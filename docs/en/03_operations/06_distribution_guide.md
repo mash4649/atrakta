@@ -24,7 +24,7 @@
 ## Build Artifacts
 
 ```bash
-./scripts/build_release_artifacts.sh
+./scripts/build/build_release_artifacts.sh
 ```
 
 Outputs:
@@ -41,7 +41,7 @@ Outputs:
 ## User Onboarding Template
 
 1. macOS / Linux users can run one-command installer:
-   - `curl -fsSL https://raw.githubusercontent.com/mash4649/atrakta/main/scripts/install.sh | bash`
+   - `curl -fsSL https://raw.githubusercontent.com/mash4649/atrakta/main/scripts/build/install.sh | bash`
 2. Download OS/arch archive from Releases (manual path)
    - Extracted executable name is `atrakta` (`atrakta.exe` on Windows)
 3. Put `atrakta` (`atrakta.exe` on Windows) on PATH

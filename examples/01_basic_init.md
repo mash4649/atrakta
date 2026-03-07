@@ -7,7 +7,7 @@ Atrakta を新しいプロジェクトに導入する最短手順です。
 **macOS / Linux**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/mash4649/atrakta/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/mash4649/atrakta/main/scripts/build/install.sh | bash
 ```
 
 インストール確認:

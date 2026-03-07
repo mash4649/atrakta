@@ -36,7 +36,7 @@ Think of it as:
 
 #  15‑Second Demo
 
-https://github.com/mash4649/atrakta/raw/main/demo/demo.mp4
+[![Watch the demo on YouTube](https://img.youtube.com/vi/42EvSW08GeY/hqdefault.jpg)](https://youtu.be/42EvSW08GeY)
 
 ---
 
@@ -60,11 +60,11 @@ https://github.com/mash4649/atrakta/raw/main/demo/demo.mp4
 **macOS / Linux**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/mash4649/atrakta/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/mash4649/atrakta/main/scripts/build/install.sh | bash
 atrakta init --interfaces cursor
 ```
 
-**Windows** — download `atrakta_*_windows_amd64.zip` from [Releases](../../releases):
+**Windows** — download `atrakta_*_windows_amd64.zip` from [Releases](https://github.com/mash4649/atrakta/releases):
 
 ```powershell
 $targetDir = "$env:USERPROFILE\AppData\Local\Programs\atrakta"
