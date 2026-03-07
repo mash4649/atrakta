@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT_DIR"
 
 mkdir -p .tmp/go-build .tmp/go-mod .tmp/dist
@@ -12,7 +12,7 @@ THRESHOLD_NS=50000000
 
 echo "[1/5] formatting check + base tests"
 gofmt -w $(find cmd internal -name '*.go')
-./scripts/verify_loop.sh
+./scripts/dev/verify_loop.sh
 
 echo "[2/5] fast-path benchmark"
 BENCH_OUT="$(go test ./internal/wrapper -run '^$' -bench '^BenchmarkWrapperFastPath$' -benchmem -count=5)"

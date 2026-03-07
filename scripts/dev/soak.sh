@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT_DIR"
 
 mkdir -p .tmp/go-build .tmp/go-mod .tmp/soak/logs
@@ -21,7 +21,7 @@ SOAK_FEATURE_ID="${SOAK_FEATURE_ID:-soak}"
 
 usage() {
   cat <<'EOF'
-usage: ./scripts/soak.sh [--hours N] [--minutes N] [--iterations N] [--sleep-sec N] [--max-failures N]
+usage: ./scripts/dev/soak.sh [--hours N] [--minutes N] [--iterations N] [--sleep-sec N] [--max-failures N]
 
 Runs repeated `atrakta start/doctor/migrate check` cycles for long-duration soak validation.
 At least one of --hours / --minutes / --iterations is required.
@@ -159,4 +159,3 @@ echo "soak: finished_at=$finished_at iterations=$iterations failures=$failures p
 if [ "$failures" -gt "$SOAK_MAX_FAILURES" ]; then
   exit 1
 fi
-
