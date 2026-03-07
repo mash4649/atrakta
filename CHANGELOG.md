@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented in this file.
 
+## [0.14.1] - 2026-03-07
+
+### Fixed
+
+- Events chain cache now handles long final lines in `.atrakta/events.jsonl` correctly.
+  - Prevents `parse last event line: invalid character ...` errors caused by partial tail reads.
+
+### Verification
+
+- `GOCACHE=$(pwd)/.tmp/go-build GOMODCACHE=$(pwd)/.tmp/go-mod go test ./internal/events`
+
 ## [0.14.0] - 2026-03-04
 
 ### Changed
@@ -356,4 +367,3 @@ All notable changes to this project are documented in this file.
 - Documentation was reorganized into Japanese canonical docs under `docs/01_全体` to `docs/05_計画`.
 
 ### Verification
-
