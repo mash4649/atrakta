@@ -36,7 +36,7 @@ Think of it as:
 
 #  15‑Second Demo
 
-https://github.com/mash4649/atrakta/blob/main/demo/atrakta_demo.mp4
+https://github.com/mash4649/atrakta/blob/main/demo/demo.mp4
 
 ---
 
