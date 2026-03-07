@@ -104,7 +104,7 @@ AI開発に安定したランタイムが必要だと思ったら\
 
 ## License
 
-Apache License 2.0
+MIT License
 
 Copyright 2026\
 Shogo Maganuma

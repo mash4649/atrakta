@@ -117,7 +117,7 @@ If you believe AI coding needs a stable runtime,\
 
 ## License
 
-Apache License 2.0
+MIT License
 
 Copyright 2026\
 Shogo Maganuma

@@ -44,7 +44,7 @@ https://github.com/mash4649/atraktademo/atrakta_demo.mp4
 
 [![Go](https://img.shields.io/badge/Go-1.26%2B-00ADD8?logo=go&logoColor=white)](go.mod)
 [![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Windows-blue)](#クイックスタート)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue)](LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
 [![Version](https://img.shields.io/badge/Version-0.14.0-green)](VERSION)
 
 [English](README.md) · [日本語](README_JA.md)
@@ -337,6 +337,6 @@ Atrakta のコンセプトが響いたら、
 
 ## ライセンス
 
-Apache License 2.0
+MIT License
 
 Copyright 2026 Shogo Maganuma · 詳細は [LICENSE](LICENSE)

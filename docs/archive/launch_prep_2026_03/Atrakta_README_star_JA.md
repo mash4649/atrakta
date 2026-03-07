@@ -220,7 +220,7 @@ Atrakta は OSS です。
 
 ## 📜 ライセンス
 
-Apache License 2.0
+MIT License
 
 Copyright 2026\
 Shogo Maganuma
