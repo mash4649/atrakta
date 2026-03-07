@@ -6,7 +6,6 @@ on:
       - main
     paths:
       - "VERSION"
-      - "scripts/build/**"
       - ".github/workflows/release.yml"
       - ".github/release.yml"
   workflow_dispatch:
@@ -55,14 +54,32 @@ jobs:
           fi
           tag="${today}-${seq}"
           version="$(tr -d '\n' < VERSION)"
+          existing_version_tag="$(
+            gh release list --repo "${repo}" --limit 100 --json name,tagName --jq '.[] | [.name,.tagName] | @tsv' \
+            | awk -F'\t' -v v="${version}" '$1 ~ ("\\(Atrakta v" v "\\)$") { print $2; exit }'
+          )"
+          if [[ -n "${existing_version_tag}" ]]; then
+            printf 'skip_release=true\n' >> "$GITHUB_OUTPUT"
+            printf 'existing_version_tag=%s\n' "${existing_version_tag}" >> "$GITHUB_OUTPUT"
+            printf 'version=%s\n' "$version" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           printf 'tag=%s\n' "$tag" >> "$GITHUB_OUTPUT"
           printf 'version=%s\n' "$version" >> "$GITHUB_OUTPUT"
           printf 'previous_tag=%s\n' "$latest_tag" >> "$GITHUB_OUTPUT"
+          printf 'skip_release=false\n' >> "$GITHUB_OUTPUT"
+
+      - name: Skip when this version is already released
+        if: steps.meta.outputs.skip_release == 'true'
+        run: |
+          echo "release already exists for version v${{ steps.meta.outputs.version }} (tag: ${{ steps.meta.outputs.existing_version_tag }})"
 
       - name: Build Release Artifacts
+        if: steps.meta.outputs.skip_release != 'true'
         run: ./scripts/build/build_release_artifacts.sh
 
       - name: Generate Release Notes
+        if: steps.meta.outputs.skip_release != 'true'
         id: notes
         env:
           REPO: ${{ github.repository }}
@@ -93,6 +110,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub Release
+        if: steps.meta.outputs.skip_release != 'true'
         shell: bash
         run: |
           set -euo pipefail
