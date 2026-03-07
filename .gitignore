@@ -1,6 +1,6 @@
 # Build artifacts
-atrakta
-atrakta.exe
+/atrakta
+/atrakta.exe
 *.exe
 *.dll
 *.so
