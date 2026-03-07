@@ -36,6 +36,9 @@ ehthumbs.db
 # Cache
 .cache/
 
+# Archived docs (not distributed)
+docs/archive/
+
 # Atrakta runtime state (project-local, not committed)
 /.atrakta/.locks/
 /.atrakta/events.jsonl
