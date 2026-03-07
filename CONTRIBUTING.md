@@ -61,7 +61,7 @@ go test ./...
 
 ```bash
 # 1. フォーク後にクローン
-git clone https://github.com/YOUR_USERNAME/Atrakta.git
+git clone https://github.com/YOUR_USERNAME/atrakta.git
 cd Atrakta
 
 # 2. ブランチを作成
