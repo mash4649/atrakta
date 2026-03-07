@@ -28,7 +28,6 @@ All notable changes to this project are documented in this file.
 ### Verification
 
 - `GOCACHE=$(pwd)/.tmp/go-build GOMODCACHE=$(pwd)/.tmp/go-mod go test ./...`
-- `./scripts/verify_perf_gate.sh`
 - Observed `BenchmarkStartSteadyState` p95 improved from ~315ms class to ~46ms class on local Apple M4.
 
 ## [0.13.0] - 2026-03-04
@@ -59,8 +58,6 @@ All notable changes to this project are documented in this file.
 ### Verification
 
 - `GOCACHE=$(pwd)/.tmp/go-build GOMODCACHE=$(pwd)/.tmp/go-mod go test ./...`
-- `./scripts/verify_perf_gate.sh`
-- `./scripts/soak.sh --iterations 5 --sleep-sec 1`
 
 ## [0.12.0] - 2026-03-04
 
@@ -190,7 +187,6 @@ All notable changes to this project are documented in this file.
   - missing managed projection artifacts are now auto-repaired on next `start`
   - added interrupted-run determinism test covering `needs_approval -> rerun -> stable state`
 - Added percentile performance gate script (fail-closed):
-  - `./scripts/verify_perf_gate.sh` (p95/p99 thresholds)
 - Added CI fail-closed enforcement:
   - GitHub Actions now runs `verify_loop` + `verify_perf_gate` on `push` / `pull_request`
 - Documentation/archive cleanup:
@@ -201,9 +197,6 @@ All notable changes to this project are documented in this file.
 ### Verification
 
 - `go test ./...`
-- `./scripts/verify_provisional.sh`
-- `./scripts/verify_perf_gate.sh`
-- `./scripts/verify_phase2.sh` (Windows runtime execution remains environment-skip when unavailable)
 
 ## [0.7.0] - 2026-03-03
 
@@ -227,8 +220,6 @@ All notable changes to this project are documented in this file.
 ### Verification
 
 - `go test ./...`
-- `./scripts/verify_provisional.sh`
-- `./scripts/verify_phase2.sh` (Windows runtime execution remains environment-skip when unavailable)
 
 ## [0.6.1] - 2026-03-03
 
@@ -245,8 +236,6 @@ All notable changes to this project are documented in this file.
 ### Verification
 
 - `go test ./...`
-- `./scripts/verify_provisional.sh`
-- `./scripts/verify_phase2.sh` (Windows runtime execution remains environment-skip when unavailable)
 
 ## [0.6.0] - 2026-03-03
 
@@ -273,8 +262,6 @@ All notable changes to this project are documented in this file.
 ### Verification
 
 - `go test ./...`
-- `./scripts/verify_provisional.sh`
-- `./scripts/verify_phase2.sh` (Windows runtime execution remains environment-skip when unavailable)
 
 ## [0.5.0] - 2026-03-03
 
@@ -304,8 +291,6 @@ All notable changes to this project are documented in this file.
 ### Verification
 
 - `go test ./...`
-- `./scripts/verify_provisional.sh`
-- `./scripts/verify_phase2.sh` (Windows runtime execution remains environment-skip when unavailable)
 
 ## [0.4.0] - 2026-03-03
 
@@ -316,7 +301,6 @@ All notable changes to this project are documented in this file.
   - `post_start`
   - `on_error`
 - Context budget guard for subworker plans with deterministic digest/summary compaction.
-- Recovery-aware verification loop script: `./scripts/verify_loop.sh`.
 
 ### Changed
 
@@ -328,7 +312,6 @@ All notable changes to this project are documented in this file.
 ### Verification
 
 - `go test ./...`
-- `./scripts/verify_phase2.sh` (Windows runtime execution remains environment-skip when unavailable)
 
 ## [0.3.0] - 2026-03-03
 
@@ -354,7 +337,6 @@ All notable changes to this project are documented in this file.
 ### Verification
 
 - `go test ./...`
-- `./scripts/verify_phase2.sh` (Linux runtime test passed via Docker; Windows runtime remains environment-skip)
 
 ## [0.2.0] - 2026-03-03
 
@@ -375,5 +357,3 @@ All notable changes to this project are documented in this file.
 
 ### Verification
 
-- `./scripts/verify_provisional.sh`
-- `./scripts/verify_phase2.sh` (Windows runtime execution is skipped when environment does not support it)
