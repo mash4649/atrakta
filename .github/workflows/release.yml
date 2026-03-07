@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "VERSION"
+      - "scripts/build/**"
+      - ".github/workflows/release.yml"
+      - ".github/release.yml"
   workflow_dispatch:
 
 permissions:

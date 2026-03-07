@@ -12,9 +12,9 @@ atrakta.exe
 *.out
 
 # Release build output
-.tmp/
-dist/
-build/
+/.tmp/
+/dist/
+/build/
 
 # IDE
 .vscode/

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT_DIR"
 
 mkdir -p .tmp/go-build .tmp/go-mod .tmp/dist .tmp/linux-e2e
@@ -12,7 +12,7 @@ FAST_THRESHOLD_NS=50000000
 
 echo "[1/13] format + full test"
 gofmt -w $(find cmd internal -name '*.go')
-./scripts/verify_loop.sh
+./scripts/dev/verify_loop.sh
 
 echo "[2/13] wrapper fast-path benchmark (<50ms)"
 FAST_OUT="$(go test ./internal/wrapper -run '^$' -bench '^BenchmarkWrapperFastPath$' -benchmem -count=5)"
@@ -45,7 +45,7 @@ echo "[4/13] apply scaling benchmark"
 go test ./internal/apply -run '^$' -bench '^BenchmarkApplyScaling$' -benchmem -count=1
 
 echo "[5/13] perf regression gate (p95/p99 fail-closed)"
-./scripts/verify_perf_gate.sh
+./scripts/dev/verify_perf_gate.sh
 
 echo "[6/13] projection scaling stress"
 go test ./internal/projection -run '^TestProjectionScalingLinearBound$' -count=1
