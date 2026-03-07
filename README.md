@@ -47,7 +47,7 @@ Think of it as:
 [![Go](https://img.shields.io/badge/Go-1.26%2B-00ADD8?logo=go&logoColor=white)](go.mod)
 [![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Windows-blue)](#quick-start)
 [![License](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-0.14.0-green)](VERSION)
+[![Version](https://img.shields.io/badge/Version-0.14.1-green)](VERSION)
 
 [English](README.md) · [日本語](README_JA.md)
 
