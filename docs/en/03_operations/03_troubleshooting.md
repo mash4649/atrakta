@@ -45,7 +45,7 @@
 
 - Usually missing binary or PATH entry.
 - Quick fix on macOS/Linux:
-  - `curl -fsSL https://raw.githubusercontent.com/afwm/Atrakta/main/scripts/install.sh | bash`
+  - `curl -fsSL https://raw.githubusercontent.com/mash4649/atrakta/main/scripts/install.sh | bash`
 - macOS / Linux:
   - `mkdir -p ~/.local/bin`
   - `install -m 0755 ./atrakta ~/.local/bin/atrakta`

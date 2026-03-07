@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="${ATRAKTA_REPO:-afwm/Atrakta}"
+REPO="${ATRAKTA_REPO:-mash4649/atrakta}"
 VERSION="${ATRAKTA_VERSION:-latest}"
 INSTALL_DIR="${ATRAKTA_INSTALL_DIR:-$HOME/.local/bin}"
 INSTALL_NAME="atrakta"

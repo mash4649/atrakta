@@ -7,7 +7,7 @@ Atrakta を新しいプロジェクトに導入する最短手順です。
 **macOS / Linux**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/afwm/Atrakta/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/mash4649/atrakta/main/scripts/install.sh | bash
 ```
 
 インストール確認:
@@ -18,7 +18,7 @@ atrakta --version
 
 **Windows**
 
-[Releases](https://github.com/afwm/Atrakta/releases) から `atrakta_*_windows_amd64.zip` をダウンロードして展開し、`atrakta.exe` を PATH に追加してください。
+[Releases](https://github.com/mash4649/atrakta/releases) から `atrakta_*_windows_amd64.zip` をダウンロードして展開し、`atrakta.exe` を PATH に追加してください。
 
 詳細: [セットアップガイド](../docs/en/03_operations/01_setup.md)
 
