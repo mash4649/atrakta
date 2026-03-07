@@ -4,8 +4,8 @@
 
 ## Spec Version
 
-- Document version: `v0.14.0`
-- Target CLI: `atrakta` `v0.14.0`
+- Document version: `v0.14.1`
+- Target CLI: `atrakta` `v0.14.1`
 - Last updated: `2026-03-04`
 
 ## Commands

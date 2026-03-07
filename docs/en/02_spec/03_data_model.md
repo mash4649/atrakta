@@ -2,7 +2,7 @@
 
 [English](./03_data_model.md) | [日本語](../../ja/02_仕様/03_データモデル.md)
 
-## Schema Versions (latest-only, v0.14.0)
+## Schema Versions (latest-only, v0.14.1)
 
 - `contract.json`: `contract.v = 1`
 - `state.json`: `state.v = 1`

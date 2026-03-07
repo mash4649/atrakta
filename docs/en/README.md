@@ -4,7 +4,7 @@
 
 This is the English documentation set for the current Go implementation.
 
-- Target version: `v0.14.0` ([VERSION](../../VERSION))
+- Target version: `v0.14.1` ([VERSION](../../VERSION))
 - Last updated: `2026-03-04`
 
 ## Structure
