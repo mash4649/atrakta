@@ -1,5 +1,11 @@
 <div align="center">
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="assets/logo-light.png">
+  <img alt="Atrakta logo" src="assets/logo.svg" width="520">
+</picture>
+
 # Atrakta
 
 ### AIコーディングのための欠けていたランタイム
