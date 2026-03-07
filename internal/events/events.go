@@ -432,6 +432,15 @@ func readLastNonEmptyLine(filePath string) ([]byte, error) {
 			return nil, err
 		}
 		buf = append(part, buf...)
+		trimmed := bytes.TrimRight(buf, "\r\n\t ")
+		// When reading from tail chunks, wait until we have observed at least one
+		// real newline byte before treating the final segment as a complete line.
+		// Without this guard, a very long last JSON line can be parsed from the
+		// middle and fail with "invalid character ...".
+		if start > 0 && len(trimmed) > 0 && !bytes.Contains(trimmed, []byte{'\n'}) {
+			pos = start
+			continue
+		}
 		if line := lastNonEmptyFromBuffer(buf); len(line) > 0 {
 			copied := make([]byte, len(line))
 			copy(copied, line)
