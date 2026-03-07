@@ -12,7 +12,7 @@
 ### リポジトリのクローン
 
 ```bash
-git clone https://github.com/afwm/Atrakta.git
+git clone https://github.com/mash4649/atrakta.git
 cd Atrakta
 ```
 
@@ -35,13 +35,13 @@ go test ./...
 
 ### バグ報告
 
-1. [Issues](https://github.com/afwm/Atrakta/issues) を検索して重複がないか確認
+1. [Issues](https://github.com/mash4649/atrakta/issues) を検索して重複がないか確認
 2. 「Bug Report」テンプレートで Issue を作成
 3. 再現手順・環境・期待する動作を明記
 
 ### 機能提案
 
-1. [Discussions](https://github.com/afwm/Atrakta/discussions) で先に議論
+1. [Discussions](https://github.com/mash4649/atrakta/discussions) で先に議論
 2. 合意が取れたら「Feature Request」テンプレートで Issue を作成
 
 ### ドキュメント改善

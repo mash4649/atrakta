@@ -60,7 +60,7 @@ https://github.com/mash4649/atrakta/raw/main/demo/demo.mp4
 **macOS / Linux**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/mash4649/Atrakta/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/mash4649/atrakta/main/scripts/install.sh | bash
 atrakta init --interfaces cursor
 ```
 

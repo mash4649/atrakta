@@ -5,7 +5,7 @@ Atrakta のコードベースに貢献するための開発ガイドです。
 ## クイックスタート
 
 ```bash
-git clone https://github.com/afwm/Atrakta.git
+git clone https://github.com/mash4649/atrakta.git
 cd Atrakta
 go build ./cmd/atrakta
 ./atrakta --version

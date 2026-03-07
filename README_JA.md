@@ -119,7 +119,7 @@ aider   ──┘                           ├── state.json      （セッ�
 **macOS / Linux**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/afwm/Atrakta/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/mash4649/atrakta/main/scripts/install.sh | bash
 atrakta init --interfaces cursor
 ```
 

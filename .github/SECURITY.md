@@ -12,7 +12,7 @@
 
 セキュリティの脆弱性を発見した場合は、**公開 Issue ではなく** 以下の方法で報告してください。
 
-**報告先:** GitHub の [Security Advisories](https://github.com/afwm/Atrakta/security/advisories/new) を使用してください。
+**報告先:** GitHub の [Security Advisories](https://github.com/mash4649/atrakta/security/advisories/new) を使用してください。
 
 報告内容に含めてほしいもの:
 
