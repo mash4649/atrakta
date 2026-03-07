@@ -1,0 +1,98 @@
+{
+  "v": 1,
+  "project_id": "atrakta",
+  "interfaces": {
+    "supported": [
+      "vscode",
+      "cursor",
+      "windsurf",
+      "trae",
+      "antigravity",
+      "aider",
+      "codex_cli",
+      "gemini_cli",
+      "claude_code",
+      "opencode",
+      "github_copilot"
+    ],
+    "fallback": "core",
+    "core_set": [
+      "cursor"
+    ],
+    "prune_unused_default": true
+  },
+  "boundary": {
+    "include": [
+      ""
+    ],
+    "exclude": [
+      ".atrakta/"
+    ],
+    "managed_root": ".atrakta/"
+  },
+  "tools": {
+    "allow": [
+      "create",
+      "edit",
+      "run"
+    ],
+    "deny": [],
+    "approval_required_for": [
+      "boundary_expand",
+      "external_side_effect",
+      "destructive_prune"
+    ]
+  },
+  "token_budget": {
+    "soft": 8000,
+    "hard": 16000
+  },
+  "projections": {
+    "max_per_interface": 3
+  },
+  "routing": {
+    "categories": {
+      "edit": {
+        "worker": "code_edit_fast",
+        "quality": "quick"
+      },
+      "sync": {
+        "worker": "sync_safe",
+        "quality": "quick"
+      },
+      "verify": {
+        "worker": "ci_strict",
+        "quality": "heavy"
+      }
+    },
+    "default": {
+      "worker": "general",
+      "quality": "quick"
+    }
+  },
+  "context": {
+    "resolution": "nearest_with_import",
+    "projection": "interface_only",
+    "max_import_depth": 6
+  },
+  "security": {
+    "profile": "workspace_write"
+  },
+  "edit_safety": {
+    "mode": "anchor+optional_ast",
+    "anchors": {
+      "normalization": "ws+eol+unicode_nfc",
+      "window_lines": 20
+    },
+    "languages": {
+      "go": "ast",
+      "json": "parse"
+    }
+  },
+  "policies": {
+    "prompt_min": {
+      "ref": ".atrakta/policies/prompt-min.json",
+      "apply": "conditional"
+    }
+  }
+}

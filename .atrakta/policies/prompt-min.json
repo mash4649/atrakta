@@ -1,0 +1,7 @@
+{
+  "id": "prompt-min@1",
+  "apply": "conditional",
+  "require_goal_prefix": true,
+  "goal_label": "Goal",
+  "required": false
+}
