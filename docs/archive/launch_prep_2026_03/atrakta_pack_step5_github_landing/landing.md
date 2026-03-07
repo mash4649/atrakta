@@ -119,4 +119,4 @@ If this project resonates with you, please ⭐ star the repository.
 
 ## License
 
-Apache License 2.0
+MIT License
