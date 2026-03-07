@@ -1,0 +1,49 @@
+# Build artifacts
+atrakta
+atrakta.exe
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Go
+/bin/
+/vendor/
+*.out
+
+# Release build output
+.tmp/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+
+# Cursor
+.cursor/
+
+# Cache
+.cache/
+
+# Atrakta runtime state (project-local, not committed)
+/.atrakta/.locks/
+/.atrakta/events.jsonl
+/.atrakta/state.json
+/.atrakta/progress.json
+/.atrakta/task-graph.json
+/.atrakta/run-checkpoints/
+/.atrakta/metrics/
+/.atrakta/runtime/
+/.atrakta/git/checkpoint-latest.json
+/.atrakta/git/bootstrap.md

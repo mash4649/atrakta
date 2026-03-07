@@ -1,0 +1,33 @@
+changelog:
+  exclude:
+    labels:
+      - skip-changelog
+      - no-release-note
+  categories:
+    - title: 🚀 Features
+      labels:
+        - feat
+        - feature
+    - title: ⚡ Performance
+      labels:
+        - perf
+        - performance
+    - title: 🛡 Reliability & Security
+      labels:
+        - fix
+        - bug
+        - security
+    - title: 🧰 Refactor & Maintenance
+      labels:
+        - refactor
+        - chore
+        - dependencies
+    - title: 📝 Docs
+      labels:
+        - docs
+    - title: ✅ Tests
+      labels:
+        - test
+    - title: Other Changes
+      labels:
+        - "*"
