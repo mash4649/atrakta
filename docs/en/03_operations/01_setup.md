@@ -14,7 +14,7 @@ Binary distribution is the default. Recommended locations:
 Recommended one-command install (macOS / Linux):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/mash4649/atrakta/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/mash4649/atrakta/main/scripts/build/install.sh | bash
 ```
 
 `install.sh` auto-detects OS/arch, downloads the matching release asset, verifies checksum, installs to `~/.local/bin`, and removes macOS quarantine attribute.

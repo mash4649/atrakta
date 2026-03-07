@@ -29,7 +29,7 @@
 1. Normal path:
    - push to `main` triggers `.github/workflows/release.yml`
 2. Manual fallback:
-   - `./scripts/build_release_artifacts.sh`
+   - `./scripts/build/build_release_artifacts.sh`
 3. Outputs:
    - `.tmp/release/v<version>/packages`
    - `.tmp/release/v<version>/checksums.txt`

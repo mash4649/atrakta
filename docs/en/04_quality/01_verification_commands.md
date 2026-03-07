@@ -5,7 +5,7 @@
 ## Basic Verification
 
 ```bash
-./scripts/verify_loop.sh
+./scripts/dev/verify_loop.sh
 ```
 
 A minimal verification loop that retries once with `doctor` when `go test ./...` fails.
@@ -13,7 +13,7 @@ A minimal verification loop that retries once with `doctor` when `go test ./...`
 ## Provisional Verification
 
 ```bash
-./scripts/verify_provisional.sh
+./scripts/dev/verify_provisional.sh
 ```
 
 Includes:
@@ -26,7 +26,7 @@ Includes:
 ## Phase2 Verification
 
 ```bash
-./scripts/verify_phase2.sh
+./scripts/dev/verify_phase2.sh
 ```
 
 Additional checks:
@@ -42,7 +42,7 @@ Additional checks:
 ## Performance Regression Gate
 
 ```bash
-./scripts/verify_perf_gate.sh
+./scripts/dev/verify_perf_gate.sh
 ```
 
 Covers:
@@ -69,11 +69,11 @@ CI usage:
 
 ```bash
 # short measurement with custom minutes
-./scripts/soak.sh --minutes 10
+./scripts/dev/soak.sh --minutes 10
 
 # 24h / 72h profiles
-./scripts/soak_24h.sh
-./scripts/soak_72h.sh
+./scripts/dev/soak_24h.sh
+./scripts/dev/soak_72h.sh
 ```
 
 Notes:
