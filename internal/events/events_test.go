@@ -3,6 +3,7 @@ package events
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"testing"
 )
@@ -91,5 +92,23 @@ func TestVerifyChainCached(t *testing.T) {
 	}
 	if err := VerifyChainCached(repo); err != nil {
 		t.Fatalf("second verify cached failed: %v", err)
+	}
+}
+
+func TestVerifyChainCachedWithLongLastLine(t *testing.T) {
+	repo := t.TempDir()
+	// Make the last line much longer than tail-read chunk size and include many
+	// escaped "\n" sequences to mimic large repo-map summaries.
+	longSummary := strings.Repeat("atrakta/.git/objects/xx/yy (1234)\\n", 600)
+	if _, err := Append(repo, "repo_map", "orchestrator", map[string]any{
+		"summary": longSummary,
+	}); err != nil {
+		t.Fatalf("append failed: %v", err)
+	}
+	if err := VerifyChainCached(repo); err != nil {
+		t.Fatalf("verify cached failed for long last line: %v", err)
+	}
+	if err := VerifyChainCached(repo); err != nil {
+		t.Fatalf("second verify cached failed for long last line: %v", err)
 	}
 }
