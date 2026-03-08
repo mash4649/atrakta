@@ -10,27 +10,20 @@
 
 ### The missing runtime for AI coding
 
-Switch between **Cursor, Claude Code, Codex, Copilot, VS Code** and
-continue the **same AI development session**.
+Keep the same AI coding session across **Cursor, Claude Code, Codex, Copilot, and VS Code**.
 
-Atrakta makes AI coding:
+**Atrakta is the runtime that preserves AI development state across tools, restarts, and handoffs.**
 
-**Resumable · Reproducible · Tool‑independent**
+Switch interfaces without losing context, decisions, or workflow progress.
 
----
+**Git for AI coding sessions: Resumable · Reproducible · Tool‑independent**
 
-# TL;DR
+[![Go](https://img.shields.io/badge/Go-1.26%2B-00ADD8?logo=go&logoColor=white)](go.mod)
+[![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Windows-blue)](#quick-start)
+[![License](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
+[![Version](https://img.shields.io/badge/Version-0.14.1-green)](VERSION)
 
-AI coding tools **do not share session state**.
-
-Switch tools or restart a session and the AI starts from zero.
-
-**Atrakta adds a runtime layer that persists AI development state so any
-tool can resume the same workflow.**
-
-Think of it as:
-
-**Git for AI coding sessions.**
+[English](README.md) · [日本語](README_JA.md)
 
 ---
 
@@ -43,17 +36,6 @@ Think of it as:
 Full resolution: [MP4 (GitHub Release asset)](https://github.com/mash4649/atrakta/releases/latest/download/demo.mp4) · [YouTube](https://youtu.be/42EvSW08GeY)
 
 ---
-
-### Without being locked into any AI tool, keep the same development experience anytime.
-
-*An AI development runtime that enables a consistent workflow across any AI coding tool.*
-
-[![Go](https://img.shields.io/badge/Go-1.26%2B-00ADD8?logo=go&logoColor=white)](go.mod)
-[![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Windows-blue)](#quick-start)
-[![License](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-0.14.1-green)](VERSION)
-
-[English](README.md) · [日本語](README_JA.md)
 
 </div>
 
