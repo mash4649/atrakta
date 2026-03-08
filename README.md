@@ -36,7 +36,11 @@ Think of it as:
 
 #  15‑Second Demo
 
-[![Watch the demo on YouTube](https://img.youtube.com/vi/42EvSW08GeY/hqdefault.jpg)](https://youtu.be/42EvSW08GeY)
+<a href="https://github.com/mash4649/atrakta/releases/latest/download/demo.mp4">
+  <img src="demo/demo.gif" alt="Atrakta demo" width="640">
+</a>
+
+Full resolution: [MP4 (GitHub Release asset)](https://github.com/mash4649/atrakta/releases/latest/download/demo.mp4) · [YouTube](https://youtu.be/42EvSW08GeY)
 
 ---
 
