@@ -1,0 +1,35 @@
+name: backlog-dry-run
+
+on:
+  schedule:
+    - cron: "17 2 * * 1"
+  workflow_dispatch:
+
+jobs:
+  dry-run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate script syntax
+        run: |
+          bash -n scripts/dev/create_parity_issue_pack.sh
+          bash -n scripts/dev/populate_parity_project.sh
+          bash -n scripts/dev/sync_parity_project_fields.sh
+
+      - name: Validate draft JSON
+        run: |
+          jq empty .github/issue_drafts/parity_extension_brownfield.json
+          jq empty .github/issue_drafts/parity_extension_brownfield_epic_map.json
+
+      - name: Dry-run issue pack creation
+        run: |
+          ./scripts/dev/create_parity_issue_pack.sh --repo mash4649/atrakta --dry-run --start-id 1 --limit 3 > /tmp/issue-pack.out
+          grep -q "\[DRY-RUN\] Issue 1" /tmp/issue-pack.out
+
+      - name: Dry-run project population
+        run: |
+          ./scripts/dev/populate_parity_project.sh --repo mash4649/atrakta --project-number 1 --dry-run --start-id 1 --limit 3 > /tmp/project-populate.out
+          grep -q "\[dry-run\] add: draft#1" /tmp/project-populate.out

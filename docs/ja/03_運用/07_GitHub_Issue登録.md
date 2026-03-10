@@ -72,3 +72,32 @@ dry-run:
   --repo <owner/repo> \
   --dry-run
 ```
+
+## Projectフィールドを同期する
+
+Issueラベル `priority:P0/P1/P2` を Project の `Priority` フィールドへ同期します。
+
+```bash
+./scripts/dev/sync_parity_project_fields.sh \
+  --owner <owner> \
+  --project-number <n>
+```
+
+dry-run:
+
+```bash
+./scripts/dev/sync_parity_project_fields.sh \
+  --owner <owner> \
+  --project-number <n> \
+  --dry-run
+```
+
+## 推奨ビュー（Milestone別）
+
+Project UI の保存ビューに以下の filter を設定してください。
+
+- `milestone:"Milestone 1: Schema & Docs Foundation"`
+- `milestone:"Milestone 2: Core Projection"`
+- `milestone:"Milestone 3: Brownfield & Doctor"`
+- `milestone:"Milestone 4: Extensions & Runtime"`
+- `milestone:"Milestone 5: Operations & Quality"`

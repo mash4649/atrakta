@@ -74,3 +74,32 @@ Dry run:
   --repo <owner/repo> \
   --dry-run
 ```
+
+## Sync Project Fields
+
+Sync `priority:P0/P1/P2` labels into the Project `Priority` single-select field:
+
+```bash
+./scripts/dev/sync_parity_project_fields.sh \
+  --owner <owner> \
+  --project-number <n>
+```
+
+Dry run:
+
+```bash
+./scripts/dev/sync_parity_project_fields.sh \
+  --owner <owner> \
+  --project-number <n> \
+  --dry-run
+```
+
+## Recommended Milestone Views
+
+Create saved views in the Project UI with these filters:
+
+- `milestone:"Milestone 1: Schema & Docs Foundation"`
+- `milestone:"Milestone 2: Core Projection"`
+- `milestone:"Milestone 3: Brownfield & Doctor"`
+- `milestone:"Milestone 4: Extensions & Runtime"`
+- `milestone:"Milestone 5: Operations & Quality"`
