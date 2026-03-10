@@ -1,4 +1,4 @@
-# 07. GitHub Issue Bootstrap (Parity / Extension / Brownfield)
+# 08. GitHub Issue Bootstrap (Parity / Extension / Brownfield)
 
 This operation document turns the backlog drafts into runnable GitHub issue creation.
 

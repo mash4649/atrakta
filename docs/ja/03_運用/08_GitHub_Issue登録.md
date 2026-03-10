@@ -1,4 +1,4 @@
-# 07. GitHub Issue登録（Parity / Extension / Brownfield）
+# 08. GitHub Issue登録（Parity / Extension / Brownfield）
 
 この手順は、実装バックログを GitHub Issue として一括登録するための運用です。
 

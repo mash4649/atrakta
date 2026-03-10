@@ -10,21 +10,23 @@ This is the English documentation set for the current Go implementation.
 ## Structure
 
 - `01_overview`: purpose, design principles, current scope
-- `02_spec`: CLI spec, execution flow, data model, sync policy
-- `03_operations`: onboarding, daily operations, troubleshooting, issue bootstrap
-- `04_quality`: tests, benchmarks, cross-build verification
+- `02_spec`: CLI spec, execution flow, data model, sync policy, parity contract, extension surface
+- `03_operations`: onboarding, daily operations, troubleshooting, brownfield integration, issue bootstrap
+- `04_quality`: verification commands, benchmark criteria, parity verification, extension verification
 
 ## Recommended Reading Order
 
 1. `01_overview/01_overview.md`
 2. `02_spec/01_cli_spec.md`
-3. `03_operations/01_setup.md`
-4. `03_operations/04_update_guide.md`
-5. `03_operations/06_distribution_guide.md`
-6. `03_operations/07_github_issue_bootstrap.md`
-7. `03_operations/05_gc_operations.md`
-8. `04_quality/01_verification_commands.md`
-9. `../../CHANGELOG.md`
+3. `02_spec/06_parity_contract.md`
+4. `02_spec/07_extension_surface.md`
+5. `03_operations/01_setup.md`
+6. `03_operations/07_brownfield_integration.md`
+7. `03_operations/08_github_issue_bootstrap.md`
+8. `04_quality/03_parity_verification.md`
+9. `04_quality/04_extension_verification.md`
+10. `04_quality/01_verification_commands.md`
+11. `../../CHANGELOG.md`
 
 ## Documentation Policy
 
