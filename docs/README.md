@@ -5,7 +5,7 @@
 This directory contains the canonical documentation for Atrakta.
 
 - Version: `v0.14.1` ([VERSION](../VERSION))
-- Last updated: `2026-03-04`
+- Last updated: `2026-03-11`
 
 ## Structure
 
@@ -24,7 +24,7 @@ docs/
 |---|---|
 | `01_overview/` | Purpose, design principles, current scope |
 | `02_spec/` | CLI spec, execution flow, data model, sync policy, interface matrix |
-| `03_operations/` | Setup, daily use, troubleshooting, update guide, GC, distribution |
+| `03_operations/` | Setup, daily use, troubleshooting, update guide, GC, distribution, GitHub issue bootstrap |
 | `04_quality/` | Verification commands, benchmark criteria |
 
 ## Japanese Documentation
@@ -35,7 +35,7 @@ docs/
 |---|---|
 | `01_全体/` | 目的・設計原則・現状スコープ |
 | `02_仕様/` | CLI仕様・実行フロー・データモデル・同期ポリシー |
-| `03_運用/` | 導入・日常運用・トラブル・更新・GC・配布 |
+| `03_運用/` | 導入・日常運用・トラブル・更新・GC・配布・GitHub Issue登録 |
 | `04_品質/` | 検証コマンド・ベンチマーク基準 |
 
 ## Archive

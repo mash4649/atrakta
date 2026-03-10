@@ -1,0 +1,682 @@
+{
+  "version": 1,
+  "milestones": [
+    {
+      "id": "M1",
+      "title": "Milestone 1: Schema & Docs Foundation",
+      "description": "Issue 1-6"
+    },
+    {
+      "id": "M2",
+      "title": "Milestone 2: Core Projection",
+      "description": "Issue 7-11"
+    },
+    {
+      "id": "M3",
+      "title": "Milestone 3: Brownfield & Doctor",
+      "description": "Issue 13-17"
+    },
+    {
+      "id": "M4",
+      "title": "Milestone 4: Extensions & Runtime",
+      "description": "Issue 12,18-21"
+    },
+    {
+      "id": "M5",
+      "title": "Milestone 5: Operations & Quality",
+      "description": "Issue 22-28"
+    }
+  ],
+  "issues": [
+    {
+      "id": 1,
+      "title": "docs: README に parity / extension / brownfield / quality 拡張を追加する",
+      "labels": ["type:docs", "area:readme", "priority:P0"],
+      "milestone": "M1",
+      "summary": "README の索引を拡張し、Parity Contract / Extension Surface / Brownfield導入 / Parity検証 / Extension検証を見つけやすくする。",
+      "background": "現状 README は overview/spec/operations/quality の4区分だが、parity / extension / brownfield 関連文書への導線が不足している。",
+      "scope": ["docs/README.md", "docs/ja/README.md", "docs/en/README.md"],
+      "tasks": [
+        "spec セクションに 06_Parity Contract を追加",
+        "spec セクションに 07_Extension Surface を追加",
+        "operations セクションに 07_Brownfield導入 を追加",
+        "quality セクションに 03_Parity検証 を追加",
+        "quality セクションに 04_Extension検証 を追加",
+        "ja/en の索引構造を揃える"
+      ],
+      "acceptance": [
+        "README から parity / extension / brownfield / quality 追加文書へ辿れる",
+        "既存文書の位置づけを壊していない",
+        "ja/en の索引が対応している"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": 2,
+      "title": "docs: Parity Contract を正式仕様として追加する",
+      "labels": ["type:docs", "area:spec", "priority:P0"],
+      "milestone": "M1",
+      "summary": "同じ開発体験の定義を Parity Contract として仕様化する。",
+      "background": "現状は安全で一貫したハーネスはあるが、何をもって cross-tool parity とするかの正式仕様がない。",
+      "scope": ["docs/ja/02_仕様/06_Parity Contract.md", "docs/en/02_spec/06_parity_contract.md"],
+      "tasks": [
+        "Purpose を定義する",
+        "Canonical sources of truth を定義する",
+        "Parity surfaces を定義する",
+        "Projection rules を定義する",
+        "Drift detection rules を定義する",
+        "Reverse sync policy を定義する",
+        "Acceptance criteria を定義する",
+        "Non-goals を定義する"
+      ],
+      "acceptance": [
+        "instruction / approval / output / execution / quality / safety / routing surface が明文化されている",
+        "non-goals が明示されている",
+        "Fast Path / Strict Path / latest-only と矛盾しない"
+      ],
+      "depends_on": [1]
+    },
+    {
+      "id": 3,
+      "title": "docs: Extension Surface を正式仕様として追加する",
+      "labels": ["type:docs", "area:spec", "priority:P0"],
+      "milestone": "M1",
+      "summary": "plugin / MCP / skill / workflow / hook を contract 上の一級概念として仕様化する。",
+      "background": "拡張要素の扱いを deterministic な projection 前提で明文化する。",
+      "scope": ["docs/ja/02_仕様/07_Extension Surface.md"],
+      "tasks": [
+        "MCP を定義する",
+        "plugin を定義する",
+        "skill を定義する",
+        "workflow を定義する",
+        "hook を定義する",
+        "merge strategy を定義する",
+        "append mode / include mode を定義する",
+        "unsupported policy を定義する"
+      ],
+      "acceptance": [
+        "plugin / MCP / skill / workflow / hook が仕様として定義されている",
+        "unsupported が silent ignore になっていない",
+        "projection 方針が deterministic 前提になっている"
+      ],
+      "depends_on": [1]
+    },
+    {
+      "id": 4,
+      "title": "schema: contract.json に parity セクションを追加する",
+      "labels": ["type:schema", "area:contract", "priority:P0"],
+      "milestone": "M1",
+      "summary": ".atrakta/contract.json に parity schema を追加する。",
+      "background": "contract loader で parity surface を fail-closed で扱えるようにする。",
+      "scope": [".atrakta/contract.json", "contract loader"],
+      "tasks": [
+        "parity.v を追加",
+        "canonical_sources を追加",
+        "instruction_surface を追加",
+        "approval_surface を追加",
+        "output_surface を追加",
+        "execution_surface を追加",
+        "quality_surface を追加",
+        "projection_surface を追加",
+        "既存 quality/routing/security/tools/policies との整合チェックを追加"
+      ],
+      "acceptance": [
+        "contract loader が parity を読める",
+        "schema 矛盾時は fail-closed で停止する",
+        "latest-only 方針を維持する"
+      ],
+      "depends_on": [2]
+    },
+    {
+      "id": 5,
+      "title": "schema: contract.json に extensions セクションを追加する",
+      "labels": ["type:schema", "area:contract", "priority:P0"],
+      "milestone": "M1",
+      "summary": "plugin / MCP / skill / workflow / hook / merge strategy を contract 管理下に置く。",
+      "background": "extensions schema を canonical contract に統合する。",
+      "scope": [".atrakta/contract.json", "contract loader"],
+      "tasks": [
+        "extensions.v を追加",
+        "merge_mode を追加",
+        "agents を追加",
+        "mcp を追加",
+        "plugins を追加",
+        "skills を追加",
+        "workflows を追加",
+        "hooks を追加"
+      ],
+      "acceptance": [
+        "extensions schema を読み取れる",
+        "append-first を既定値にできる",
+        "protected field は reverse sync されない"
+      ],
+      "depends_on": [3]
+    },
+    {
+      "id": 6,
+      "title": "docs/schema: データモデルに projection / extension manifest を追加する",
+      "labels": ["type:docs", "type:schema", "area:data-model", "priority:P0"],
+      "milestone": "M1",
+      "summary": "projection manifest と extension manifest、および parity/integration 系イベントをデータモデルに追加する。",
+      "background": "drift 検知と integration 追跡のための state/events スキーマを整備する。",
+      "scope": ["docs/ja/02_仕様/03_データモデル.md", "state/events schema"],
+      "tasks": [
+        ".atrakta/projections/manifest.json を定義",
+        ".atrakta/extensions/manifest.json を定義",
+        "state へ parity/projection 状態フィールドを追加",
+        "events へ projection_rendered を追加",
+        "events へ integration_checked / integration_blocked を追加"
+      ],
+      "acceptance": [
+        "manifest 形式が文書化されている",
+        "state/events で parity と integration を追跡できる",
+        "drift 検知に必要な hash が定義されている"
+      ],
+      "depends_on": [4, 5]
+    },
+    {
+      "id": 7,
+      "title": "core: projection renderer 共通層を実装する",
+      "labels": ["type:feature", "area:projection", "priority:P0"],
+      "milestone": "M2",
+      "summary": "canonical contract から deterministic に render する共通 renderer を実装する。",
+      "background": "native projection ごとの個別実装差を抑え、hash 安定性を確保する。",
+      "scope": ["renderer abstraction", "canonical model transform", "hash stabilization"],
+      "tasks": [
+        "renderer interface を定義",
+        "parity/extension を含む canonical model を作る",
+        "出力順 / key order / 改行を固定",
+        "hash 計算を統一",
+        "unit test を追加"
+      ],
+      "acceptance": [
+        "同一入力から毎回同一出力が得られる",
+        "renderer が struct -> render で統一されている",
+        "hash 安定性テストがある"
+      ],
+      "depends_on": [4, 5, 6]
+    },
+    {
+      "id": 8,
+      "title": "core: projection manifest を生成・更新する",
+      "labels": ["type:feature", "area:projection", "priority:P0"],
+      "milestone": "M2",
+      "summary": "projection 実行結果を manifest に記録する。",
+      "background": "projection 実行と drift 検知を state/events と一貫させる。",
+      "scope": [".atrakta/projections/manifest.json", ".atrakta/extensions/manifest.json"],
+      "tasks": [
+        "projections manifest writer を実装",
+        "extensions manifest writer を実装",
+        "entry に interface/kind/files/source_hash/render_hash/status を記録",
+        "state/events と連携"
+      ],
+      "acceptance": [
+        "projection 実行後に manifest が更新される",
+        "drift 検知に必要な hash が残る",
+        "events に projection 実行が記録される"
+      ],
+      "depends_on": [6, 7]
+    },
+    {
+      "id": 9,
+      "title": "projection: Cursor 向け native projection を実装する",
+      "labels": ["type:feature", "area:cursor", "area:projection", "priority:P0"],
+      "milestone": "M2",
+      "summary": "Cursor 向けに native projection を出力する。",
+      "background": "Cursor 用 AGENTS/rules を deterministic に生成し manifest 記録する。",
+      "scope": [".cursor/AGENTS.md", ".cursor/rules/00-atrakta.mdc"],
+      "tasks": [
+        "Cursor renderer を実装",
+        "AGENTS projection を実装",
+        "rules projection を実装",
+        "manifest 記録を実装"
+      ],
+      "acceptance": [
+        "Cursor 向け projection が deterministic に生成される",
+        "manifest に記録される",
+        "unsupported 項目は warning になる"
+      ],
+      "depends_on": [7, 8]
+    },
+    {
+      "id": 10,
+      "title": "projection: Claude Code 向け native projection を実装する",
+      "labels": ["type:feature", "area:claude-code", "area:projection", "priority:P0"],
+      "milestone": "M2",
+      "summary": "Claude Code 向けに CLAUDE.md と optional native files を出力する。",
+      "background": "Claude renderer と optional settings/mcp projections の入口を揃える。",
+      "scope": ["CLAUDE.md", ".claude/settings.json", ".claude/agents/*.md", ".claude/mcp.json"],
+      "tasks": [
+        "Claude renderer を実装",
+        "CLAUDE.md projection を実装",
+        "optional settings projection を実装",
+        "MCP projection entrypoint を用意"
+      ],
+      "acceptance": [
+        "Claude Code 向け projection が生成される",
+        "manifest に記録される",
+        "unsupported 項目が silent ignore されない"
+      ],
+      "depends_on": [7, 8]
+    },
+    {
+      "id": 11,
+      "title": "projection: Codex 向け native projection を実装する",
+      "labels": ["type:feature", "area:codex", "area:projection", "priority:P0"],
+      "milestone": "M2",
+      "summary": "Codex 向けに AGENTS.md / .codex/config.toml projection を実装する。",
+      "background": "Codex renderer と manifest 更新を deterministic 前提で実装する。",
+      "scope": ["AGENTS.md", ".codex/config.toml"],
+      "tasks": [
+        "Codex renderer を実装",
+        ".codex/config.toml projection を実装",
+        "manifest 記録を実装"
+      ],
+      "acceptance": [
+        "Codex projection が deterministic に生成される",
+        "manifest に記録される",
+        "unsupported 項目が warning で見える"
+      ],
+      "depends_on": [7, 8]
+    },
+    {
+      "id": 12,
+      "title": "projection: MCP / plugin / skill / workflow / hook projection を実装する",
+      "labels": ["type:feature", "area:extensions", "area:projection", "priority:P1"],
+      "milestone": "M4",
+      "summary": "extensions contract から各種 projection を生成する。",
+      "background": "native projection がない場合の fallback/link/markdown 生成を含めて実装する。",
+      "scope": ["extensions projection layer"],
+      "tasks": [
+        "MCP projection を実装",
+        "plugin projection を実装",
+        "skill projection を実装",
+        "workflow projection を実装",
+        "hook projection を実装",
+        "fallback/link/markdown 生成を実装"
+      ],
+      "acceptance": [
+        "extensions から projection が生成できる",
+        "native projection がない場合 fallback が生成される",
+        "unsupported は warning で見える"
+      ],
+      "depends_on": [5, 7, 8, 10]
+    },
+    {
+      "id": 13,
+      "title": "brownfield: AGENTS.md append/include モードを実装する",
+      "labels": ["type:feature", "area:brownfield", "area:agents", "priority:P0"],
+      "milestone": "M3",
+      "summary": "既存 AGENTS.md を上書きせず、append/include で Atrakta を導入できるようにする。",
+      "background": "brownfield 導入時の no-overwrite を保証する。",
+      "scope": ["AGENTS projection behavior", "repair behavior"],
+      "tasks": [
+        "AGENTS 未存在時のみ full generate",
+        "AGENTS 既存在時は managed block append",
+        "include モードで .atrakta/AGENTS.append.md を生成",
+        "repair は managed block / append file のみ修復",
+        "idempotency test を追加"
+      ],
+      "acceptance": [
+        "既存 AGENTS.md を上書きしない",
+        "2回実行しても managed block が増殖しない",
+        "include モードでも deterministic"
+      ],
+      "depends_on": [5, 7]
+    },
+    {
+      "id": 14,
+      "title": "cli: init に brownfield モードを追加する",
+      "labels": ["type:feature", "area:cli", "area:brownfield", "priority:P0"],
+      "milestone": "M3",
+      "summary": "途中導入向けの init --mode brownfield を追加する。",
+      "background": "greenfield 導入と brownfield 導入の経路を分離する。",
+      "scope": ["CLI init flow", "proposal output"],
+      "tasks": [
+        "--mode brownfield を追加",
+        "--merge-strategy append|include|replace を追加",
+        "--agents-mode append|include|generate を追加",
+        "--no-overwrite を追加",
+        "既存設定検出を実装",
+        ".atrakta/proposals/*.patch 出力を実装"
+      ],
+      "acceptance": [
+        "brownfield init が overwrite せず完了する",
+        "merge 不可能な場合 patch/proposal が出る",
+        "greenfield と brownfield の導入経路が分かれる"
+      ],
+      "depends_on": [13]
+    },
+    {
+      "id": 15,
+      "title": "cli: projection render/status/repair コマンドを追加する",
+      "labels": ["type:feature", "area:cli", "area:projection", "priority:P0"],
+      "milestone": "M3",
+      "summary": "projection を明示的に操作する CLI を追加する。",
+      "background": "runtime 実行とは独立して projection の状態管理を可能にする。",
+      "scope": ["CLI projection commands", "manifest integration"],
+      "tasks": [
+        "atrakta projection render を追加",
+        "atrakta projection status --json を追加",
+        "atrakta projection repair を追加"
+      ],
+      "acceptance": [
+        "projection の render/status/repair が CLI で可能",
+        "manifest と連携する",
+        "repair は managed 範囲だけ変更する"
+      ],
+      "depends_on": [8, 9, 10, 11]
+    },
+    {
+      "id": 16,
+      "title": "cli: doctor --parity を追加する",
+      "labels": ["type:feature", "area:doctor", "area:parity", "priority:P0"],
+      "milestone": "M3",
+      "summary": "parity drift を診断する doctor を追加する。",
+      "background": "projection/manifest/managed block の不整合を可観測にする。",
+      "scope": ["CLI doctor parity mode"],
+      "tasks": [
+        "atrakta doctor --parity を追加",
+        "atrakta doctor --parity --json を追加",
+        "projection missing 検知",
+        "render hash mismatch 検知",
+        "manifest missing 検知",
+        "managed block corruption 検知",
+        "approval/output/noninteractive mismatch 検知"
+      ],
+      "acceptance": [
+        "parity drift を検知できる",
+        "blocking issue と warning を区別できる",
+        "repair command を提案できる"
+      ],
+      "depends_on": [8, 15]
+    },
+    {
+      "id": 17,
+      "title": "cli: doctor --integration を追加する",
+      "labels": ["type:feature", "area:doctor", "area:brownfield", "priority:P1"],
+      "milestone": "M3",
+      "summary": "brownfield 導入時の overwrite risk / append failure / include missing を診断する。",
+      "background": "integration failure を機械可読で検知し repair/proposal に誘導する。",
+      "scope": ["CLI doctor integration mode"],
+      "tasks": [
+        "atrakta doctor --integration を追加",
+        "--json 出力を追加",
+        "overwrite risk 検知",
+        "append/include failure 検知",
+        "unsupported extension projection 検知"
+      ],
+      "acceptance": [
+        "brownfield 導入時の衝突を診断できる",
+        "machine-readable JSON が出る",
+        "repair or proposal への誘導がある"
+      ],
+      "depends_on": [14, 15]
+    },
+    {
+      "id": 18,
+      "title": "cli: hook surface を拡張する",
+      "labels": ["type:feature", "area:hook", "area:cli", "priority:P1"],
+      "milestone": "M4",
+      "summary": "hook を surface 単位で導入・修復できるようにする。",
+      "background": "既存 shell rc / git hooks を壊さず managed append と repair を実現する。",
+      "scope": ["hook install/uninstall/status/repair"],
+      "tasks": [
+        "shell.on_cd を実装",
+        "shell.on_exec を実装",
+        "git.pre_commit を実装",
+        "git.pre_push を実装",
+        "ide.on_open を実装",
+        "workflow.before_start / after_apply を実装",
+        "hook install/uninstall/status/repair を追加"
+      ],
+      "acceptance": [
+        "hook が surface 単位で管理できる",
+        "既存 shell rc / git hooks を壊さない",
+        "managed append と repair が動く"
+      ],
+      "depends_on": [5, 12, 14]
+    },
+    {
+      "id": 19,
+      "title": "sync: reverse sync allowlist を拡張する",
+      "labels": ["type:feature", "area:sync", "priority:P1"],
+      "milestone": "M4",
+      "summary": "reverse sync の allowlist を parity/hook 周辺まで拡張する。",
+      "background": "proposal-only 維持と protected fields 保護を明確化する。",
+      "scope": ["reverse sync allowlist", "field-level diff JSON"],
+      "tasks": [
+        "tools.approval_required_for を追加",
+        "quality.quick_checks を追加",
+        "quality.heavy_checks を追加",
+        "policies.prompt_min.goal_label/required を追加",
+        "parity.output_surface.plan_format/error_format を追加",
+        "extensions.hooks.shell.on_cd / ide.on_open を追加",
+        "field-level diff JSON を追加",
+        "protected field deny reason を追加"
+      ],
+      "acceptance": [
+        "reverse sync は proposal-only を維持する",
+        "保護対象フィールドは更新不可",
+        "allow/deny 理由が JSON で見える"
+      ],
+      "depends_on": [4, 5, 16]
+    },
+    {
+      "id": 20,
+      "title": "runtime: 実行フローに parity / extension / projection check を統合する",
+      "labels": ["type:feature", "area:runtime", "area:parity", "priority:P1"],
+      "milestone": "M4",
+      "summary": "strict path に projection/manifest/integration の検証を追加する。",
+      "background": "fast path を劣化させず strict path 側で整合性チェックを統合する。",
+      "scope": ["runtime strict path"],
+      "tasks": [
+        "AGENTS projection 準備を追加",
+        "extension surface 解決を追加",
+        "projection render/verify を追加",
+        "manifest 更新を追加",
+        "parity/integration check を追加",
+        "strict 昇格条件を追加"
+      ],
+      "acceptance": [
+        "strict path に parity/extension が統合される",
+        "repair は start の自動クリティカルパスに入らない",
+        "fast path 劣化を起こさない"
+      ],
+      "depends_on": [15, 16, 17, 19]
+    },
+    {
+      "id": 21,
+      "title": "docs: インターフェース対応表を native projection / extension projection 前提で更新する",
+      "labels": ["type:docs", "area:interfaces", "priority:P1"],
+      "milestone": "M4",
+      "summary": "interface matrix を editor / CLI / extension projection を含む形に更新する。",
+      "background": "projection 先と unsupported policy を明確にする。",
+      "scope": ["docs/ja/02_仕様/05_インターフェース対応表.md", "docs/en/02_spec/05_interface_matrix.md"],
+      "tasks": [
+        "Cursor native projection を追記",
+        "Claude Code native projection を追記",
+        "Codex native projection を追記",
+        "Antigravity workflow/rules を追記",
+        "extension projection policy を追記",
+        "unsupported policy を追記"
+      ],
+      "acceptance": [
+        "対応表から各 interface の projection 先が分かる",
+        "extension projection の扱いが明確",
+        "unsupported が silent ignore ではない"
+      ],
+      "depends_on": [9, 10, 11, 12]
+    },
+    {
+      "id": 22,
+      "title": "docs: 導入手順に brownfield/parity/integration を追加する",
+      "labels": ["type:docs", "area:operations", "priority:P1"],
+      "milestone": "M5",
+      "summary": "導入手順を新規導入・途中導入の両方に対応させる。",
+      "background": "導入後確認に parity/integration チェックを組み込む。",
+      "scope": ["docs/ja/03_運用/01_導入手順.md", "docs/en/03_operations/01_setup.md"],
+      "tasks": [
+        "greenfield 導入手順を更新",
+        "brownfield 導入手順を追加",
+        "導入後確認に doctor --parity を追加",
+        "導入後確認に doctor --integration を追加",
+        "projection status --json を追加"
+      ],
+      "acceptance": [
+        "新規導入と途中導入の両方が文書化されている",
+        "overwrite しない導入が案内されている",
+        "導入完了条件が明確"
+      ],
+      "depends_on": [14, 16, 17]
+    },
+    {
+      "id": 23,
+      "title": "docs: 日常運用 / トラブルシュート / 更新 / GC / 配布手順を parity/extensions 前提で更新する",
+      "labels": ["type:docs", "area:operations", "priority:P1"],
+      "milestone": "M5",
+      "summary": "運用ドキュメント群に parity / extension / brownfield を通す。",
+      "background": "運用・障害対応・更新・配布まで parity/integration を統合する。",
+      "scope": [
+        "docs/ja/03_運用/02_日常運用.md",
+        "docs/ja/03_運用/03_トラブルシュート.md",
+        "docs/ja/03_運用/04_更新手順.md",
+        "docs/ja/03_運用/05_GC運用.md",
+        "docs/ja/03_運用/06_配布手順.md"
+      ],
+      "tasks": [
+        "日常運用に parity check を追加",
+        "ツール切替時の projection render を追加",
+        "sync proposal 保存ルールを追加",
+        "projection drift / integration blocked をトラブルシュートへ追加",
+        "更新後の parity/integration 確認を追加",
+        "GC 対象外として manifest を明記",
+        "配布手順に brownfield init を追加"
+      ],
+      "acceptance": [
+        "運用 docs に parity / integration / extensions が組み込まれている",
+        "brownfield 固有の衝突に対応している",
+        "GC で必要 manifest を消さない"
+      ],
+      "depends_on": [16, 17, 20]
+    },
+    {
+      "id": 24,
+      "title": "quality: parity / extensions / brownfield 向け verify スクリプトを追加する",
+      "labels": ["type:test", "area:quality", "priority:P0"],
+      "milestone": "M5",
+      "summary": "parity / extension / brownfield / repair を CI で検証する。",
+      "background": "個別 verify スクリプトを追加し CI から再利用可能にする。",
+      "scope": ["scripts/dev", "CI workflow"],
+      "tasks": [
+        "verify_parity.sh を追加",
+        "verify_extensions.sh を追加",
+        "verify_brownfield.sh を追加",
+        "verify_projection_repair.sh を追加"
+      ],
+      "acceptance": [
+        "各 verify が CI から呼べる",
+        "exit code と JSON 出力が整っている",
+        "parity / extension / brownfield / repair が個別に検証できる"
+      ],
+      "depends_on": [15, 16, 17, 18, 19]
+    },
+    {
+      "id": 25,
+      "title": "test: parity / brownfield fixture を追加する",
+      "labels": ["type:test", "area:fixtures", "priority:P0"],
+      "milestone": "M5",
+      "summary": "deterministic render / drift / repair / no-overwrite を fixture ベースで検証できるようにする。",
+      "background": "parity と brownfield の再現性検証を fixture 化する。",
+      "scope": ["test fixtures", "projection/doctor tests"],
+      "tasks": [
+        "parity minimal fixture",
+        "parity multi-interface fixture",
+        "parity drifted fixture",
+        "parity unsupported-field fixture",
+        "parity noninteractive fixture",
+        "existing AGENTS fixture",
+        "existing CLAUDE fixture",
+        "existing cursor rules fixture",
+        "shell rc with user content fixture",
+        "conflicting managed block fixture"
+      ],
+      "acceptance": [
+        "deterministic projection を fixture で再現できる",
+        "drift / repair / no-overwrite を fixture で検証できる"
+      ],
+      "depends_on": [13, 15, 16, 17]
+    },
+    {
+      "id": 26,
+      "title": "quality: parity / extension / brownfield benchmark 基準を追加する",
+      "labels": ["type:test", "area:benchmark", "priority:P1"],
+      "milestone": "M5",
+      "summary": "parity / extension / brownfield の性能・整合指標を benchmark に追加する。",
+      "background": "fast path / p95 / p99 の guardrail を parity 系検証に拡張する。",
+      "scope": ["benchmark docs", "benchmark tests"],
+      "tasks": [
+        "BenchmarkProjectionRender を追加",
+        "BenchmarkParityDoctor を追加",
+        "BenchmarkProjectionRepair を追加",
+        "BenchmarkExtensionRender を追加",
+        "TestParityConsistencyRate を追加",
+        "TestParityDriftFalsePositiveRate を追加",
+        "TestParityDriftFalseNegativeRate を追加",
+        "TestBrownfieldAppendIdempotent を追加",
+        "TestBrownfieldNoOverwrite を追加"
+      ],
+      "acceptance": [
+        "parity/extension/brownfield の指標が benchmark 文書にある",
+        "fast path / p95 / p99 の guardrail を明記している",
+        "repair が通常 start のクリティカルパスに入らない前提が保たれる"
+      ],
+      "depends_on": [24, 25]
+    },
+    {
+      "id": 27,
+      "title": "quality: Windows native parity を release gate に昇格する",
+      "labels": ["type:test", "area:windows", "priority:P2"],
+      "milestone": "M5",
+      "summary": "Windows native execution test を provisional ではなく release quality に昇格する。",
+      "background": "release gate 前に Windows parity を必須確認する。",
+      "scope": ["Windows CI", "release gate"],
+      "tasks": [
+        "Windows native parity test を追加",
+        "release gate に組み込む",
+        "skip 条件を限定する"
+      ],
+      "acceptance": [
+        "Windows parity が release quality に入る",
+        "skip 条件が限定されている",
+        "release 前に native parity 確認が走る"
+      ],
+      "depends_on": [24, 26]
+    },
+    {
+      "id": 28,
+      "title": "release: parity / extensions / brownfield の完了条件を release checklist に追加する",
+      "labels": ["type:docs", "area:release", "priority:P2"],
+      "milestone": "M5",
+      "summary": "この改善の完了条件を release gate として codify する。",
+      "background": "実装漏れを防ぐため、リリースチェックリストに明示的な完了条件を追加する。",
+      "scope": ["release checklist docs", "release workflow gate"],
+      "tasks": [
+        "06_Parity Contract の存在確認を追加",
+        "07_Extension Surface の存在確認を追加",
+        "contract に parity/extensions があることを確認",
+        "projection/extension manifest を確認",
+        "native projection 主要3系統を確認",
+        "doctor --parity / doctor --integration の確認を追加",
+        "AGENTS append/include idempotency の確認を追加",
+        "verify スクリプト通過を追加",
+        "Windows parity 確認を追加"
+      ],
+      "acceptance": [
+        "完了条件が release gate として使える",
+        "実装したつもりを防げる"
+      ],
+      "depends_on": [24, 26, 27]
+    }
+  ]
+}

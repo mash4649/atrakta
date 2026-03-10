@@ -1,0 +1,137 @@
+{
+  "version": 1,
+  "epics": [
+    {
+      "id": "E1",
+      "title": "Epic 1: Canonical Contract と Parity/Extension 仕様を確立する",
+      "purpose": "Parity / Extension / Brownfield の設計を文書と schema の両方で固定し、以後の projection / doctor / verify 実装の基盤を作る。",
+      "stories": [
+        {"id": "1.1", "title": "README とドキュメント索引を拡張する", "issues": [1]},
+        {"id": "1.2", "title": "Parity Contract を正式仕様化する", "issues": [2]},
+        {"id": "1.3", "title": "Extension Surface を正式仕様化する", "issues": [3]},
+        {"id": "1.4", "title": "contract.json schema を拡張する", "issues": [4, 5]},
+        {"id": "1.5", "title": "データモデル文書を更新する", "issues": [6]}
+      ]
+    },
+    {
+      "id": "E2",
+      "title": "Epic 2: Projection 基盤を実装する",
+      "purpose": "canonical contract から各ツール向け設定を deterministic に投影できるようにする。",
+      "stories": [
+        {"id": "2.1", "title": "projection renderer 共通層を実装する", "issues": [7]},
+        {"id": "2.2", "title": "projection manifest を実装する", "issues": [8]},
+        {"id": "2.3", "title": "native projection を実装する（主要3系統）", "issues": [9, 10, 11]},
+        {"id": "2.4", "title": "拡張 projection を実装する", "issues": [12]}
+      ]
+    },
+    {
+      "id": "E3",
+      "title": "Epic 3: Brownfield 導入モードを実装する",
+      "purpose": "既存プロジェクトに Atrakta を壊さず導入できるようにする。",
+      "stories": [
+        {"id": "3.1", "title": "AGENTS.md の append/include モードを実装する", "issues": [13]},
+        {"id": "3.2", "title": "init の brownfield モードを実装する", "issues": [14]},
+        {"id": "3.3", "title": "integration doctor を実装する", "issues": [17]}
+      ]
+    },
+    {
+      "id": "E4",
+      "title": "Epic 4: CLI / 実行フロー / sync policy を拡張する",
+      "purpose": "parity / extension / brownfield を CLI と runtime に統合する。",
+      "stories": [
+        {"id": "4.1", "title": "projection CLI を追加する", "issues": [15]},
+        {"id": "4.2", "title": "parity doctor を追加する", "issues": [16]},
+        {"id": "4.3", "title": "hook surface を拡張する", "issues": [18]},
+        {"id": "4.4", "title": "sync policy を拡張する", "issues": [19]},
+        {"id": "4.5", "title": "実行フローを更新する", "issues": [20]}
+      ]
+    },
+    {
+      "id": "E5",
+      "title": "Epic 5: 運用ドキュメントを最適化する",
+      "purpose": "導入・運用・更新・配布に parity / extension / brownfield を通す。",
+      "stories": [
+        {"id": "5.1", "title": "導入手順を更新する", "issues": [22]},
+        {"id": "5.2", "title": "日常運用を更新する", "issues": [23]},
+        {"id": "5.3", "title": "トラブルシュートを更新する", "issues": [23]},
+        {"id": "5.4", "title": "更新手順を更新する", "issues": [23]},
+        {"id": "5.5", "title": "GC / 配布手順を更新する", "issues": [23]}
+      ]
+    },
+    {
+      "id": "E6",
+      "title": "Epic 6: 品質検証とベンチマークを拡張する",
+      "purpose": "parity / extension / brownfield を CI とベンチで継続検証する。",
+      "stories": [
+        {"id": "6.1", "title": "parity / extension / brownfield 検証を追加する", "issues": [24]},
+        {"id": "6.2", "title": "fixture を追加する", "issues": [25]},
+        {"id": "6.3", "title": "benchmark 基準を追加する", "issues": [26]},
+        {"id": "6.4", "title": "Windows native parity を格上げする", "issues": [27]}
+      ]
+    },
+    {
+      "id": "E7",
+      "title": "Epic 7: リリース完了条件を確定する",
+      "purpose": "この改善が完了したと判断できる明確な基準を置く。",
+      "stories": [
+        {"id": "7.1", "title": "完了条件を codify する", "issues": [28]}
+      ]
+    }
+  ],
+  "issue_story_links": [
+    {"issue": 1, "epic": "E1", "story": "1.1"},
+    {"issue": 2, "epic": "E1", "story": "1.2"},
+    {"issue": 3, "epic": "E1", "story": "1.3"},
+    {"issue": 4, "epic": "E1", "story": "1.4"},
+    {"issue": 5, "epic": "E1", "story": "1.4"},
+    {"issue": 6, "epic": "E1", "story": "1.5"},
+    {"issue": 7, "epic": "E2", "story": "2.1"},
+    {"issue": 8, "epic": "E2", "story": "2.2"},
+    {"issue": 9, "epic": "E2", "story": "2.3"},
+    {"issue": 10, "epic": "E2", "story": "2.3"},
+    {"issue": 11, "epic": "E2", "story": "2.3"},
+    {"issue": 12, "epic": "E2", "story": "2.4"},
+    {"issue": 13, "epic": "E3", "story": "3.1"},
+    {"issue": 14, "epic": "E3", "story": "3.2"},
+    {"issue": 15, "epic": "E4", "story": "4.1"},
+    {"issue": 16, "epic": "E4", "story": "4.2"},
+    {"issue": 17, "epic": "E3", "story": "3.3"},
+    {"issue": 18, "epic": "E4", "story": "4.3"},
+    {"issue": 19, "epic": "E4", "story": "4.4"},
+    {"issue": 20, "epic": "E4", "story": "4.5"},
+    {"issue": 21, "epic": "E5", "story": "5.2"},
+    {"issue": 22, "epic": "E5", "story": "5.1"},
+    {"issue": 23, "epic": "E5", "story": "5.2"},
+    {"issue": 24, "epic": "E6", "story": "6.1"},
+    {"issue": 25, "epic": "E6", "story": "6.2"},
+    {"issue": 26, "epic": "E6", "story": "6.3"},
+    {"issue": 27, "epic": "E6", "story": "6.4"},
+    {"issue": 28, "epic": "E7", "story": "7.1"}
+  ],
+  "issue_overrides": [
+    {
+      "issue": 16,
+      "extra_tasks": [
+        "extension projection drift 検知を追加"
+      ]
+    },
+    {
+      "issue": 17,
+      "extra_tasks": [
+        "user-managed conflict 検知を追加"
+      ]
+    },
+    {
+      "issue": 23,
+      "extra_tasks": [
+        "release note に projection compatibility / parity schema version 記載ルールを追加"
+      ]
+    },
+    {
+      "issue": 28,
+      "extra_acceptance": [
+        "fast path / strict path / latest-only / single writer の維持確認が gate に含まれる"
+      ]
+    }
+  ]
+}
