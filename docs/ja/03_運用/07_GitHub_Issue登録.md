@@ -52,3 +52,23 @@
 作成結果の Draft ID -> GitHub Issue番号 マップは以下に保存されます。
 
 - `.github/issue_drafts/out/issue-map-YYYYMMDD-HHMMSS.json`
+
+## GitHub Project へ投入する
+
+バックログProjectを作成または再利用し、Issueを投入します。
+
+```bash
+./scripts/dev/populate_parity_project.sh \
+  --repo <owner/repo> \
+  --owner <owner> \
+  --project-title "Atrakta Parity / Extension / Brownfield Backlog" \
+  --issue-map .github/issue_drafts/out/issue-map-YYYYMMDD-HHMMSS.json
+```
+
+dry-run:
+
+```bash
+./scripts/dev/populate_parity_project.sh \
+  --repo <owner/repo> \
+  --dry-run
+```

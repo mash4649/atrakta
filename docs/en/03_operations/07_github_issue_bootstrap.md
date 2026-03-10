@@ -54,3 +54,23 @@ Created issue ID mapping is stored in:
 - `.github/issue_drafts/out/issue-map-YYYYMMDD-HHMMSS.json`
 
 Use it to map draft IDs to real GitHub issue numbers.
+
+## Add issues to GitHub Project
+
+Create or reuse the backlog project and add all draft issues:
+
+```bash
+./scripts/dev/populate_parity_project.sh \
+  --repo <owner/repo> \
+  --owner <owner> \
+  --project-title "Atrakta Parity / Extension / Brownfield Backlog" \
+  --issue-map .github/issue_drafts/out/issue-map-YYYYMMDD-HHMMSS.json
+```
+
+Dry run:
+
+```bash
+./scripts/dev/populate_parity_project.sh \
+  --repo <owner/repo> \
+  --dry-run
+```
