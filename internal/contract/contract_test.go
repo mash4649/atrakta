@@ -33,6 +33,31 @@ func TestValidateRejectsInvalidNewFields(t *testing.T) {
 	if err := Validate(c); err == nil {
 		t.Fatalf("expected conventions_read_only=false to fail")
 	}
+
+	c = Default(t.TempDir())
+	c.Parity.ExecutionSurface.LatestOnly = false
+	if err := Validate(c); err == nil {
+		t.Fatalf("expected parity latest_only=false to fail")
+	}
+
+	c = Default(t.TempDir())
+	c.Parity.ApprovalSurface.ApprovalRequiredForRef = "tools.approval_required_for"
+	c.Tools.ApprovalRequiredFor = nil
+	if err := Validate(c); err == nil {
+		t.Fatalf("expected missing tools.approval_required_for to fail parity validation")
+	}
+
+	c = Default(t.TempDir())
+	c.Extensions.MergeMode = "invalid"
+	if err := Validate(c); err == nil {
+		t.Fatalf("expected invalid extensions.merge_mode to fail")
+	}
+
+	c = Default(t.TempDir())
+	c.Extensions.Plugins = []ExtensionEntry{{ID: "p1"}, {ID: "p1"}}
+	if err := Validate(c); err == nil {
+		t.Fatalf("expected duplicate extension ids to fail")
+	}
 }
 
 func TestCanonicalizeAppliesNewDefaults(t *testing.T) {
@@ -62,5 +87,11 @@ func TestCanonicalizeAppliesNewDefaults(t *testing.T) {
 	}
 	if n.EditSafety == nil || n.EditSafety.Languages["go"] != "ast" || n.EditSafety.Languages["json"] != "parse" {
 		t.Fatalf("unexpected edit safety language defaults: %#v", n.EditSafety)
+	}
+	if n.Parity == nil || n.Parity.ExecutionSurface.PathPolicy != "fast_first_strict_on_demand" {
+		t.Fatalf("unexpected parity defaults: %#v", n.Parity)
+	}
+	if n.Extensions == nil || n.Extensions.MergeMode != "append-first" {
+		t.Fatalf("unexpected extensions defaults: %#v", n.Extensions)
 	}
 }

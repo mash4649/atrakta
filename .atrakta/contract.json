@@ -47,6 +47,15 @@
     "soft": 8000,
     "hard": 16000
   },
+  "quality": {
+    "quick_checks": [
+      "verify_loop"
+    ],
+    "heavy_checks": [
+      "verify_perf_gate"
+    ],
+    "enable_heavy": true
+  },
   "projections": {
     "max_per_interface": 3
   },
@@ -94,5 +103,56 @@
       "ref": ".atrakta/policies/prompt-min.json",
       "apply": "conditional"
     }
+  },
+  "parity": {
+    "v": 1,
+    "canonical_sources": [
+      ".atrakta/contract.json",
+      ".atrakta/state.json",
+      ".atrakta/events.jsonl"
+    ],
+    "instruction_surface": {
+      "source": "contract_and_policy",
+      "prompt_policy_ref": "policies.prompt_min.ref"
+    },
+    "approval_surface": {
+      "approval_required_for_ref": "tools.approval_required_for"
+    },
+    "output_surface": {
+      "plan_format": "markdown",
+      "error_format": "structured"
+    },
+    "execution_surface": {
+      "path_policy": "fast_first_strict_on_demand",
+      "latest_only": true
+    },
+    "quality_surface": {
+      "quick_checks_ref": "quality.quick_checks",
+      "heavy_checks_ref": "quality.heavy_checks"
+    },
+    "safety_surface": {
+      "security_profile_ref": "security.profile"
+    },
+    "routing_surface": {
+      "categories_ref": "routing.categories",
+      "default_ref": "routing.default"
+    },
+    "projection_surface": {
+      "deterministic": true,
+      "managed_only_repair": true
+    }
+  },
+  "extensions": {
+    "v": 1,
+    "merge_mode": "append-first",
+    "agents": {
+      "mode": "append",
+      "append_file": ".atrakta/AGENTS.append.md"
+    },
+    "mcp": [],
+    "plugins": [],
+    "skills": [],
+    "workflows": [],
+    "hooks": {}
   }
 }

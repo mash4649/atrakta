@@ -28,6 +28,8 @@ type Contract struct {
 	Security    *Security    `json:"security,omitempty"`
 	EditSafety  *EditSafety  `json:"edit_safety,omitempty"`
 	Policies    *Policies    `json:"policies,omitempty"`
+	Parity      *Parity      `json:"parity,omitempty"`
+	Extensions  *Extensions  `json:"extensions,omitempty"`
 }
 
 type Interfaces struct {
@@ -140,6 +142,104 @@ type PromptMinRef struct {
 	Apply    string `json:"apply,omitempty"`
 }
 
+type Parity struct {
+	V                  int                `json:"v"`
+	CanonicalSources   []string           `json:"canonical_sources"`
+	InstructionSurface InstructionSurface `json:"instruction_surface"`
+	ApprovalSurface    ApprovalSurface    `json:"approval_surface"`
+	OutputSurface      OutputSurface      `json:"output_surface"`
+	ExecutionSurface   ExecutionSurface   `json:"execution_surface"`
+	QualitySurface     QualitySurface     `json:"quality_surface"`
+	SafetySurface      SafetySurface      `json:"safety_surface"`
+	RoutingSurface     RoutingSurface     `json:"routing_surface"`
+	ProjectionSurface  ProjectionSurface  `json:"projection_surface"`
+}
+
+type InstructionSurface struct {
+	Source          string `json:"source,omitempty"`
+	PromptPolicyRef string `json:"prompt_policy_ref,omitempty"`
+}
+
+type ApprovalSurface struct {
+	ApprovalRequiredForRef string `json:"approval_required_for_ref,omitempty"`
+}
+
+type OutputSurface struct {
+	PlanFormat  string `json:"plan_format,omitempty"`
+	ErrorFormat string `json:"error_format,omitempty"`
+}
+
+type ExecutionSurface struct {
+	PathPolicy string `json:"path_policy,omitempty"`
+	LatestOnly bool   `json:"latest_only,omitempty"`
+}
+
+type QualitySurface struct {
+	QuickChecksRef string `json:"quick_checks_ref,omitempty"`
+	HeavyChecksRef string `json:"heavy_checks_ref,omitempty"`
+}
+
+type SafetySurface struct {
+	SecurityProfileRef string `json:"security_profile_ref,omitempty"`
+}
+
+type RoutingSurface struct {
+	CategoriesRef string `json:"categories_ref,omitempty"`
+	DefaultRef    string `json:"default_ref,omitempty"`
+}
+
+type ProjectionSurface struct {
+	Deterministic     bool `json:"deterministic,omitempty"`
+	ManagedOnlyRepair bool `json:"managed_only_repair,omitempty"`
+}
+
+type Extensions struct {
+	V         int              `json:"v"`
+	MergeMode string           `json:"merge_mode,omitempty"`
+	Agents    *AgentsExtension `json:"agents,omitempty"`
+	MCP       []ExtensionEntry `json:"mcp,omitempty"`
+	Plugins   []ExtensionEntry `json:"plugins,omitempty"`
+	Skills    []ExtensionEntry `json:"skills,omitempty"`
+	Workflows []ExtensionEntry `json:"workflows,omitempty"`
+	Hooks     *HooksExtension  `json:"hooks,omitempty"`
+}
+
+type AgentsExtension struct {
+	Mode       string `json:"mode,omitempty"`
+	AppendFile string `json:"append_file,omitempty"`
+}
+
+type ExtensionEntry struct {
+	ID      string `json:"id"`
+	Enabled *bool  `json:"enabled,omitempty"`
+}
+
+type HooksExtension struct {
+	Shell    *ShellHooks    `json:"shell,omitempty"`
+	Git      *GitHooks      `json:"git,omitempty"`
+	IDE      *IDEHooks      `json:"ide,omitempty"`
+	Workflow *WorkflowHooks `json:"workflow,omitempty"`
+}
+
+type ShellHooks struct {
+	OnCD   *bool `json:"on_cd,omitempty"`
+	OnExec *bool `json:"on_exec,omitempty"`
+}
+
+type GitHooks struct {
+	PreCommit *bool `json:"pre_commit,omitempty"`
+	PrePush   *bool `json:"pre_push,omitempty"`
+}
+
+type IDEHooks struct {
+	OnOpen *bool `json:"on_open,omitempty"`
+}
+
+type WorkflowHooks struct {
+	BeforeStart *bool `json:"before_start,omitempty"`
+	AfterApply  *bool `json:"after_apply,omitempty"`
+}
+
 func LoadOrInit(repoRoot string) (Contract, []byte, error) {
 	path := filepath.Join(repoRoot, ".atrakta", "contract.json")
 	b, err := os.ReadFile(path)
@@ -224,6 +324,11 @@ func Default(repoRoot string) Contract {
 			ApprovalRequiredFor: []string{"boundary_expand", "external_side_effect", "destructive_prune"},
 		},
 		TokenBudget: TokenBudget{Soft: 8000, Hard: 16000},
+		Quality: &Quality{
+			QuickChecks: []string{"verify_loop"},
+			HeavyChecks: []string{"verify_perf_gate"},
+			EnableHeavy: true,
+		},
 		Projections: &Projections{MaxPerInterface: 3},
 		Routing: &Routing{
 			Categories: map[string]RoutingRule{
@@ -258,6 +363,49 @@ func Default(repoRoot string) Contract {
 				Required: false,
 				Apply:    "conditional",
 			},
+		},
+		Parity: &Parity{
+			V:                1,
+			CanonicalSources: []string{".atrakta/contract.json", ".atrakta/state.json", ".atrakta/events.jsonl"},
+			InstructionSurface: InstructionSurface{
+				Source:          "contract_and_policy",
+				PromptPolicyRef: "policies.prompt_min.ref",
+			},
+			ApprovalSurface: ApprovalSurface{
+				ApprovalRequiredForRef: "tools.approval_required_for",
+			},
+			OutputSurface: OutputSurface{
+				PlanFormat:  "markdown",
+				ErrorFormat: "structured",
+			},
+			ExecutionSurface: ExecutionSurface{
+				PathPolicy: "fast_first_strict_on_demand",
+				LatestOnly: true,
+			},
+			QualitySurface: QualitySurface{
+				QuickChecksRef: "quality.quick_checks",
+				HeavyChecksRef: "quality.heavy_checks",
+			},
+			SafetySurface: SafetySurface{
+				SecurityProfileRef: "security.profile",
+			},
+			RoutingSurface: RoutingSurface{
+				CategoriesRef: "routing.categories",
+				DefaultRef:    "routing.default",
+			},
+			ProjectionSurface: ProjectionSurface{
+				Deterministic:     true,
+				ManagedOnlyRepair: true,
+			},
+		},
+		Extensions: &Extensions{
+			V:         1,
+			MergeMode: "append-first",
+			Agents: &AgentsExtension{
+				Mode:       "append",
+				AppendFile: ".atrakta/AGENTS.append.md",
+			},
+			Hooks: &HooksExtension{},
 		},
 	}
 }
@@ -476,6 +624,16 @@ func Validate(c Contract) error {
 			return fmt.Errorf("policies.prompt_min.apply must be conditional")
 		}
 	}
+	if c.Parity != nil {
+		if err := validateParity(c); err != nil {
+			return err
+		}
+	}
+	if c.Extensions != nil {
+		if err := validateExtensions(c.Extensions); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -605,7 +763,227 @@ func CanonicalizeBoundary(c Contract) Contract {
 			c2.Policies.PromptMin.Apply = "conditional"
 		}
 	}
+	if c2.Parity != nil {
+		if c2.Parity.V == 0 {
+			c2.Parity.V = 1
+		}
+		if len(c2.Parity.CanonicalSources) == 0 {
+			c2.Parity.CanonicalSources = []string{".atrakta/contract.json", ".atrakta/state.json", ".atrakta/events.jsonl"}
+		}
+		c2.Parity.InstructionSurface.Source = strings.TrimSpace(strings.ToLower(c2.Parity.InstructionSurface.Source))
+		if c2.Parity.InstructionSurface.Source == "" {
+			c2.Parity.InstructionSurface.Source = "contract_and_policy"
+		}
+		if c2.Parity.InstructionSurface.PromptPolicyRef == "" {
+			c2.Parity.InstructionSurface.PromptPolicyRef = "policies.prompt_min.ref"
+		}
+		if c2.Parity.ApprovalSurface.ApprovalRequiredForRef == "" {
+			c2.Parity.ApprovalSurface.ApprovalRequiredForRef = "tools.approval_required_for"
+		}
+		c2.Parity.OutputSurface.PlanFormat = strings.TrimSpace(strings.ToLower(c2.Parity.OutputSurface.PlanFormat))
+		if c2.Parity.OutputSurface.PlanFormat == "" {
+			c2.Parity.OutputSurface.PlanFormat = "markdown"
+		}
+		c2.Parity.OutputSurface.ErrorFormat = strings.TrimSpace(strings.ToLower(c2.Parity.OutputSurface.ErrorFormat))
+		if c2.Parity.OutputSurface.ErrorFormat == "" {
+			c2.Parity.OutputSurface.ErrorFormat = "structured"
+		}
+		c2.Parity.ExecutionSurface.PathPolicy = strings.TrimSpace(strings.ToLower(c2.Parity.ExecutionSurface.PathPolicy))
+		if c2.Parity.ExecutionSurface.PathPolicy == "" {
+			c2.Parity.ExecutionSurface.PathPolicy = "fast_first_strict_on_demand"
+		}
+		if !c2.Parity.ExecutionSurface.LatestOnly {
+			c2.Parity.ExecutionSurface.LatestOnly = true
+		}
+		if c2.Parity.QualitySurface.QuickChecksRef == "" {
+			c2.Parity.QualitySurface.QuickChecksRef = "quality.quick_checks"
+		}
+		if c2.Parity.QualitySurface.HeavyChecksRef == "" {
+			c2.Parity.QualitySurface.HeavyChecksRef = "quality.heavy_checks"
+		}
+		if c2.Parity.SafetySurface.SecurityProfileRef == "" {
+			c2.Parity.SafetySurface.SecurityProfileRef = "security.profile"
+		}
+		if c2.Parity.RoutingSurface.CategoriesRef == "" {
+			c2.Parity.RoutingSurface.CategoriesRef = "routing.categories"
+		}
+		if c2.Parity.RoutingSurface.DefaultRef == "" {
+			c2.Parity.RoutingSurface.DefaultRef = "routing.default"
+		}
+		if !c2.Parity.ProjectionSurface.Deterministic {
+			c2.Parity.ProjectionSurface.Deterministic = true
+		}
+		if !c2.Parity.ProjectionSurface.ManagedOnlyRepair {
+			c2.Parity.ProjectionSurface.ManagedOnlyRepair = true
+		}
+	}
+	if c2.Extensions != nil {
+		if c2.Extensions.V == 0 {
+			c2.Extensions.V = 1
+		}
+		c2.Extensions.MergeMode = strings.TrimSpace(strings.ToLower(c2.Extensions.MergeMode))
+		if c2.Extensions.MergeMode == "" {
+			c2.Extensions.MergeMode = "append-first"
+		}
+		if c2.Extensions.Agents == nil {
+			c2.Extensions.Agents = &AgentsExtension{}
+		}
+		c2.Extensions.Agents.Mode = strings.TrimSpace(strings.ToLower(c2.Extensions.Agents.Mode))
+		if c2.Extensions.Agents.Mode == "" {
+			c2.Extensions.Agents.Mode = "append"
+		}
+		if c2.Extensions.Agents.AppendFile == "" {
+			c2.Extensions.Agents.AppendFile = ".atrakta/AGENTS.append.md"
+		} else {
+			c2.Extensions.Agents.AppendFile = util.NormalizeRelPath(c2.Extensions.Agents.AppendFile)
+		}
+	}
 	return c2
+}
+
+func validateParity(c Contract) error {
+	p := c.Parity
+	if p.V != 1 {
+		return fmt.Errorf("parity.v must be 1")
+	}
+	if len(p.CanonicalSources) == 0 {
+		return fmt.Errorf("parity.canonical_sources required")
+	}
+	for _, src := range p.CanonicalSources {
+		if strings.TrimSpace(src) == "" {
+			return fmt.Errorf("parity.canonical_sources contains empty value")
+		}
+		if filepath.IsAbs(src) {
+			return fmt.Errorf("parity.canonical_sources must be repo-relative")
+		}
+		n := util.NormalizeRelPath(src)
+		if n == "" || strings.HasPrefix(n, "../") {
+			return fmt.Errorf("parity.canonical_sources must be repo-relative")
+		}
+	}
+
+	if p.InstructionSurface.PromptPolicyRef != "" && p.InstructionSurface.PromptPolicyRef != "policies.prompt_min.ref" {
+		return fmt.Errorf("parity.instruction_surface.prompt_policy_ref must be policies.prompt_min.ref")
+	}
+	if p.ApprovalSurface.ApprovalRequiredForRef != "" && p.ApprovalSurface.ApprovalRequiredForRef != "tools.approval_required_for" {
+		return fmt.Errorf("parity.approval_surface.approval_required_for_ref must be tools.approval_required_for")
+	}
+	if p.QualitySurface.QuickChecksRef != "" && p.QualitySurface.QuickChecksRef != "quality.quick_checks" {
+		return fmt.Errorf("parity.quality_surface.quick_checks_ref must be quality.quick_checks")
+	}
+	if p.QualitySurface.HeavyChecksRef != "" && p.QualitySurface.HeavyChecksRef != "quality.heavy_checks" {
+		return fmt.Errorf("parity.quality_surface.heavy_checks_ref must be quality.heavy_checks")
+	}
+	if p.SafetySurface.SecurityProfileRef != "" && p.SafetySurface.SecurityProfileRef != "security.profile" {
+		return fmt.Errorf("parity.safety_surface.security_profile_ref must be security.profile")
+	}
+	if p.RoutingSurface.CategoriesRef != "" && p.RoutingSurface.CategoriesRef != "routing.categories" {
+		return fmt.Errorf("parity.routing_surface.categories_ref must be routing.categories")
+	}
+	if p.RoutingSurface.DefaultRef != "" && p.RoutingSurface.DefaultRef != "routing.default" {
+		return fmt.Errorf("parity.routing_surface.default_ref must be routing.default")
+	}
+	if p.ExecutionSurface.PathPolicy != "" && p.ExecutionSurface.PathPolicy != "fast_first_strict_on_demand" {
+		return fmt.Errorf("parity.execution_surface.path_policy must be fast_first_strict_on_demand")
+	}
+	if !p.ExecutionSurface.LatestOnly {
+		return fmt.Errorf("parity.execution_surface.latest_only must be true")
+	}
+	if p.OutputSurface.PlanFormat != "" && p.OutputSurface.PlanFormat != "markdown" && p.OutputSurface.PlanFormat != "json" {
+		return fmt.Errorf("parity.output_surface.plan_format must be markdown|json")
+	}
+	if p.OutputSurface.ErrorFormat != "" && p.OutputSurface.ErrorFormat != "structured" && p.OutputSurface.ErrorFormat != "plain" {
+		return fmt.Errorf("parity.output_surface.error_format must be structured|plain")
+	}
+	if !p.ProjectionSurface.Deterministic {
+		return fmt.Errorf("parity.projection_surface.deterministic must be true")
+	}
+	if !p.ProjectionSurface.ManagedOnlyRepair {
+		return fmt.Errorf("parity.projection_surface.managed_only_repair must be true")
+	}
+
+	if p.ApprovalSurface.ApprovalRequiredForRef == "tools.approval_required_for" && len(c.Tools.ApprovalRequiredFor) == 0 {
+		return fmt.Errorf("tools.approval_required_for required when parity approval surface is enabled")
+	}
+	if p.QualitySurface.QuickChecksRef == "quality.quick_checks" && c.Quality == nil {
+		return fmt.Errorf("quality.quick_checks reference requires quality section")
+	}
+	if p.QualitySurface.HeavyChecksRef == "quality.heavy_checks" && c.Quality == nil {
+		return fmt.Errorf("quality.heavy_checks reference requires quality section")
+	}
+	if p.RoutingSurface.CategoriesRef == "routing.categories" && c.Routing == nil {
+		return fmt.Errorf("routing.categories reference requires routing section")
+	}
+	if p.SafetySurface.SecurityProfileRef == "security.profile" && c.Security == nil {
+		return fmt.Errorf("security.profile reference requires security section")
+	}
+	if p.InstructionSurface.PromptPolicyRef == "policies.prompt_min.ref" && (c.Policies == nil || c.Policies.PromptMin == nil) {
+		return fmt.Errorf("policies.prompt_min required when parity instruction surface references prompt policy")
+	}
+	return nil
+}
+
+func validateExtensions(e *Extensions) error {
+	if e.V != 1 {
+		return fmt.Errorf("extensions.v must be 1")
+	}
+	mode := strings.TrimSpace(strings.ToLower(e.MergeMode))
+	if mode == "" {
+		mode = "append-first"
+	}
+	switch mode {
+	case "append-first", "append", "include", "replace":
+	default:
+		return fmt.Errorf("extensions.merge_mode must be append-first|append|include|replace")
+	}
+	if e.Agents != nil {
+		agentsMode := strings.TrimSpace(strings.ToLower(e.Agents.Mode))
+		if agentsMode == "" {
+			agentsMode = "append"
+		}
+		switch agentsMode {
+		case "append", "include", "generate":
+		default:
+			return fmt.Errorf("extensions.agents.mode must be append|include|generate")
+		}
+		if e.Agents.AppendFile != "" {
+			if filepath.IsAbs(e.Agents.AppendFile) {
+				return fmt.Errorf("extensions.agents.append_file must be repo-relative")
+			}
+			n := util.NormalizeRelPath(e.Agents.AppendFile)
+			if n == "" || strings.HasPrefix(n, "../") {
+				return fmt.Errorf("extensions.agents.append_file must be repo-relative")
+			}
+		}
+	}
+	if err := validateExtensionEntries("extensions.mcp", e.MCP); err != nil {
+		return err
+	}
+	if err := validateExtensionEntries("extensions.plugins", e.Plugins); err != nil {
+		return err
+	}
+	if err := validateExtensionEntries("extensions.skills", e.Skills); err != nil {
+		return err
+	}
+	if err := validateExtensionEntries("extensions.workflows", e.Workflows); err != nil {
+		return err
+	}
+	return nil
+}
+
+func validateExtensionEntries(field string, items []ExtensionEntry) error {
+	seen := map[string]struct{}{}
+	for _, item := range items {
+		id := strings.TrimSpace(item.ID)
+		if id == "" {
+			return fmt.Errorf("%s contains empty id", field)
+		}
+		if _, ok := seen[id]; ok {
+			return fmt.Errorf("%s contains duplicate id %q", field, id)
+		}
+		seen[id] = struct{}{}
+	}
+	return nil
 }
 
 func validateRoutingRule(rule RoutingRule, field string) error {
