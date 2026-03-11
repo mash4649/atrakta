@@ -61,7 +61,7 @@ func optionalTemplates(repoRoot string, c contract.Contract, id, projectionDir, 
 			})
 		case "atrakta-link":
 			source := ".atrakta/contract.json"
-			marker := "ATRAKTA-LINK\n"
+			marker, _ := SyntheticTemplateContent(id + ":atrakta-link@1")
 			contentHash := util.SHA256Tagged([]byte(marker))
 			templateID := id + ":atrakta-link@1"
 			out = append(out, Desired{
@@ -72,11 +72,42 @@ func optionalTemplates(repoRoot string, c contract.Contract, id, projectionDir, 
 				Target:      source,
 				Fingerprint: Fingerprint(contractHash, templateID, contentHash),
 			})
+		case "cursor-rule":
+			templateID := id + ":cursor-rule@1"
+			content, _ := SyntheticTemplateContent(templateID)
+			contentHash := util.SHA256Tagged([]byte(content))
+			out = append(out, Desired{
+				Interface:   id,
+				TemplateID:  templateID,
+				Path:        util.NormalizeRelPath(filepath.ToSlash(filepath.Join(projectionDir, "rules", "00-atrakta.mdc"))),
+				Source:      "AGENTS.md",
+				Target:      "",
+				Fingerprint: Fingerprint(contractHash, templateID, contentHash),
+			})
 		default:
 			return nil, fmt.Errorf("unsupported optional template %q", name)
 		}
 	}
 	return out, nil
+}
+
+func SyntheticTemplateContent(templateID string) (string, bool) {
+	switch {
+	case strings.HasSuffix(templateID, ":atrakta-link@1"):
+		return "ATRAKTA-LINK\n", true
+	case strings.HasSuffix(templateID, ":cursor-rule@1"):
+		return strings.TrimSpace(`
+---
+description: Atrakta managed baseline rules
+globs:
+alwaysApply: true
+---
+
+Follow [AGENTS.md](mdc:../../AGENTS.md) and keep parity with Atrakta projections.
+`) + "\n", true
+	default:
+		return "", false
+	}
 }
 
 func Fingerprint(contractHash, templateID, canonicalTemplateContentHash string) string {

@@ -329,7 +329,12 @@ func Default(repoRoot string) Contract {
 			HeavyChecks: []string{"go_test_compile"},
 			EnableHeavy: false,
 		},
-		Projections: &Projections{MaxPerInterface: 3},
+		Projections: &Projections{
+			OptionalTemplates: map[string][]string{
+				"cursor": {"cursor-rule"},
+			},
+			MaxPerInterface: 3,
+		},
 		Routing: &Routing{
 			Categories: map[string]RoutingRule{
 				"sync":   {Worker: "sync_safe", Quality: "quick"},
@@ -485,7 +490,7 @@ func Validate(c Contract) error {
 			}
 			for _, t := range templates {
 				switch t {
-				case "contract-json", "atrakta-link":
+				case "contract-json", "atrakta-link", "cursor-rule":
 				default:
 					return fmt.Errorf("unsupported optional template %q for interface %q", t, id)
 				}

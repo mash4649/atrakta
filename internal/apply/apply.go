@@ -494,18 +494,15 @@ func newSourceResolver(repoRoot, fallback string) *sourceResolver {
 }
 
 func (r *sourceResolver) load(op model.Operation) string {
+	if synthetic, ok := projection.SyntheticTemplateContent(op.TemplateID); ok {
+		return synthetic
+	}
 	source := op.Source
 	if source == "" {
 		if strings.HasSuffix(op.TemplateID, ":agents-md@1") {
 			return r.fallback
 		}
-		if strings.HasSuffix(op.TemplateID, ":atrakta-link@1") {
-			return "ATRAKTA-LINK\n"
-		}
 		return r.fallback
-	}
-	if strings.HasSuffix(op.TemplateID, ":atrakta-link@1") {
-		return "ATRAKTA-LINK\n"
 	}
 
 	source = util.NormalizeRelPath(source)

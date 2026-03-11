@@ -624,6 +624,12 @@ func scopeOfPath(p string) string {
 	if n == "" {
 		return "./"
 	}
+	// Keep Cursor native rules under the same scope as .cursor/AGENTS.md so
+	// branch lane planning does not split a single interface into overlapping
+	// serial groups.
+	if strings.HasPrefix(n, ".cursor/rules/") {
+		return ".cursor/"
+	}
 	dir := path.Dir(n)
 	if dir == "." || dir == "" {
 		return n

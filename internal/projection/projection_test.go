@@ -59,3 +59,38 @@ func TestOptionalTemplateContractJSON(t *testing.T) {
 		t.Fatalf("expected optional contract-json template")
 	}
 }
+
+func TestOptionalTemplateCursorRule(t *testing.T) {
+	repo := t.TempDir()
+	if err := os.WriteFile(filepath.Join(repo, "AGENTS.md"), []byte("# A\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Join(repo, ".atrakta"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	c := contract.Default(repo)
+	c.Projections.OptionalTemplates = map[string][]string{"cursor": {"cursor-rule"}}
+	cb, _ := json.MarshalIndent(c, "", "  ")
+	if err := os.WriteFile(filepath.Join(repo, ".atrakta", "contract.json"), cb, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	d, err := RequiredForTargets(repo, c, registry.Default(), []string{"cursor"}, contract.ContractHash(cb), "# A\n")
+	if err != nil {
+		t.Fatalf("projection generation failed: %v", err)
+	}
+	found := false
+	for _, it := range d {
+		if it.TemplateID == "cursor:cursor-rule@1" {
+			found = true
+			if it.Path != ".cursor/rules/00-atrakta.mdc" {
+				t.Fatalf("unexpected cursor rule path: %s", it.Path)
+			}
+			if it.Target != "" {
+				t.Fatalf("cursor rule should render as copy (empty target), got %q", it.Target)
+			}
+		}
+	}
+	if !found {
+		t.Fatalf("expected optional cursor-rule template")
+	}
+}

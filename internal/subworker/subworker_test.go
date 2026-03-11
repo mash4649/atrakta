@@ -302,3 +302,9 @@ func TestApplyBudgetGuardDisablesWhenHardLimitStillExceeded(t *testing.T) {
 		t.Fatalf("expected tasks/results to be cleared on hard limit fallback")
 	}
 }
+
+func TestScopeOfPathKeepsCursorRulesInCursorScope(t *testing.T) {
+	if got := scopeOfPath(".cursor/rules/00-atrakta.mdc"); got != ".cursor/" {
+		t.Fatalf("unexpected scope for cursor rules: %s", got)
+	}
+}

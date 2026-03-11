@@ -74,7 +74,7 @@ func Build(in Input) (model.PlanResult, error) {
 			continue
 		}
 		ops = append(ops, model.Operation{
-			Op:               "link",
+			Op:               desiredOp(d),
 			Path:             rel,
 			RequiresApproval: false,
 			Source:           d.Source,
@@ -148,6 +148,13 @@ func Build(in Input) (model.PlanResult, error) {
 	}, nil
 }
 
+func desiredOp(d projection.Desired) string {
+	if strings.TrimSpace(d.Target) == "" {
+		return "copy"
+	}
+	return "link"
+}
+
 func normalizeDesired(in []projection.Desired) map[string]projection.Desired {
 	out := make(map[string]projection.Desired, len(in))
 	for _, d := range in {
@@ -212,8 +219,8 @@ func isEquivalentExistingProjection(repoRoot, rel string, d projection.Desired, 
 }
 
 func loadSourceText(repoRoot string, d projection.Desired, sourceCache map[string]string) (string, bool) {
-	if strings.HasSuffix(d.TemplateID, ":atrakta-link@1") {
-		return "ATRAKTA-LINK\n", true
+	if synthetic, ok := projection.SyntheticTemplateContent(d.TemplateID); ok {
+		return synthetic, true
 	}
 	source := util.NormalizeRelPath(d.Source)
 	if source == "" {

@@ -57,6 +57,11 @@
     "enable_heavy": false
   },
   "projections": {
+    "optional_templates": {
+      "cursor": [
+        "cursor-rule"
+      ]
+    },
     "max_per_interface": 3
   },
   "routing": {

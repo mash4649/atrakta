@@ -176,3 +176,36 @@ func TestBuildRecreatesManagedProjectionWhenArtifactMissing(t *testing.T) {
 		t.Fatalf("expected link op for recreate, got %s", pl.Ops[0].Op)
 	}
 }
+
+func TestBuildUsesCopyWhenDesiredTargetIsEmpty(t *testing.T) {
+	repo := t.TempDir()
+	c := contract.Default(repo)
+	if err := os.WriteFile(filepath.Join(repo, "AGENTS.md"), []byte("# hello\n"), 0o644); err != nil {
+		t.Fatalf("write AGENTS failed: %v", err)
+	}
+	d := projection.Desired{
+		Path:        ".cursor/rules/00-atrakta.mdc",
+		Source:      "AGENTS.md",
+		Target:      "",
+		Fingerprint: "sha256:cursor-rule",
+		Interface:   "cursor",
+		TemplateID:  "cursor:cursor-rule@1",
+	}
+	pl, err := Build(Input{
+		RepoRoot:    repo,
+		Contract:    c,
+		Detect:      model.DetectResult{TargetSet: []string{"cursor"}, PruneAllowed: false, Reason: model.ReasonExplicit},
+		State:       state.Empty(""),
+		FeatureID:   "feat-cursor-rule",
+		Projections: []projection.Desired{d},
+	})
+	if err != nil {
+		t.Fatalf("build failed: %v", err)
+	}
+	if len(pl.Ops) != 1 {
+		t.Fatalf("expected 1 op, got %d", len(pl.Ops))
+	}
+	if pl.Ops[0].Op != "copy" {
+		t.Fatalf("expected copy op for empty target projection, got %s", pl.Ops[0].Op)
+	}
+}
