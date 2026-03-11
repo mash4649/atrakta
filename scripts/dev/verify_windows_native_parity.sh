@@ -60,4 +60,10 @@ cat <<JSON
 }
 JSON
 
+if [[ "$EXIT_CODE" -ne 0 ]]; then
+  echo "----- windows native parity test log -----"
+  cat "$LOG_FILE"
+  echo "----- end log -----"
+fi
+
 exit "$EXIT_CODE"
