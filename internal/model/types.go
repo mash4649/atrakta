@@ -111,3 +111,33 @@ type SyncProposal struct {
 	RequiresApproval bool     `json:"requires_approval"`
 	Summary          string   `json:"summary"`
 }
+
+type ProjectionManifest struct {
+	V       int                       `json:"v"`
+	Entries []ProjectionManifestEntry `json:"entries"`
+}
+
+type ProjectionManifestEntry struct {
+	Interface  string   `json:"interface"`
+	Kind       string   `json:"kind"`
+	Files      []string `json:"files"`
+	SourceHash string   `json:"source_hash"`
+	RenderHash string   `json:"render_hash"`
+	Status     string   `json:"status"`
+	UpdatedAt  string   `json:"updated_at,omitempty"`
+}
+
+type ExtensionManifest struct {
+	V       int                      `json:"v"`
+	Entries []ExtensionManifestEntry `json:"entries"`
+}
+
+type ExtensionManifestEntry struct {
+	Kind       string   `json:"kind"`
+	ID         string   `json:"id"`
+	Files      []string `json:"files"`
+	SourceHash string   `json:"source_hash"`
+	RenderHash string   `json:"render_hash"`
+	Status     string   `json:"status"`
+	UpdatedAt  string   `json:"updated_at,omitempty"`
+}

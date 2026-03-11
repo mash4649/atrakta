@@ -7,6 +7,8 @@
 - `contract.json`: `contract.v = 1`
 - `state.json`: `state.v = 1`
 - `events.jsonl`: `schema_version = 2` (writer/check both fixed to `2`)
+- `projections/manifest.json`: `v = 1`
+- `extensions/manifest.json`: `v = 1`
 - `progress.json`: no explicit version field (fixed-key operation)
 - `task-graph.json`: `v = 1`
 - `runtime/auto-state.v1.json`: `v = 1`
@@ -39,11 +41,19 @@
 - `security.profile` (`read_only|workspace_write|full`)
 - `edit_safety` (anchor normalization rules + `off|ast|parse` per language)
 - `policies.prompt_min` (conditional Goal prefix policy reference)
+- `parity`
+  - `v`, `canonical_sources`
+  - `instruction/approval/output/execution/quality/safety/routing/projection surface`
+- `extensions`
+  - `v`, `merge_mode`
+  - `agents`, `mcp`, `plugins`, `skills`, `workflows`, `hooks`
 
 ## `.atrakta/state.json`
 
 - Current values for managed paths and fingerprints
 - Updated from apply results
+- `projection` (last rendered state/hash/status)
+- `integration` (last checked result and blocking reasons)
 
 ## `.atrakta/events.jsonl`
 
@@ -55,6 +65,27 @@
   - `repo_map`
   - `routing_decision`
   - `policy_applied`
+- parity/integration events:
+  - `projection_rendered`
+  - `projection_drift_detected`
+  - `integration_checked`
+  - `integration_blocked`
+
+## `.atrakta/projections/manifest.json`
+
+- `v` (current: `1`)
+- `entries[]`
+  - `interface`, `kind`, `files[]`
+  - `source_hash`, `render_hash`
+  - `status`, `updated_at`
+
+## `.atrakta/extensions/manifest.json`
+
+- `v` (current: `1`)
+- `entries[]`
+  - `kind`, `id`, `files[]`
+  - `source_hash`, `render_hash`
+  - `status`, `updated_at`
 
 ## `.atrakta/progress.json`
 

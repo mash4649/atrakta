@@ -25,6 +25,21 @@ type State struct {
 	ContractHash string                   `json:"contract_hash"`
 	ManagedPaths map[string]ManagedRecord `json:"managed_paths"`
 	Autonomy     map[string]any           `json:"autonomy,omitempty"`
+	Projection   *ProjectionState         `json:"projection,omitempty"`
+	Integration  *IntegrationState        `json:"integration,omitempty"`
+}
+
+type ProjectionState struct {
+	LastRenderedAt string `json:"last_rendered_at,omitempty"`
+	SourceHash     string `json:"source_hash,omitempty"`
+	RenderHash     string `json:"render_hash,omitempty"`
+	Status         string `json:"status,omitempty"`
+}
+
+type IntegrationState struct {
+	LastCheckedAt   string   `json:"last_checked_at,omitempty"`
+	LastResult      string   `json:"last_result,omitempty"`
+	BlockingReasons []string `json:"blocking_reasons,omitempty"`
 }
 
 type ApplyOpResult struct {

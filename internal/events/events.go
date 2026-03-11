@@ -24,6 +24,11 @@ const SchemaVersion = 2
 const (
 	groupCommitWindow  = 40 * time.Millisecond
 	runtimeCacheVerify = "events_verify"
+
+	EventProjectionRendered      = "projection_rendered"
+	EventProjectionDriftDetected = "projection_drift_detected"
+	EventIntegrationChecked      = "integration_checked"
+	EventIntegrationBlocked      = "integration_blocked"
 )
 
 var (
