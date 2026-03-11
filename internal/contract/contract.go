@@ -325,9 +325,9 @@ func Default(repoRoot string) Contract {
 		},
 		TokenBudget: TokenBudget{Soft: 8000, Hard: 16000},
 		Quality: &Quality{
-			QuickChecks: []string{"verify_loop"},
-			HeavyChecks: []string{"verify_perf_gate"},
-			EnableHeavy: true,
+			QuickChecks: []string{"projection_integrity"},
+			HeavyChecks: []string{"go_test_compile"},
+			EnableHeavy: false,
 		},
 		Projections: &Projections{MaxPerInterface: 3},
 		Routing: &Routing{

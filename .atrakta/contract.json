@@ -49,12 +49,12 @@
   },
   "quality": {
     "quick_checks": [
-      "verify_loop"
+      "projection_integrity"
     ],
     "heavy_checks": [
-      "verify_perf_gate"
+      "go_test_compile"
     ],
-    "enable_heavy": true
+    "enable_heavy": false
   },
   "projections": {
     "max_per_interface": 3

@@ -22,6 +22,7 @@ import (
 	"atrakta/internal/gate"
 	"atrakta/internal/gitauto"
 	"atrakta/internal/ifaceauto"
+	"atrakta/internal/manifest"
 	"atrakta/internal/model"
 	"atrakta/internal/plan"
 	"atrakta/internal/policy"
@@ -699,7 +700,49 @@ func Start(repoRoot string, ad adapter.Adapter, flags StartFlags) (StartResult, 
 	}
 
 	st2 := state.UpdateFromApply(st, contractHash, toStateApply(ap))
+	manifestResult, manifestErr := manifest.UpdateFromApply(repoRoot, ap, contractHash)
+	if manifestErr != nil {
+		now := util.NowUTC()
+		st2.Integration = &state.IntegrationState{
+			LastCheckedAt:   now,
+			LastResult:      "blocked",
+			BlockingReasons: []string{"manifest update failed: " + manifestErr.Error()},
+		}
+		_ = state.Save(repoRoot, st2)
+		_, _ = events.Append(repoRoot, events.EventIntegrationBlocked, "orchestrator", map[string]any{
+			"feature_id": featureID,
+			"reason":     "manifest_update_failed",
+			"error":      manifestErr.Error(),
+		})
+		return StartResult{}, fmt.Errorf("update manifests: %w", manifestErr)
+	}
+	now := util.NowUTC()
+	st2.Projection = &state.ProjectionState{
+		LastRenderedAt: now,
+		SourceHash:     manifestResult.SourceHash,
+		RenderHash:     manifestResult.RenderHash,
+		Status:         "ok",
+	}
+	st2.Integration = &state.IntegrationState{
+		LastCheckedAt: now,
+		LastResult:    "ok",
+	}
 	if err := state.Save(repoRoot, st2); err != nil {
+		return StartResult{}, err
+	}
+	if _, err := events.Append(repoRoot, events.EventProjectionRendered, "orchestrator", map[string]any{
+		"feature_id":         featureID,
+		"source_hash":        manifestResult.SourceHash,
+		"render_hash":        manifestResult.RenderHash,
+		"projection_entries": manifestResult.ProjectionEntries,
+		"extension_entries":  manifestResult.ExtensionEntries,
+	}); err != nil {
+		return StartResult{}, err
+	}
+	if _, err := events.Append(repoRoot, events.EventIntegrationChecked, "orchestrator", map[string]any{
+		"feature_id": featureID,
+		"result":     "ok",
+	}); err != nil {
 		return StartResult{}, err
 	}
 	if featureID != "adhoc" {
