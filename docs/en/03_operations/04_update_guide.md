@@ -16,6 +16,10 @@
      - `hash -r`
 2. Run `atrakta doctor`
 3. Run `atrakta init --interfaces <primary-interface>` once (uniform for interactive/non-interactive)
+4. Verify parity/integration health
+   - `atrakta doctor --parity`
+   - `atrakta doctor --integration`
+   - `atrakta projection status --json`
 
 ## 2. Team Use (with CI)
 
@@ -23,6 +27,7 @@
 2. Update pinned Atrakta version in CI first
 3. Run `atrakta doctor` in target repository
 4. Validate representative workflows: `start`, `resume`, `gc --scope tmp`
+5. Finish with `doctor --parity` / `doctor --integration` / `projection status --json`
 
 ## 2.1 Distribution Artifact Build for Maintainers
 
@@ -38,9 +43,13 @@
 ## 3. Long-running / Critical Repositories
 
 1. Back up `.atrakta/events.jsonl` before update
-2. Run `atrakta migrate check`
-3. Re-sync in order: `atrakta doctor` -> `atrakta start`
-4. Optionally inspect events proposals via `atrakta gc --scope events`
+2. Back up projection/extension manifests before update
+   - `.atrakta/projections/manifest.json`
+   - `.atrakta/extensions/manifest.json`
+3. Run `atrakta migrate check`
+4. Re-sync in order: `atrakta doctor` -> `atrakta start`
+5. Run `atrakta doctor --parity` / `atrakta doctor --integration`
+6. Optionally inspect events proposals via `atrakta gc --scope events`
 
 ## 4. Non-interactive Environments (CI etc.)
 

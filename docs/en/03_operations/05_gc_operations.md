@@ -5,6 +5,7 @@
 ## Policy
 
 - Never delete core context (`state.json`, `progress.json`, checkpoints, auto-state)
+- Keep projection/extension manifests out of GC scope (`.atrakta/projections/manifest.json`, `.atrakta/extensions/manifest.json`)
 - `.tmp` is auto-GC target only when threshold is exceeded
 - `events.jsonl` remains proposal-only (no automatic mutation)
 - Every GC run logs dry-run/applied results

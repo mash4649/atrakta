@@ -20,6 +20,7 @@
   2. Build artifacts with `scripts/build_release_artifacts.sh`
   3. Generate release notes from `.github/release.yml`
   4. Create GitHub Release with packages and checksums
+  5. Include projection compatibility and parity schema version in release notes
 
 ## Build Artifacts
 
@@ -36,7 +37,7 @@ Outputs:
 
 1. Normally just verify the auto-release result
 2. On failure, rerun via `workflow_dispatch` or build manually
-3. Announce user update procedure (binary replacement -> `atrakta doctor`)
+3. Announce user update procedure (binary replacement -> parity/integration checks)
 
 ## User Onboarding Template
 
@@ -55,4 +56,9 @@ Outputs:
      - `Copy-Item .\atrakta.exe "$targetDir\atrakta.exe" -Force`
      - add `$targetDir` to user PATH
 4. Verify with `atrakta --help`
-5. Run once in target project: `atrakta init --interfaces <primary>`
+5. For existing repositories, recommend brownfield init:
+   - `atrakta init --mode brownfield --interfaces cursor --merge-strategy append --agents-mode append --no-overwrite`
+6. Post-install checks:
+   - `atrakta doctor --parity`
+   - `atrakta doctor --integration`
+   - `atrakta projection status --json`

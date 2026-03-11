@@ -61,6 +61,68 @@
 
 - With `sync-level=2`, AGENTS-derived proposals are not used for decisions.
 
+## `projection drift detected` / parity drift
+
+- Cause: managed projections are missing, edited, or hash-mismatched.
+- Check:
+  - `atrakta doctor --parity`
+  - `atrakta projection status --json`
+- Repair:
+  - `atrakta projection repair --all`
+- Fallback:
+  - regenerate only affected interface: `atrakta projection render --interface <id>`
+
+## `projection manifest is missing`
+
+- Cause: `.atrakta/projections/manifest.json` was not generated or was removed.
+- Check:
+  - `atrakta doctor --parity`
+- Repair:
+  - `atrakta projection render --all`
+- Fallback:
+  - rerun `atrakta start --interfaces <id>` to regenerate from runtime flow.
+
+## `managed_block_corruption`
+
+- Cause: manual edits inside managed block, or broken append/include boundaries.
+- Check:
+  - `atrakta doctor --parity`
+  - `atrakta doctor --integration`
+- Repair:
+  - `atrakta projection repair --all`
+- Fallback:
+  - preserve user-managed sections and regenerate only managed sections.
+
+## `parity blocked`
+
+- Cause: contract/parity/manifest constraints hit fail-closed conditions.
+- Check:
+  - `atrakta doctor --parity --json`
+- Repair:
+  - follow each blocking issue `repair_hint`.
+- Fallback:
+  - inspect drift first with `atrakta projection status --json` before strict runs.
+
+## `integration blocked`
+
+- Cause: brownfield conflicts such as overwrite risk, append failure, include missing.
+- Check:
+  - `atrakta doctor --integration --json`
+- Repair:
+  - `atrakta projection repair --all` or `atrakta init --mode brownfield --no-overwrite`
+- Fallback:
+  - review and apply `.atrakta/proposals/*.patch` manually.
+
+## `unsupported extension projection`
+
+- Cause: extension is enabled but no native projection exists yet.
+- Check:
+  - `atrakta doctor --integration`
+- Repair:
+  - use fallback/link markdown outputs under `.extensions/*`.
+- Fallback:
+  - temporarily disable the extension and re-enable when renderer support lands.
+
 ## `.tmp` keeps growing
 
 - Dry-run: `atrakta gc --scope tmp`
