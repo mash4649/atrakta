@@ -105,11 +105,21 @@ type StepEvent struct {
 }
 
 type SyncProposal struct {
-	Needed           bool     `json:"needed"`
-	Prefer           []string `json:"prefer,omitempty"`
-	Disable          []string `json:"disable,omitempty"`
-	RequiresApproval bool     `json:"requires_approval"`
-	Summary          string   `json:"summary"`
+	Needed           bool            `json:"needed"`
+	Prefer           []string        `json:"prefer,omitempty"`
+	Disable          []string        `json:"disable,omitempty"`
+	Allowed          []SyncFieldDiff `json:"allowed,omitempty"`
+	Denied           []SyncFieldDiff `json:"denied,omitempty"`
+	RequiresApproval bool            `json:"requires_approval"`
+	Summary          string          `json:"summary"`
+}
+
+type SyncFieldDiff struct {
+	Field  string `json:"field"`
+	Status string `json:"status"`
+	From   any    `json:"from,omitempty"`
+	To     any    `json:"to,omitempty"`
+	Reason string `json:"reason,omitempty"`
 }
 
 type ProjectionManifest struct {

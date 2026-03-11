@@ -137,9 +137,10 @@ type Policies struct {
 }
 
 type PromptMinRef struct {
-	Ref      string `json:"ref"`
-	Required bool   `json:"required,omitempty"`
-	Apply    string `json:"apply,omitempty"`
+	Ref       string `json:"ref"`
+	GoalLabel string `json:"goal_label,omitempty"`
+	Required  bool   `json:"required,omitempty"`
+	Apply     string `json:"apply,omitempty"`
 }
 
 type Parity struct {
@@ -764,6 +765,7 @@ func CanonicalizeBoundary(c Contract) Contract {
 	}
 	if c2.Policies != nil && c2.Policies.PromptMin != nil {
 		c2.Policies.PromptMin.Ref = util.NormalizeRelPath(c2.Policies.PromptMin.Ref)
+		c2.Policies.PromptMin.GoalLabel = strings.TrimSpace(c2.Policies.PromptMin.GoalLabel)
 		if c2.Policies.PromptMin.Apply == "" {
 			c2.Policies.PromptMin.Apply = "conditional"
 		}
