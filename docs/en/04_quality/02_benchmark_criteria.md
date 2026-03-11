@@ -29,7 +29,16 @@ Notes:
 - `BenchmarkBuildNoopManagedScaling`
 - `BenchmarkStartSteadyState`
 - `BenchmarkWrapperFastPath`
+- `BenchmarkProjectionRender`
+- `BenchmarkParityDoctor`
+- `BenchmarkProjectionRepair`
+- `BenchmarkExtensionRender`
 - `TestProjectionScalingLinearBound`
+- `TestParityConsistencyRate`
+- `TestParityDriftFalsePositiveRate`
+- `TestParityDriftFalseNegativeRate`
+- `TestBrownfieldAppendIdempotent`
+- `TestBrownfieldNoOverwrite`
 
 ## Operational Rules
 
@@ -38,3 +47,4 @@ Notes:
 - maintain determinism and safety gates during speed optimization
 - keep fast-path for no-dependency cases even with DAG task graph
 - verify apply scaling remains acceptable after edit safety (Go AST / JSON parse)
+- keep `repair` out of the default `start` critical path (run via explicit commands)
