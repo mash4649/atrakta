@@ -12,6 +12,8 @@
 - Run parity/integration checks after major changes.
 - For storage growth, dry-run with `atrakta gc --scope tmp`, then apply with `--apply` if safe.
 - Legacy event logs (`schema v1`) are unsupported; archive and restart with new logs if needed.
+- For import pipeline operations, run `atrakta import pulse` to track pending review state.
+- Import review runbook: `03_operations/10_import_review_runbook.md`.
 
 ### Recommended Post-change Checks
 
@@ -20,6 +22,7 @@ atrakta doctor
 atrakta doctor --parity
 atrakta doctor --integration
 atrakta projection status --json
+atrakta import pulse
 ```
 
 ## Projection Workflow for Interface Switching

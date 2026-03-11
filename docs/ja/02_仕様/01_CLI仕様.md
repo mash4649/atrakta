@@ -24,6 +24,13 @@ atrakta hook uninstall
 atrakta ide-autostart [install|uninstall|status]
 atrakta migrate check
 atrakta resume [--interfaces <id,id,...>] [--feature-id <id>] [--sync-level <0|1|2>] [--map-tokens <n>] [--map-refresh <sec>]
+atrakta import repo <path> [--auto-analyze]
+atrakta import report <batch_id>
+atrakta import pulse
+atrakta capability analyze <capability_id>
+atrakta recipe convert <capability_id> --deterministic-input-note <note> [--status <pending|approved|rejected>] [--input-contract-ref <ref>] [--allow <primitive,...>]
+atrakta memory review <capability_id> [--status <pending|approved|rejected>] [--promote] [--operator <id>]
+atrakta exploration catalog [--reviewed-only] [--limit <n>]
 ```
 
 ## 互換性方針
@@ -134,6 +141,17 @@ atrakta resume [--interfaces <id,id,...>] [--feature-id <id>] [--sync-level <0|1
 
 - `.atrakta/run-checkpoints/latest.json` を読み、前回実行条件で `start` を再実行
 - `--interfaces` / `--feature-id` / `--sync-level` を指定した場合は checkpoint 値を上書き
+
+## Import/Review サーフェス
+
+- `import repo`: deterministic な local directory import + quarantine-first 登録。
+- `import repo --auto-analyze`（既定 `true`）: import 後に analyze-only hook を実行。
+- `import report`: batch report と pending conversion/memory review 件数を表示。
+- `import pulse`: pending import/review を 1 画面で可視化。
+- `capability analyze`: 単一 capability の analysis metadata を保存。
+- `recipe convert`: review gate 経由で `recipe_candidate` へ変換（bounded default）。
+- `memory review`: review gate 必須の memory promotion（自動昇格なし）。
+- `exploration catalog --reviewed-only`: review gate 通過済み imported asset のみを opt-in で探索入力へ供給。
 
 ## 終了コード（deferred outcome）
 

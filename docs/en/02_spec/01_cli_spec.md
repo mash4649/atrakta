@@ -23,6 +23,13 @@ atrakta hook uninstall
 atrakta ide-autostart [install|uninstall|status]
 atrakta migrate check
 atrakta resume [--interfaces <id,id,...>] [--feature-id <id>] [--sync-level <0|1|2>] [--map-tokens <n>] [--map-refresh <sec>]
+atrakta import repo <path> [--auto-analyze]
+atrakta import report <batch_id>
+atrakta import pulse
+atrakta capability analyze <capability_id>
+atrakta recipe convert <capability_id> --deterministic-input-note <note> [--status <pending|approved|rejected>] [--input-contract-ref <ref>] [--allow <primitive,...>]
+atrakta memory review <capability_id> [--status <pending|approved|rejected>] [--promote] [--operator <id>]
+atrakta exploration catalog [--reviewed-only] [--limit <n>]
 ```
 
 ## Compatibility Policy
@@ -135,6 +142,17 @@ atrakta resume [--interfaces <id,id,...>] [--feature-id <id>] [--sync-level <0|1
 
 - Load `.atrakta/run-checkpoints/latest.json` and restart with prior conditions
 - `--interfaces` / `--feature-id` / `--sync-level` override checkpoint values when provided
+
+## Import/Review Surfaces
+
+- `import repo`: deterministic local-directory import + quarantine-first registration.
+- `import repo --auto-analyze` (default `true`): analyze-only hook after import.
+- `import report`: batch report with pending conversion/memory review counts.
+- `import pulse`: one-screen operations visibility for pending import/review state.
+- `capability analyze`: analyze a single capability and persist analysis metadata.
+- `recipe convert`: review-gated conversion to `recipe_candidate` with bounded defaults.
+- `memory review`: review-gated memory promotion (no automatic promotion).
+- `exploration catalog --reviewed-only`: opt-in retrieval path for review-passed imported assets.
 
 ## Exit Codes (Deferred Outcomes)
 

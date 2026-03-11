@@ -29,6 +29,15 @@ const (
 	EventProjectionDriftDetected = "projection_drift_detected"
 	EventIntegrationChecked      = "integration_checked"
 	EventIntegrationBlocked      = "integration_blocked"
+
+	EventCapabilityImported       = "capability_imported"
+	EventCapabilityAnalyzed       = "capability_analyzed"
+	EventCapabilityQuarantined    = "capability_quarantined"
+	EventCapabilityPromoted       = "capability_promoted"
+	EventRecipeCandidateCreated   = "recipe_candidate_created"
+	EventRecipeConversionReviewed = "recipe_conversion_reviewed"
+	EventMemorySurfaceAssigned    = "memory_surface_assigned"
+	EventMemoryPromotionReviewed  = "memory_promotion_reviewed"
 )
 
 var (

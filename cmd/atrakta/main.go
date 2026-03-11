@@ -21,6 +21,7 @@ import (
 	gcengine "atrakta/internal/gc"
 	"atrakta/internal/hooks"
 	"atrakta/internal/ide"
+	"atrakta/internal/importing"
 	"atrakta/internal/manifest"
 	"atrakta/internal/migrate"
 	"atrakta/internal/model"
@@ -80,6 +81,16 @@ func main() {
 		handleResume(cwd, ad)
 	case "projection":
 		handleProjection(cwd, ad)
+	case "import":
+		handleImport(cwd)
+	case "capability":
+		handleCapability(cwd)
+	case "recipe":
+		handleRecipe(cwd)
+	case "memory":
+		handleMemory(cwd)
+	case "exploration":
+		handleExploration(cwd)
 	default:
 		usage()
 		os.Exit(2)
@@ -769,6 +780,196 @@ func resolveProjectionInterfaces(cwd, iface string, all bool) (string, error) {
 	return strings.Join(ids, ","), nil
 }
 
+func handleImport(cwd string) {
+	if len(os.Args) < 3 {
+		fmt.Fprintln(os.Stderr, "usage: atrakta import [repo|report|pulse]")
+		os.Exit(2)
+	}
+	switch os.Args[2] {
+	case "repo":
+		fs := flag.NewFlagSet("import repo", flag.ExitOnError)
+		autoAnalyze := fs.Bool("auto-analyze", true, "run analyze-only hook after import")
+		_ = fs.Parse(os.Args[3:])
+		if fs.NArg() < 1 {
+			fmt.Fprintln(os.Stderr, "usage: atrakta import repo <path> [--auto-analyze]")
+			os.Exit(2)
+		}
+		path := fs.Arg(0)
+		loaded, err := importing.LoadRepository(path)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		rep, err := importing.ImportRepository(cwd, loaded)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		if *autoAnalyze {
+			if _, err := importing.AnalyzeImportBatch(cwd, rep.ImportBatchID); err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
+		}
+		b, _ := json.MarshalIndent(rep, "", "  ")
+		fmt.Println(string(b))
+	case "report":
+		fs := flag.NewFlagSet("import report", flag.ExitOnError)
+		_ = fs.Parse(os.Args[3:])
+		if fs.NArg() < 1 {
+			fmt.Fprintln(os.Stderr, "usage: atrakta import report <batch_id>")
+			os.Exit(2)
+		}
+		rep, err := importing.LoadImportReport(cwd, fs.Arg(0))
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		pulse, err := importing.BuildImportPulse(cwd)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		out := map[string]any{
+			"report":                   rep,
+			"import_batch":             rep.ImportBatchID,
+			"quarantined_capabilities": pulse.QuarantinedCaps,
+			"pending_conversions":      pulse.PendingConversions,
+			"pending_memory_reviews":   pulse.PendingMemoryReviews,
+		}
+		b, _ := json.MarshalIndent(out, "", "  ")
+		fmt.Println(string(b))
+	case "pulse":
+		pulse, err := importing.BuildImportPulse(cwd)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		b, _ := json.MarshalIndent(pulse, "", "  ")
+		fmt.Println(string(b))
+	default:
+		fmt.Fprintln(os.Stderr, "usage: atrakta import [repo|report|pulse]")
+		os.Exit(2)
+	}
+}
+
+func handleCapability(cwd string) {
+	if len(os.Args) < 3 {
+		fmt.Fprintln(os.Stderr, "usage: atrakta capability analyze <capability_id>")
+		os.Exit(2)
+	}
+	switch os.Args[2] {
+	case "analyze":
+		fs := flag.NewFlagSet("capability analyze", flag.ExitOnError)
+		_ = fs.Parse(os.Args[3:])
+		if fs.NArg() < 1 {
+			fmt.Fprintln(os.Stderr, "usage: atrakta capability analyze <capability_id>")
+			os.Exit(2)
+		}
+		entry, err := importing.AnalyzeCapability(cwd, fs.Arg(0))
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		b, _ := json.MarshalIndent(entry, "", "  ")
+		fmt.Println(string(b))
+	default:
+		fmt.Fprintln(os.Stderr, "usage: atrakta capability analyze <capability_id>")
+		os.Exit(2)
+	}
+}
+
+func handleRecipe(cwd string) {
+	if len(os.Args) < 3 {
+		fmt.Fprintln(os.Stderr, "usage: atrakta recipe convert <capability_id>")
+		os.Exit(2)
+	}
+	switch os.Args[2] {
+	case "convert":
+		fs := flag.NewFlagSet("recipe convert", flag.ExitOnError)
+		status := fs.String("status", "approved", "review status: pending|approved|rejected")
+		deterministicInputNote := fs.String("deterministic-input-note", "", "required deterministic input note")
+		inputContractRef := fs.String("input-contract-ref", "", "optional input contract reference")
+		allow := fs.String("allow", "", "comma-separated allowlist primitives")
+		_ = fs.Parse(os.Args[3:])
+		if fs.NArg() < 1 {
+			fmt.Fprintln(os.Stderr, "usage: atrakta recipe convert <capability_id> [--status ...] [--deterministic-input-note ...] [--input-contract-ref ...] [--allow ...]")
+			os.Exit(2)
+		}
+		allowlist := []string{}
+		for _, part := range strings.Split(strings.TrimSpace(*allow), ",") {
+			part = strings.TrimSpace(part)
+			if part == "" {
+				continue
+			}
+			allowlist = append(allowlist, part)
+		}
+		entry, err := importing.ConvertRecipeCandidate(cwd, fs.Arg(0), *status, *deterministicInputNote, *inputContractRef, allowlist)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		b, _ := json.MarshalIndent(entry, "", "  ")
+		fmt.Println(string(b))
+	default:
+		fmt.Fprintln(os.Stderr, "usage: atrakta recipe convert <capability_id>")
+		os.Exit(2)
+	}
+}
+
+func handleMemory(cwd string) {
+	if len(os.Args) < 3 {
+		fmt.Fprintln(os.Stderr, "usage: atrakta memory review <capability_id>")
+		os.Exit(2)
+	}
+	switch os.Args[2] {
+	case "review":
+		fs := flag.NewFlagSet("memory review", flag.ExitOnError)
+		status := fs.String("status", "pending", "review status: pending|approved|rejected")
+		promote := fs.Bool("promote", false, "promote to operational memory when approved")
+		operator := fs.String("operator", "", "operator id for approved promotion")
+		_ = fs.Parse(os.Args[3:])
+		if fs.NArg() < 1 {
+			fmt.Fprintln(os.Stderr, "usage: atrakta memory review <capability_id> [--status ...] [--promote] [--operator <id>]")
+			os.Exit(2)
+		}
+		result, err := importing.ReviewMemoryPromotion(cwd, fs.Arg(0), *status, *operator, *promote)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		b, _ := json.MarshalIndent(result, "", "  ")
+		fmt.Println(string(b))
+	default:
+		fmt.Fprintln(os.Stderr, "usage: atrakta memory review <capability_id>")
+		os.Exit(2)
+	}
+}
+
+func handleExploration(cwd string) {
+	if len(os.Args) < 3 {
+		fmt.Fprintln(os.Stderr, "usage: atrakta exploration catalog [--reviewed-only] [--limit <n>]")
+		os.Exit(2)
+	}
+	switch os.Args[2] {
+	case "catalog":
+		fs := flag.NewFlagSet("exploration catalog", flag.ExitOnError)
+		reviewedOnly := fs.Bool("reviewed-only", false, "include only review-gated assets")
+		limit := fs.Int("limit", 0, "optional output limit")
+		_ = fs.Parse(os.Args[3:])
+		cat, err := importing.BuildCatalog(cwd, importing.CatalogOptions{ReviewedOnly: *reviewedOnly, Limit: *limit})
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		b, _ := json.MarshalIndent(cat, "", "  ")
+		fmt.Println(string(b))
+	default:
+		fmt.Fprintln(os.Stderr, "usage: atrakta exploration catalog [--reviewed-only] [--limit <n>]")
+		os.Exit(2)
+	}
+}
+
 // cmdName returns the invoked command name (supports "atr" alias via symlink).
 func cmdName() string {
 	name := filepath.Base(os.Args[0])
@@ -800,6 +1001,13 @@ func usage() {
 	fmt.Printf("  %s projection render [--interface <id>] [--all]\n", cmd)
 	fmt.Printf("  %s projection status [--json]\n", cmd)
 	fmt.Printf("  %s projection repair [--interface <id>] [--all]\n", cmd)
+	fmt.Printf("  %s import repo <path> [--auto-analyze]\n", cmd)
+	fmt.Printf("  %s import report <batch_id>\n", cmd)
+	fmt.Printf("  %s import pulse\n", cmd)
+	fmt.Printf("  %s capability analyze <capability_id>\n", cmd)
+	fmt.Printf("  %s recipe convert <capability_id> --deterministic-input-note <note> [--status <pending|approved|rejected>] [--input-contract-ref <ref>] [--allow <primitive,...>]\n", cmd)
+	fmt.Printf("  %s memory review <capability_id> [--status <pending|approved|rejected>] [--promote] [--operator <id>]\n", cmd)
+	fmt.Printf("  %s exploration catalog [--reviewed-only] [--limit <n>]\n", cmd)
 	if cmd == "atrakta" {
 		fmt.Println("\n  tip: 'atr' is a short alias for 'atrakta'")
 	}

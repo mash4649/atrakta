@@ -112,3 +112,29 @@ func TestVerifyChainCachedWithLongLastLine(t *testing.T) {
 		t.Fatalf("second verify cached failed for long last line: %v", err)
 	}
 }
+
+func TestImportedLifecycleEventTaxonomy(t *testing.T) {
+	repo := t.TempDir()
+	types := []string{
+		EventCapabilityImported,
+		EventCapabilityAnalyzed,
+		EventCapabilityQuarantined,
+		EventCapabilityPromoted,
+		EventRecipeCandidateCreated,
+		EventRecipeConversionReviewed,
+		EventMemorySurfaceAssigned,
+		EventMemoryPromotionReviewed,
+	}
+	for _, typ := range types {
+		if _, err := Append(repo, typ, "test", map[string]any{
+			"capability_id":   "cap-demo",
+			"kind":            "skill",
+			"import_batch_id": "import-demo",
+		}); err != nil {
+			t.Fatalf("append %s failed: %v", typ, err)
+		}
+	}
+	if err := VerifyChain(repo); err != nil {
+		t.Fatalf("expected valid chain for imported lifecycle events: %v", err)
+	}
+}

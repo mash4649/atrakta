@@ -7,6 +7,7 @@
 - `contract.json`: `contract.v = 1`
 - `state.json`: `state.v = 1`
 - `events.jsonl`: `schema_version = 2` (writer/check both fixed to `2`)
+- `capabilities/registry.json`: `v = 1`
 - `projections/manifest.json`: `v = 1`
 - `extensions/manifest.json`: `v = 1`
 - `progress.json`: no explicit version field (fixed-key operation)
@@ -70,6 +71,33 @@
   - `projection_drift_detected`
   - `integration_checked`
   - `integration_blocked`
+- imported capability lifecycle events:
+  - `capability_imported`
+  - `capability_analyzed`
+  - `capability_quarantined`
+  - `capability_promoted`
+  - `recipe_candidate_created`
+  - `recipe_conversion_reviewed`
+  - `memory_surface_assigned`
+  - `memory_promotion_reviewed`
+
+## `.atrakta/capabilities/registry.json`
+
+- `v` (current: `1`)
+- `entries[]`
+  - required:
+    - `id`
+    - `kind` (`skill|recipe_candidate|reference_memory|gateway|api|unsupported`)
+    - `path`
+    - `provenance`
+  - optional imported-asset metadata:
+    - `source_type`
+    - `source_path`
+    - `import_batch_id`
+    - `analysis_status`
+    - `quarantine_reason`
+    - `conversion_status`
+    - `default_memory_surface`
 
 ## `.atrakta/projections/manifest.json`
 
