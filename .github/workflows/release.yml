@@ -18,7 +18,26 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  windows-native-parity:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: false
+
+      - name: Windows native parity verification
+        shell: bash
+        run: ./scripts/dev/verify_windows_native_parity.sh
+
   create-release:
+    needs:
+      - windows-native-parity
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

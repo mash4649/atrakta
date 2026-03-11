@@ -48,3 +48,20 @@ jobs:
 
       - name: Projection repair verification
         run: ./scripts/dev/verify_projection_repair.sh
+
+  windows-native-parity:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: false
+
+      - name: Windows native parity verification
+        shell: bash
+        run: ./scripts/dev/verify_windows_native_parity.sh

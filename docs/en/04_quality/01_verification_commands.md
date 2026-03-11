@@ -23,6 +23,19 @@ Includes:
 - Linux/Windows cross `go test -run '^$'`
 - Linux/Windows binary build confirmation
 
+## Windows Native Parity Gate
+
+```bash
+./scripts/dev/verify_windows_native_parity.sh
+```
+
+Runs strict native parity flow on a Windows runner (`TestWindowsNativeParity`) and is required in CI/release workflows.
+
+Skip policy is limited:
+
+- default: fail when executed outside Windows native runner
+- explicit override only: `ATRAKTA_ALLOW_WINDOWS_PARITY_SKIP=1`
+
 ## Phase2 Verification
 
 ```bash
@@ -37,7 +50,6 @@ Additional checks:
 - H7 migration replay determinism test
 - events schema v2 integrity test (`migrate check`)
 - Docker runtime verification for Linux binary
-- Windows runtime test is skipped under environment constraints
 
 ## Performance Regression Gate
 
