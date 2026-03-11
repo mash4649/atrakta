@@ -37,6 +37,10 @@ scripts/
 |---|---|
 | `verify_loop.sh` | 基本テストをループ実行（CI でも使用） |
 | `verify_perf_gate.sh` | SLO パフォーマンス回帰テスト（CI でも使用） |
+| `verify_parity.sh` | parity ドリフト関連の検証（JSON 出力あり） |
+| `verify_extensions.sh` | extension projection 関連の検証（JSON 出力あり） |
+| `verify_brownfield.sh` | brownfield 導入系の検証（JSON 出力あり） |
+| `verify_projection_repair.sh` | projection repair 関連の検証（JSON 出力あり） |
 | `verify_phase2.sh` | Phase 2 検証スイート |
 | `verify_provisional.sh` | 暫定検証スクリプト |
 | `soak.sh` | 短時間ソークテスト |
@@ -51,6 +55,12 @@ scripts/
 
 # パフォーマンス回帰テスト
 ./scripts/dev/verify_perf_gate.sh
+
+# parity / extension / brownfield / repair 検証
+./scripts/dev/verify_parity.sh
+./scripts/dev/verify_extensions.sh
+./scripts/dev/verify_brownfield.sh
+./scripts/dev/verify_projection_repair.sh
 
 # ソークテスト（長時間安定性確認）
 ./scripts/dev/soak.sh

@@ -36,3 +36,15 @@ jobs:
 
       - name: SLO regression gate
         run: ./scripts/dev/verify_perf_gate.sh
+
+      - name: Parity verification
+        run: ./scripts/dev/verify_parity.sh
+
+      - name: Extensions verification
+        run: ./scripts/dev/verify_extensions.sh
+
+      - name: Brownfield verification
+        run: ./scripts/dev/verify_brownfield.sh
+
+      - name: Projection repair verification
+        run: ./scripts/dev/verify_projection_repair.sh
