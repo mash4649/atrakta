@@ -93,8 +93,13 @@ func handleDoctor(cwd string, ad adapter.CLIAdapter) {
 	applySync := fs.Bool("apply-sync", false, "apply sync proposal (approval required)")
 	syncLevel := fs.String("sync-level", "", "sync level (0|1|2)")
 	parity := fs.Bool("parity", false, "run parity drift diagnostics")
-	asJSON := fs.Bool("json", false, "print machine-readable output (for parity mode)")
+	integration := fs.Bool("integration", false, "run brownfield integration diagnostics")
+	asJSON := fs.Bool("json", false, "print machine-readable output (for parity/integration mode)")
 	_ = fs.Parse(os.Args[2:])
+	if *parity && *integration {
+		fmt.Fprintln(os.Stderr, "doctor: --parity and --integration cannot be used together")
+		os.Exit(2)
+	}
 
 	if *parity {
 		rep, err := doctor.RunParity(cwd)
@@ -102,6 +107,35 @@ func handleDoctor(cwd string, ad adapter.CLIAdapter) {
 			fmt.Println(rep.JSON())
 		} else {
 			fmt.Printf("doctor --parity: %s\n", rep.Reason)
+			for _, f := range rep.BlockingIssues {
+				fmt.Printf("  [BLOCK] %s: %s", f.Code, f.Message)
+				if f.Path != "" {
+					fmt.Printf(" (%s)", f.Path)
+				}
+				fmt.Println()
+			}
+			for _, f := range rep.Warnings {
+				fmt.Printf("  [WARN ] %s: %s", f.Code, f.Message)
+				if f.Path != "" {
+					fmt.Printf(" (%s)", f.Path)
+				}
+				fmt.Println()
+			}
+			for _, cmd := range rep.SuggestedCommands {
+				fmt.Printf("  suggestion: %s\n", cmd)
+			}
+		}
+		if err != nil || rep.Outcome == "BLOCKED" {
+			os.Exit(1)
+		}
+		return
+	}
+	if *integration {
+		rep, err := doctor.RunIntegration(cwd)
+		if *asJSON {
+			fmt.Println(rep.JSON())
+		} else {
+			fmt.Printf("doctor --integration: %s\n", rep.Reason)
 			for _, f := range rep.BlockingIssues {
 				fmt.Printf("  [BLOCK] %s: %s", f.Code, f.Message)
 				if f.Path != "" {
@@ -696,7 +730,7 @@ func usage() {
 	fmt.Printf("%s commands:\n", cmd)
 	fmt.Printf("  %s start [--interfaces <id,id,...>] [--feature-id <id>] [--sync-level <0|1|2>] [--map-tokens <n>] [--map-refresh <sec>]\n", cmd)
 	fmt.Printf("  %s init [--mode <greenfield|brownfield>] [--interfaces <id,id,...>] [--feature-id <id>] [--sync-level <0|1|2>] [--map-tokens <n>] [--map-refresh <sec>] [--merge-strategy <append|include|replace>] [--agents-mode <append|include|generate>] [--no-overwrite] [--no-hook]\n", cmd)
-	fmt.Printf("  %s doctor [--sync-proposal] [--apply-sync] [--sync-level <0|1|2>] [--parity] [--json]\n", cmd)
+	fmt.Printf("  %s doctor [--sync-proposal] [--apply-sync] [--sync-level <0|1|2>] [--parity|--integration] [--json]\n", cmd)
 	fmt.Printf("  %s gc [--scope <tmp,events>] [--apply] [--auto]\n", cmd)
 	fmt.Printf("  %s wrap install\n", cmd)
 	fmt.Printf("  %s wrap uninstall\n", cmd)
