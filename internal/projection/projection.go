@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"sort"
 	"strings"
 
 	"atrakta/internal/contract"
@@ -22,39 +21,8 @@ type Desired struct {
 }
 
 func RequiredForTargets(repoRoot string, c contract.Contract, reg registry.Registry, targets []string, contractHash, sourceText string) ([]Desired, error) {
-	canon := util.NormalizeContentLF(sourceText)
-	sourceHash := util.SHA256Tagged([]byte(canon))
-
-	out := []Desired{}
-	for _, id := range targets {
-		e, ok := reg.Entries[id]
-		if !ok || e.ProjectionDir == "" {
-			continue
-		}
-		target := util.NormalizeRelPath(filepath.ToSlash(filepath.Join(e.ProjectionDir, "AGENTS.md")))
-		templateID := id + ":agents-md@1"
-		fp := Fingerprint(contractHash, templateID, sourceHash)
-		out = append(out, Desired{
-			Interface:   id,
-			TemplateID:  templateID,
-			Path:        target,
-			Source:      "AGENTS.md",
-			Target:      "AGENTS.md",
-			Fingerprint: fp,
-		})
-		opt, err := optionalTemplates(repoRoot, c, id, e.ProjectionDir, contractHash)
-		if err != nil {
-			return nil, err
-		}
-		out = append(out, opt...)
-	}
-	sort.SliceStable(out, func(i, j int) bool {
-		if out[i].Path == out[j].Path {
-			return out[i].TemplateID < out[j].TemplateID
-		}
-		return out[i].Path < out[j].Path
-	})
-	return out, nil
+	model := BuildCanonicalModel(c, contractHash, sourceText)
+	return DefaultEngine().RenderTargets(repoRoot, model, reg, targets)
 }
 
 func optionalTemplates(repoRoot string, c contract.Contract, id, projectionDir, contractHash string) ([]Desired, error) {
