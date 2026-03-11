@@ -6,11 +6,13 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
 	"atrakta/internal/adapter"
 	"atrakta/internal/bootstrap"
+	"atrakta/internal/brownfield"
 	"atrakta/internal/checkpoint"
 	agentsctx "atrakta/internal/context"
 	"atrakta/internal/contract"
@@ -22,6 +24,7 @@ import (
 	"atrakta/internal/manifest"
 	"atrakta/internal/migrate"
 	"atrakta/internal/model"
+	"atrakta/internal/projection"
 	"atrakta/internal/registry"
 	"atrakta/internal/runtimeobs"
 	"atrakta/internal/syncpolicy"
@@ -264,33 +267,127 @@ func handleIDEAutoStart(cwd string) {
 
 func handleInit(cwd string, ad adapter.CLIAdapter) {
 	fs := flag.NewFlagSet("init", flag.ExitOnError)
+	mode := fs.String("mode", "greenfield", "init mode: greenfield|brownfield")
 	interfaces := fs.String("interfaces", "", "comma-separated interface ids")
 	featureID := fs.String("feature-id", "", "feature id for long-running stability")
 	syncLevel := fs.String("sync-level", "", "sync level (0|1|2)")
 	mapTokens := fs.Int("map-tokens", 0, "repository map token budget")
 	mapRefresh := fs.Int("map-refresh", 0, "repository map refresh seconds")
+	mergeStrategy := fs.String("merge-strategy", "", "brownfield merge strategy: append|include|replace")
+	agentsMode := fs.String("agents-mode", "", "brownfield agents mode: append|include|generate")
+	noOverwrite := fs.Bool("no-overwrite", false, "brownfield: never overwrite existing user-managed files")
 	noHook := fs.Bool("no-hook", false, "skip hook install")
 	_ = fs.Parse(os.Args[2:])
 
 	self, _ := os.Executable()
-	if err := wrapper.Install(self); err != nil {
-		fmt.Fprintln(os.Stderr, "init failed at wrap install:", err)
-		os.Exit(1)
+
+	resolvedMode := strings.TrimSpace(strings.ToLower(*mode))
+	if resolvedMode == "" {
+		resolvedMode = "greenfield"
 	}
-	if !*noHook {
-		if err := hooks.Install(self); err != nil {
-			fmt.Fprintln(os.Stderr, "init failed at hook install:", err)
-			os.Exit(1)
-		}
-	}
-	if changed, path, err := ide.Install(cwd); err != nil {
-		fmt.Fprintln(os.Stderr, "init failed at ide autostart install:", err)
-		os.Exit(1)
-	} else if changed {
-		fmt.Printf("ide autostart installed: %s\n", path)
+	if resolvedMode != "greenfield" && resolvedMode != "brownfield" {
+		fmt.Fprintln(os.Stderr, "init: --mode must be greenfield|brownfield")
+		os.Exit(2)
 	}
 
-	res, err := core.Start(cwd, ad, core.StartFlags{Interfaces: *interfaces, FeatureID: *featureID, SyncLevel: *syncLevel, MapTokens: *mapTokens, MapRefresh: *mapRefresh})
+	resolvedInterfaces := *interfaces
+	if resolvedMode == "brownfield" {
+		merge, agents, err := normalizeBrownfieldModes(*mergeStrategy, *agentsMode)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "init:", err)
+			os.Exit(2)
+		}
+
+		c, _, err := contract.LoadOrInit(cwd)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "init failed at contract load:", err)
+			os.Exit(1)
+		}
+		c = contract.CanonicalizeBoundary(c)
+		if c.Extensions == nil {
+			def := contract.Default(cwd)
+			c.Extensions = def.Extensions
+		}
+		if c.Extensions.Agents == nil {
+			c.Extensions.Agents = &contract.AgentsExtension{Mode: "append", AppendFile: ".atrakta/AGENTS.append.md"}
+		}
+		c.Extensions.MergeMode = merge
+		c.Extensions.Agents.Mode = agents
+		if strings.TrimSpace(c.Extensions.Agents.AppendFile) == "" {
+			c.Extensions.Agents.AppendFile = ".atrakta/AGENTS.append.md"
+		}
+		cb, err := contract.Save(cwd, c)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "init failed at contract save:", err)
+			os.Exit(1)
+		}
+
+		targetIDs := resolveInitInterfaces(*interfaces, c)
+		resolvedInterfaces = strings.Join(targetIDs, ",")
+		sourceAGENTS, _, err := bootstrap.EnsureRootAGENTSWithMode(cwd, agents, c.Extensions.Agents.AppendFile)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "init failed at AGENTS preparation:", err)
+			os.Exit(1)
+		}
+		detection, err := brownfield.Detect(cwd)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "init failed at brownfield detection:", err)
+			os.Exit(1)
+		}
+		reg := registry.ApplyOverrides(registry.Default(), c)
+		desired, err := projection.RequiredForTargets(cwd, c, reg, targetIDs, contract.ContractHash(cb), sourceAGENTS)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "init failed at projection planning:", err)
+			os.Exit(1)
+		}
+		conflicts, err := brownfield.FindConflicts(cwd, desired, *noOverwrite)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "init failed at conflict detection:", err)
+			os.Exit(1)
+		}
+		if *noOverwrite && len(conflicts) > 0 {
+			patchPath, err := brownfield.WriteProposalPatch(cwd, brownfield.ProposalInput{
+				Mode:          "brownfield",
+				MergeStrategy: merge,
+				AgentsMode:    agents,
+				NoOverwrite:   true,
+				Interfaces:    targetIDs,
+				Detection:     detection,
+				Conflicts:     conflicts,
+			})
+			if err != nil {
+				fmt.Fprintln(os.Stderr, "init failed at proposal generation:", err)
+				os.Exit(1)
+			}
+			fmt.Printf("brownfield init: overwrite risk detected (%d file(s)); proposal saved: %s\n", len(conflicts), patchPath)
+			fmt.Println("brownfield init completed without overwrite")
+			return
+		}
+		if *noOverwrite {
+			fmt.Println("brownfield init: --no-overwrite active; skipping wrapper/hook/ide auto-install")
+		}
+	}
+
+	if !(resolvedMode == "brownfield" && *noOverwrite) {
+		if err := wrapper.Install(self); err != nil {
+			fmt.Fprintln(os.Stderr, "init failed at wrap install:", err)
+			os.Exit(1)
+		}
+		if !*noHook {
+			if err := hooks.Install(self); err != nil {
+				fmt.Fprintln(os.Stderr, "init failed at hook install:", err)
+				os.Exit(1)
+			}
+		}
+		if changed, path, err := ide.Install(cwd); err != nil {
+			fmt.Fprintln(os.Stderr, "init failed at ide autostart install:", err)
+			os.Exit(1)
+		} else if changed {
+			fmt.Printf("ide autostart installed: %s\n", path)
+		}
+	}
+
+	res, err := core.Start(cwd, ad, core.StartFlags{Interfaces: resolvedInterfaces, FeatureID: *featureID, SyncLevel: *syncLevel, MapTokens: *mapTokens, MapRefresh: *mapRefresh})
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		if strings.HasPrefix(strings.ToLower(strings.TrimSpace(err.Error())), "blocked:") {
@@ -303,6 +400,72 @@ func handleInit(cwd string, ad adapter.CLIAdapter) {
 		os.Exit(code)
 	}
 	maybeScheduleAutoGC(cwd, res.Step)
+}
+
+func normalizeBrownfieldModes(mergeStrategy, agentsMode string) (string, string, error) {
+	merge := strings.TrimSpace(strings.ToLower(mergeStrategy))
+	if merge == "" {
+		merge = "append"
+	}
+	switch merge {
+	case "append", "include", "replace":
+	default:
+		return "", "", fmt.Errorf("--merge-strategy must be append|include|replace")
+	}
+
+	agents := strings.TrimSpace(strings.ToLower(agentsMode))
+	if agents == "" {
+		switch merge {
+		case "include":
+			agents = "include"
+		case "replace":
+			agents = "generate"
+		default:
+			agents = "append"
+		}
+	}
+	switch agents {
+	case "append", "include", "generate":
+	default:
+		return "", "", fmt.Errorf("--agents-mode must be append|include|generate")
+	}
+	return merge, agents, nil
+}
+
+func resolveInitInterfaces(raw string, c contract.Contract) []string {
+	raw = strings.TrimSpace(raw)
+	sup := contract.SupportedSet(c)
+	out := make([]string, 0)
+	seen := map[string]struct{}{}
+	add := func(id string) {
+		id = strings.TrimSpace(id)
+		if id == "" {
+			return
+		}
+		if _, ok := sup[id]; !ok {
+			return
+		}
+		if _, ok := seen[id]; ok {
+			return
+		}
+		seen[id] = struct{}{}
+		out = append(out, id)
+	}
+	if raw != "" {
+		for _, part := range strings.Split(raw, ",") {
+			add(part)
+		}
+	}
+	if len(out) == 0 {
+		for _, id := range c.Interfaces.CoreSet {
+			add(id)
+		}
+	}
+	if len(out) == 0 {
+		add("cursor")
+	}
+	sort.Strings(out)
+	return out
 }
 
 func handleWrap() {
@@ -532,7 +695,7 @@ func usage() {
 	cmd := cmdName()
 	fmt.Printf("%s commands:\n", cmd)
 	fmt.Printf("  %s start [--interfaces <id,id,...>] [--feature-id <id>] [--sync-level <0|1|2>] [--map-tokens <n>] [--map-refresh <sec>]\n", cmd)
-	fmt.Printf("  %s init [--interfaces <id,id,...>] [--feature-id <id>] [--sync-level <0|1|2>] [--map-tokens <n>] [--map-refresh <sec>] [--no-hook]\n", cmd)
+	fmt.Printf("  %s init [--mode <greenfield|brownfield>] [--interfaces <id,id,...>] [--feature-id <id>] [--sync-level <0|1|2>] [--map-tokens <n>] [--map-refresh <sec>] [--merge-strategy <append|include|replace>] [--agents-mode <append|include|generate>] [--no-overwrite] [--no-hook]\n", cmd)
 	fmt.Printf("  %s doctor [--sync-proposal] [--apply-sync] [--sync-level <0|1|2>] [--parity] [--json]\n", cmd)
 	fmt.Printf("  %s gc [--scope <tmp,events>] [--apply] [--auto]\n", cmd)
 	fmt.Printf("  %s wrap install\n", cmd)
