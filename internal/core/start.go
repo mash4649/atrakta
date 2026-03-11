@@ -294,6 +294,7 @@ func Start(repoRoot string, ad adapter.Adapter, flags StartFlags) (StartResult, 
 	if flags.SyncLevel == "" {
 		level = syncpolicy.ParseLevel(os.Getenv("ATRAKTA_SYNC_LEVEL"))
 	}
+	strictMode := level == syncpolicy.Level2 || os.Getenv("ATRAKTA_STRICT") == "1"
 	if level == syncpolicy.Level1 {
 		sp, _, err := syncpolicy.ProposeFromAGENTS(c, sourceAGENTS)
 		if err == nil && sp.Needed {
@@ -693,7 +694,7 @@ func Start(repoRoot string, ad adapter.Adapter, flags StartFlags) (StartResult, 
 		Quality:                 c.Quality,
 		FeatureID:               featureID,
 		Progress:                pgr,
-		Strict:                  level == syncpolicy.Level2 || os.Getenv("ATRAKTA_STRICT") == "1",
+		Strict:                  strictMode,
 		RouteQuality:            routeDecision.Quality,
 		SubworkerEnabled:        metrics.Enabled,
 		SubworkerTokenEstimate:  metrics.TotalTokenEstimate,
@@ -736,6 +737,49 @@ func Start(repoRoot string, ad adapter.Adapter, flags StartFlags) (StartResult, 
 		SourceHash:     manifestResult.SourceHash,
 		RenderHash:     manifestResult.RenderHash,
 		Status:         "ok",
+	}
+	if strictMode {
+		parityReport, parityErr := doctor.RunParity(repoRoot)
+		integrationReport, integrationErr := doctor.RunIntegration(repoRoot)
+		blockingReasons := strictRuntimeBlockingReasons(parityReport, parityErr, integrationReport, integrationErr)
+		if len(blockingReasons) > 0 {
+			st2.Integration = &state.IntegrationState{
+				LastCheckedAt:   now,
+				LastResult:      "blocked",
+				BlockingReasons: append([]string{}, blockingReasons...),
+			}
+			_ = state.Save(repoRoot, st2)
+			_, _ = events.Append(repoRoot, events.EventIntegrationBlocked, "orchestrator", map[string]any{
+				"feature_id":          featureID,
+				"reason":              "strict_runtime_check_failed",
+				"blocking_reasons":    blockingReasons,
+				"parity_outcome":      parityReport.Outcome,
+				"integration_outcome": integrationReport.Outcome,
+			})
+			next := model.NextAction{
+				Kind:    "blocked",
+				Hint:    "strict parity/integration checks failed",
+				Command: "atrakta doctor --parity --json",
+			}
+			strictGate := gt
+			strictGate.Quick = model.GateFail
+			strictGate.Reason = "strict parity/integration checks failed"
+			step := model.StepEvent{
+				ActorRole:  "worker",
+				TaskID:     featureID,
+				Outcome:    "BLOCKED",
+				Gate:       strictGate,
+				NextAction: next,
+			}
+			_, _ = events.Append(repoRoot, "step", "worker", structToMap(step))
+			cp.Stage = "blocked"
+			cp.Outcome = "blocked"
+			cp.Reason = strings.Join(blockingReasons, "; ")
+			writeCheckpointBestEffort(repoRoot, ad, cp)
+			ad.NotifyBlocked("strict parity/integration checks failed")
+			ad.PresentNextAction(next)
+			return StartResult{Detect: det, Plan: pl, Apply: ap, Gate: strictGate, Step: step}, fmt.Errorf("blocked: strict parity/integration checks failed")
+		}
 	}
 	st2.Integration = &state.IntegrationState{
 		LastCheckedAt: now,
@@ -897,6 +941,55 @@ func managedArtifactsIntact(repoRoot string) bool {
 		}
 	}
 	return true
+}
+
+var strictParityWarningBlockCodes = map[string]struct{}{
+	"extension_manifest_missing": {},
+	"extension_projection_drift": {},
+}
+
+var strictIntegrationWarningBlockCodes = map[string]struct{}{
+	"include_missing": {},
+}
+
+func strictRuntimeBlockingReasons(parity doctor.ParityReport, parityErr error, integration doctor.IntegrationReport, integrationErr error) []string {
+	reasons := make([]string, 0, 8)
+	seen := map[string]struct{}{}
+	add := func(reason string) {
+		reason = strings.TrimSpace(reason)
+		if reason == "" {
+			return
+		}
+		if _, ok := seen[reason]; ok {
+			return
+		}
+		seen[reason] = struct{}{}
+		reasons = append(reasons, reason)
+	}
+	if parityErr != nil {
+		add("parity.check_failed: " + parityErr.Error())
+	}
+	for _, f := range parity.BlockingIssues {
+		add("parity." + strings.TrimSpace(f.Code) + ": " + strings.TrimSpace(f.Message))
+	}
+	for _, f := range parity.Warnings {
+		if _, ok := strictParityWarningBlockCodes[strings.TrimSpace(f.Code)]; ok {
+			add("parity." + strings.TrimSpace(f.Code) + ": " + strings.TrimSpace(f.Message))
+		}
+	}
+	if integrationErr != nil {
+		add("integration.check_failed: " + integrationErr.Error())
+	}
+	for _, f := range integration.BlockingIssues {
+		add("integration." + strings.TrimSpace(f.Code) + ": " + strings.TrimSpace(f.Message))
+	}
+	for _, f := range integration.Warnings {
+		if _, ok := strictIntegrationWarningBlockCodes[strings.TrimSpace(f.Code)]; ok {
+			add("integration." + strings.TrimSpace(f.Code) + ": " + strings.TrimSpace(f.Message))
+		}
+	}
+	sort.Strings(reasons)
+	return reasons
 }
 
 func shouldPromptForInterface() bool {
