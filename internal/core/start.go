@@ -464,6 +464,10 @@ func Start(repoRoot string, ad adapter.Adapter, flags StartFlags) (StartResult, 
 		ad.NotifyBlocked(err.Error())
 		return StartResult{}, err
 	}
+	ext := projection.ExtensionDesired(projection.BuildCanonicalModel(c, contractHash, sourceAGENTS))
+	if len(ext) > 0 {
+		projections = append(projections, ext...)
+	}
 	swPlan := subworker.BuildPhaseA(det, projections, subworker.ResolveConfig(c))
 	swPlan, budgetReport := subworker.ApplyBudgetGuard(swPlan, c.TokenBudget)
 	initialEvents := []events.AppendInput{

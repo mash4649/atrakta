@@ -108,3 +108,60 @@ func TestReadStatusHandlesMissingAndExistingManifests(t *testing.T) {
 		t.Fatalf("expected 1 projection entry, got %d", len(st1.Projection.Entries))
 	}
 }
+
+func TestUpdateFromApplyUpdatesExtensionManifestEntries(t *testing.T) {
+	repo := t.TempDir()
+	ap1 := model.ApplyResult{Ops: []model.OpResult{
+		{
+			Path:        ".atrakta/extensions/plugins/demo.md",
+			Op:          "copy",
+			Status:      "ok",
+			Interface:   "extensions",
+			TemplateID:  "extensions:plugin:demo@1",
+			Kind:        "copy",
+			Fingerprint: "sha256:ext1",
+		},
+		{
+			Path:        ".atrakta/extensions/hooks/shell.on_cd.md",
+			Op:          "copy",
+			Status:      "ok",
+			Interface:   "extensions",
+			TemplateID:  "extensions:hook:shell.on_cd@1",
+			Kind:        "copy",
+			Fingerprint: "sha256:ext2",
+		},
+	}}
+	res, err := UpdateFromApply(repo, ap1, "sha256:source1")
+	if err != nil {
+		t.Fatalf("update manifest with extensions failed: %v", err)
+	}
+	if res.ExtensionEntries != 2 {
+		t.Fatalf("expected 2 extension entries, got %d", res.ExtensionEntries)
+	}
+
+	status, err := ReadStatus(repo)
+	if err != nil {
+		t.Fatalf("read status failed: %v", err)
+	}
+	if len(status.Extension.Entries) != 2 {
+		t.Fatalf("expected 2 extension manifest entries, got %d", len(status.Extension.Entries))
+	}
+
+	ap2 := model.ApplyResult{Ops: []model.OpResult{
+		{
+			Path:       ".atrakta/extensions/plugins/demo.md",
+			Op:         "delete",
+			Status:     "ok",
+			Interface:  "extensions",
+			TemplateID: "extensions:plugin:demo@1",
+			Kind:       "copy",
+		},
+	}}
+	res2, err := UpdateFromApply(repo, ap2, "sha256:source2")
+	if err != nil {
+		t.Fatalf("delete extension manifest entry failed: %v", err)
+	}
+	if res2.ExtensionEntries != 1 {
+		t.Fatalf("expected 1 extension entry after delete, got %d", res2.ExtensionEntries)
+	}
+}

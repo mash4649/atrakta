@@ -14,6 +14,7 @@ import (
 	"atrakta/internal/core"
 	"atrakta/internal/doctor"
 	"atrakta/internal/events"
+	"atrakta/internal/manifest"
 	"atrakta/internal/model"
 	"atrakta/internal/projection"
 	"atrakta/internal/state"
@@ -143,6 +144,41 @@ func TestIncludeModeKeepsRootAGENTSAndWritesAppendFile(t *testing.T) {
 		t.Fatalf("include mode should not rewrite root AGENTS")
 	}
 	mustExist(t, filepath.Join(repo, ".atrakta", "AGENTS.append.md"))
+}
+
+func TestStartRendersExtensionFallbackProjectionsAndManifest(t *testing.T) {
+	repo := t.TempDir()
+	mustWrite(t, filepath.Join(repo, "AGENTS.md"), "# Existing\n")
+	c := contract.Default(repo)
+	on := true
+	c.Extensions.Plugins = []contract.ExtensionEntry{{ID: "demo-plugin"}}
+	c.Extensions.MCP = []contract.ExtensionEntry{{ID: "demo-mcp"}}
+	c.Extensions.Skills = []contract.ExtensionEntry{{ID: "demo-skill"}}
+	c.Extensions.Workflows = []contract.ExtensionEntry{{ID: "demo-workflow"}}
+	if c.Extensions.Hooks == nil {
+		c.Extensions.Hooks = &contract.HooksExtension{}
+	}
+	c.Extensions.Hooks.Shell = &contract.ShellHooks{OnCD: &on}
+	if _, err := contract.Save(repo, c); err != nil {
+		t.Fatalf("save contract failed: %v", err)
+	}
+
+	if _, err := core.Start(repo, testAdapter{}, core.StartFlags{Interfaces: "cursor"}); err != nil {
+		t.Fatalf("start failed: %v", err)
+	}
+	mustExist(t, filepath.Join(repo, ".extensions", "plugins", "demo-plugin.md"))
+	mustExist(t, filepath.Join(repo, ".extensions", "mcp", "demo-mcp.md"))
+	mustExist(t, filepath.Join(repo, ".extensions", "skills", "demo-skill.md"))
+	mustExist(t, filepath.Join(repo, ".extensions", "workflows", "demo-workflow.md"))
+	mustExist(t, filepath.Join(repo, ".extensions", "hooks", "shell.on_cd.md"))
+
+	st, err := manifest.ReadStatus(repo)
+	if err != nil {
+		t.Fatalf("read manifest status failed: %v", err)
+	}
+	if len(st.Extension.Entries) == 0 {
+		t.Fatalf("expected extension manifest entries to be recorded")
+	}
 }
 
 func TestAutoCreatesRootAGENTSWhenMissing(t *testing.T) {

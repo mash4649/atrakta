@@ -92,6 +92,9 @@ func optionalTemplates(repoRoot string, c contract.Contract, id, projectionDir, 
 }
 
 func SyntheticTemplateContent(templateID string) (string, bool) {
+	if content, ok := ExtensionContent(templateID); ok {
+		return content, true
+	}
 	switch {
 	case strings.HasSuffix(templateID, ":atrakta-link@1"):
 		return "ATRAKTA-LINK\n", true

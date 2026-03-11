@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"atrakta/internal/model"
+	"atrakta/internal/projection"
 	"atrakta/internal/util"
 )
 
@@ -107,7 +108,48 @@ func UpdateFromApply(repoRoot string, ap model.ApplyResult, sourceHash string) (
 	if err != nil {
 		return UpdateResult{}, err
 	}
+	entryByExtKey := make(map[string]model.ExtensionManifestEntry, len(em.Entries))
+	for _, e := range em.Entries {
+		if strings.TrimSpace(e.Kind) == "" || strings.TrimSpace(e.ID) == "" {
+			continue
+		}
+		entryByExtKey[extensionKey(e.Kind, e.ID)] = e
+	}
+	for _, op := range ap.Ops {
+		kind, id, ok := projection.ParseExtensionTemplateID(op.TemplateID)
+		if !ok {
+			continue
+		}
+		key := extensionKey(kind, id)
+		switch op.Op {
+		case "delete", "unlink":
+			delete(entryByExtKey, key)
+		default:
+			if op.Status != "ok" && op.Status != "skipped" {
+				continue
+			}
+			entryByExtKey[key] = model.ExtensionManifestEntry{
+				Kind:       kind,
+				ID:         id,
+				Files:      []string{op.Path},
+				SourceHash: sourceHash,
+				RenderHash: op.Fingerprint,
+				Status:     op.Status,
+				UpdatedAt:  now,
+			}
+		}
+	}
 	em.V = 1
+	em.Entries = make([]model.ExtensionManifestEntry, 0, len(entryByExtKey))
+	for _, e := range entryByExtKey {
+		em.Entries = append(em.Entries, e)
+	}
+	sort.Slice(em.Entries, func(i, j int) bool {
+		if em.Entries[i].Kind != em.Entries[j].Kind {
+			return em.Entries[i].Kind < em.Entries[j].Kind
+		}
+		return em.Entries[i].ID < em.Entries[j].ID
+	})
 	if err := saveExtensionManifest(repoRoot, em); err != nil {
 		return UpdateResult{}, err
 	}
@@ -158,6 +200,10 @@ func ReadStatus(repoRoot string) (Status, error) {
 
 func projectionKey(iface, kind, path string) string {
 	return iface + "|" + kind + "|" + util.NormalizeRelPath(path)
+}
+
+func extensionKey(kind, id string) string {
+	return strings.TrimSpace(strings.ToLower(kind)) + "|" + strings.TrimSpace(id)
 }
 
 func normalizeKind(kind, op string) string {
