@@ -181,7 +181,17 @@ func Start(repoRoot string, ad adapter.Adapter, flags StartFlags) (StartResult, 
 		return StartResult{}, err
 	}
 
-	_, createdAgents, err := bootstrap.EnsureRootAGENTS(repoRoot)
+	agentsMode := "append"
+	agentsAppendFile := ".atrakta/AGENTS.append.md"
+	if c.Extensions != nil && c.Extensions.Agents != nil {
+		if strings.TrimSpace(c.Extensions.Agents.Mode) != "" {
+			agentsMode = c.Extensions.Agents.Mode
+		}
+		if strings.TrimSpace(c.Extensions.Agents.AppendFile) != "" {
+			agentsAppendFile = c.Extensions.Agents.AppendFile
+		}
+	}
+	_, createdAgents, err := bootstrap.EnsureRootAGENTSWithMode(repoRoot, agentsMode, agentsAppendFile)
 	if err != nil {
 		ad.NotifyBlocked("failed to initialize AGENTS.md")
 		return StartResult{}, err

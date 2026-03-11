@@ -77,6 +77,11 @@ func TestCodexStartCreatesConfigProjectionWithoutOverwritingAGENTS(t *testing.T)
 	repo := t.TempDir()
 	agents := "human constitution\n"
 	mustWrite(t, filepath.Join(repo, "AGENTS.md"), agents)
+	c := contract.Default(repo)
+	c.Extensions.Agents.Mode = "generate"
+	if _, err := contract.Save(repo, c); err != nil {
+		t.Fatalf("save contract failed: %v", err)
+	}
 
 	_, err := core.Start(repo, testAdapter{}, core.StartFlags{Interfaces: "codex_cli"})
 	if err != nil {
@@ -90,6 +95,54 @@ func TestCodexStartCreatesConfigProjectionWithoutOverwritingAGENTS(t *testing.T)
 	if string(b) != agents {
 		t.Fatalf("AGENTS.md was unexpectedly changed")
 	}
+}
+
+func TestAppendModeAddsManagedBlockWithoutDuplication(t *testing.T) {
+	repo := t.TempDir()
+	agentsPath := filepath.Join(repo, "AGENTS.md")
+	mustWrite(t, agentsPath, "# Existing\n")
+	c := contract.Default(repo)
+	c.Extensions.Agents.Mode = "append"
+	if _, err := contract.Save(repo, c); err != nil {
+		t.Fatalf("save contract failed: %v", err)
+	}
+	if _, err := core.Start(repo, testAdapter{}, core.StartFlags{Interfaces: "cursor"}); err != nil {
+		t.Fatalf("first start failed: %v", err)
+	}
+	if _, err := core.Start(repo, testAdapter{}, core.StartFlags{Interfaces: "cursor"}); err != nil {
+		t.Fatalf("second start failed: %v", err)
+	}
+	b, err := os.ReadFile(agentsPath)
+	if err != nil {
+		t.Fatalf("read AGENTS failed: %v", err)
+	}
+	text := string(b)
+	if strings.Count(text, "<!-- ATRAKTA_MANAGED:START -->") != 1 {
+		t.Fatalf("managed block duplicated in append mode")
+	}
+}
+
+func TestIncludeModeKeepsRootAGENTSAndWritesAppendFile(t *testing.T) {
+	repo := t.TempDir()
+	agents := "# Existing\n"
+	mustWrite(t, filepath.Join(repo, "AGENTS.md"), agents)
+	c := contract.Default(repo)
+	c.Extensions.Agents.Mode = "include"
+	c.Extensions.Agents.AppendFile = ".atrakta/AGENTS.append.md"
+	if _, err := contract.Save(repo, c); err != nil {
+		t.Fatalf("save contract failed: %v", err)
+	}
+	if _, err := core.Start(repo, testAdapter{}, core.StartFlags{Interfaces: "cursor"}); err != nil {
+		t.Fatalf("start failed: %v", err)
+	}
+	b, err := os.ReadFile(filepath.Join(repo, "AGENTS.md"))
+	if err != nil {
+		t.Fatalf("read AGENTS failed: %v", err)
+	}
+	if string(b) != agents {
+		t.Fatalf("include mode should not rewrite root AGENTS")
+	}
+	mustExist(t, filepath.Join(repo, ".atrakta", "AGENTS.append.md"))
 }
 
 func TestAutoCreatesRootAGENTSWhenMissing(t *testing.T) {

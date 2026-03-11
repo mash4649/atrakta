@@ -83,7 +83,17 @@ func Run(repoRoot string, sourceAGENTS string) (Report, state.State, error) {
 			}
 		}
 	}
-	if _, _, err := bootstrap.EnsureRootAGENTS(repoRoot); err != nil {
+	agentsMode := "append"
+	agentsAppendFile := ".atrakta/AGENTS.append.md"
+	if c.Extensions != nil && c.Extensions.Agents != nil {
+		if strings.TrimSpace(c.Extensions.Agents.Mode) != "" {
+			agentsMode = c.Extensions.Agents.Mode
+		}
+		if strings.TrimSpace(c.Extensions.Agents.AppendFile) != "" {
+			agentsAppendFile = c.Extensions.Agents.AppendFile
+		}
+	}
+	if _, _, err := bootstrap.EnsureRootAGENTSWithMode(repoRoot, agentsMode, agentsAppendFile); err != nil {
 		return Report{
 			Outcome: "BLOCKED",
 			Reason:  "AGENTS initialization failed",

@@ -64,7 +64,17 @@ func RunParity(repoRoot string) (ParityReport, error) {
 	}
 	c = contract.CanonicalizeBoundary(c)
 
-	_, _, _ = bootstrap.EnsureRootAGENTS(repoRoot)
+	agentsMode := "append"
+	agentsAppendFile := ".atrakta/AGENTS.append.md"
+	if c.Extensions != nil && c.Extensions.Agents != nil {
+		if strings.TrimSpace(c.Extensions.Agents.Mode) != "" {
+			agentsMode = c.Extensions.Agents.Mode
+		}
+		if strings.TrimSpace(c.Extensions.Agents.AppendFile) != "" {
+			agentsAppendFile = c.Extensions.Agents.AppendFile
+		}
+	}
+	_, _, _ = bootstrap.EnsureRootAGENTSWithMode(repoRoot, agentsMode, agentsAppendFile)
 	sourceAGENTS, _, ctxErr := agentsctx.Resolve(agentsctx.ResolveInput{
 		RepoRoot: repoRoot,
 		StartDir: repoRoot,

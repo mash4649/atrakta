@@ -123,7 +123,22 @@ func handleDoctor(cwd string, ad adapter.CLIAdapter) {
 		return
 	}
 
-	src, created, err := bootstrap.EnsureRootAGENTS(cwd)
+	c, _, err := contract.LoadOrInit(cwd)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "failed to load contract:", err)
+		os.Exit(1)
+	}
+	agentsMode := "append"
+	agentsAppendFile := ".atrakta/AGENTS.append.md"
+	if c.Extensions != nil && c.Extensions.Agents != nil {
+		if strings.TrimSpace(c.Extensions.Agents.Mode) != "" {
+			agentsMode = c.Extensions.Agents.Mode
+		}
+		if strings.TrimSpace(c.Extensions.Agents.AppendFile) != "" {
+			agentsAppendFile = c.Extensions.Agents.AppendFile
+		}
+	}
+	src, created, err := bootstrap.EnsureRootAGENTSWithMode(cwd, agentsMode, agentsAppendFile)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "failed to initialize AGENTS.md:", err)
 		os.Exit(1)
@@ -137,11 +152,6 @@ func handleDoctor(cwd string, ad adapter.CLIAdapter) {
 		level = syncpolicy.ParseLevel(os.Getenv("ATRAKTA_SYNC_LEVEL"))
 	}
 	if *syncProposal || level == syncpolicy.Level1 {
-		c, _, err := contract.LoadOrInit(cwd)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "failed to load contract:", err)
-			os.Exit(1)
-		}
 		resolvedSrc, _, err := agentsctx.Resolve(agentsctx.ResolveInput{
 			RepoRoot: cwd,
 			StartDir: cwd,
