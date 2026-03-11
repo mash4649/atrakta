@@ -13,6 +13,7 @@
 - `02_仕様`: CLI仕様、実行フロー、データモデル、同期ポリシー、Parity Contract、Extension Surface
 - `03_運用`: 導入手順、日常運用、トラブル対応
   - Brownfield導入
+  - リリースチェックリスト（完了条件ゲート）
   - 配布手順（バイナリ配布前提）
   - GitHub Issue登録（実装バックログ一括投入）
 - `04_品質`: テスト、ベンチマーク、Parity検証、Extension検証
@@ -25,11 +26,12 @@
 4. `02_仕様/07_Extension Surface.md`
 5. `03_運用/01_導入手順.md`
 6. `03_運用/07_Brownfield導入.md`
-7. `03_運用/08_GitHub_Issue登録.md`
-8. `04_品質/03_Parity検証.md`
-9. `04_品質/04_Extension検証.md`
-10. `04_品質/01_検証コマンド.md`
-11. `../../CHANGELOG.md`
+7. `03_運用/09_リリースチェックリスト.md`
+8. `03_運用/08_GitHub_Issue登録.md`
+9. `04_品質/03_Parity検証.md`
+10. `04_品質/04_Extension検証.md`
+11. `04_品質/01_検証コマンド.md`
+12. `../../CHANGELOG.md`
 
 ## 整理ポリシー
 
