@@ -32,6 +32,7 @@ func DefaultEngine() Engine {
 		defaultRenderer: agentsRenderer{},
 		interfaceRenderers: map[string]Renderer{
 			"claude_code": claudeRenderer{},
+			"codex_cli":   codexRenderer{},
 		},
 	}
 }
@@ -179,6 +180,38 @@ func (claudeRenderer) Render(repoRoot string, model CanonicalModel, interfaceID,
 			Fingerprint: Fingerprint(model.ContractHash, item.templateID, contentHash),
 		})
 	}
+	sortDesired(out)
+	return out, nil
+}
+
+type codexRenderer struct{}
+
+func (codexRenderer) Render(repoRoot string, model CanonicalModel, interfaceID, projectionDir string) ([]Desired, error) {
+	agentsHash := model.SourceHash["AGENTS.md"]
+	if agentsHash == "" {
+		agentsHash = util.SHA256Tagged([]byte(util.NormalizeContentLF(model.SourceText["AGENTS.md"])))
+	}
+	out := []Desired{
+		{
+			Interface:   interfaceID,
+			TemplateID:  interfaceID + ":agents-md@1",
+			Path:        "AGENTS.md",
+			Source:      "AGENTS.md",
+			Target:      "AGENTS.md",
+			Fingerprint: Fingerprint(model.ContractHash, interfaceID+":agents-md@1", agentsHash),
+		},
+	}
+	configTemplateID := interfaceID + ":config-toml@1"
+	content, _ := SyntheticTemplateContent(configTemplateID)
+	contentHash := util.SHA256Tagged([]byte(content))
+	out = append(out, Desired{
+		Interface:   interfaceID,
+		TemplateID:  configTemplateID,
+		Path:        ".codex/config.toml",
+		Source:      "AGENTS.md",
+		Target:      "",
+		Fingerprint: Fingerprint(model.ContractHash, configTemplateID, contentHash),
+	})
 	sortDesired(out)
 	return out, nil
 }

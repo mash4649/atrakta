@@ -126,6 +126,13 @@ Follow [AGENTS.md](mdc:../../AGENTS.md) and keep parity with Atrakta projections
 
 This file is managed by Atrakta projection and follows the root AGENTS contract.
 `) + "\n", true
+	case strings.HasSuffix(templateID, ":config-toml@1") && strings.HasPrefix(templateID, "codex_cli:"):
+		return strings.TrimSpace(`
+# Atrakta managed Codex config
+[atrakta]
+managed = true
+instruction_source = "AGENTS.md"
+`) + "\n", true
 	default:
 		return "", false
 	}

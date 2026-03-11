@@ -127,3 +127,28 @@ func TestClaudeRendererProducesNativeTargets(t *testing.T) {
 		}
 	}
 }
+
+func TestCodexRendererProducesNativeTargets(t *testing.T) {
+	repo := t.TempDir()
+	c := contract.Default(repo)
+	model := BuildCanonicalModel(c, "sha256:contract", "# root\n")
+	reg := registry.Default()
+	rows, err := DefaultEngine().RenderTargets(repo, model, reg, []string{"codex_cli"})
+	if err != nil {
+		t.Fatalf("render codex targets failed: %v", err)
+	}
+	want := map[string]bool{
+		"AGENTS.md":          false,
+		".codex/config.toml": false,
+	}
+	for _, r := range rows {
+		if _, ok := want[r.Path]; ok {
+			want[r.Path] = true
+		}
+	}
+	for p, ok := range want {
+		if !ok {
+			t.Fatalf("missing codex projection path: %s (rows=%#v)", p, rows)
+		}
+	}
+}

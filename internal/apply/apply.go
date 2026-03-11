@@ -567,7 +567,11 @@ func probeAdoptSatisfaction(repoRoot string, op model.Operation, resolver *sourc
 	if err != nil {
 		return "", false
 	}
-	if util.NormalizeContentLF(string(b)) == content {
+	got := util.NormalizeContentLF(string(b))
+	if got == content {
+		return "copy", true
+	}
+	if util.NormalizeRelPath(op.Path) == util.NormalizeRelPath(op.Source) && got == util.NormalizeContentLF(sourceText) {
 		return "copy", true
 	}
 	return "", false

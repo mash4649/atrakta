@@ -73,6 +73,25 @@ func TestClaudeStartCreatesNativeProjectionFiles(t *testing.T) {
 	mustExist(t, filepath.Join(repo, ".claude", "agents", "atrakta.md"))
 }
 
+func TestCodexStartCreatesConfigProjectionWithoutOverwritingAGENTS(t *testing.T) {
+	repo := t.TempDir()
+	agents := "human constitution\n"
+	mustWrite(t, filepath.Join(repo, "AGENTS.md"), agents)
+
+	_, err := core.Start(repo, testAdapter{}, core.StartFlags{Interfaces: "codex_cli"})
+	if err != nil {
+		t.Fatalf("start failed: %v", err)
+	}
+	mustExist(t, filepath.Join(repo, ".codex", "config.toml"))
+	b, err := os.ReadFile(filepath.Join(repo, "AGENTS.md"))
+	if err != nil {
+		t.Fatalf("read AGENTS failed: %v", err)
+	}
+	if string(b) != agents {
+		t.Fatalf("AGENTS.md was unexpectedly changed")
+	}
+}
+
 func TestAutoCreatesRootAGENTSWhenMissing(t *testing.T) {
 	repo := t.TempDir()
 	if _, err := core.Start(repo, testAdapter{}, core.StartFlags{Interfaces: "cursor"}); err != nil {

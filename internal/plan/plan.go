@@ -215,7 +215,16 @@ func isEquivalentExistingProjection(repoRoot, rel string, d projection.Desired, 
 	if err != nil {
 		return false
 	}
-	return util.NormalizeContentLF(string(b)) == expected
+	got := util.NormalizeContentLF(string(b))
+	if got == expected {
+		return true
+	}
+	// Allow self-source adoption (e.g. AGENTS.md -> AGENTS.md) without forcing
+	// managed headers onto the canonical source file.
+	if util.NormalizeRelPath(rel) == util.NormalizeRelPath(d.Source) {
+		return got == util.NormalizeContentLF(sourceText)
+	}
+	return false
 }
 
 func loadSourceText(repoRoot string, d projection.Desired, sourceCache map[string]string) (string, bool) {

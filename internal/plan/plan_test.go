@@ -209,3 +209,36 @@ func TestBuildUsesCopyWhenDesiredTargetIsEmpty(t *testing.T) {
 		t.Fatalf("expected copy op for empty target projection, got %s", pl.Ops[0].Op)
 	}
 }
+
+func TestBuildAdoptsSelfSourceProjectionWithoutHeaderRewrite(t *testing.T) {
+	repo := t.TempDir()
+	c := contract.Default(repo)
+	if err := os.WriteFile(filepath.Join(repo, "AGENTS.md"), []byte("# root\n"), 0o644); err != nil {
+		t.Fatalf("write AGENTS failed: %v", err)
+	}
+	d := projection.Desired{
+		Path:        "AGENTS.md",
+		Source:      "AGENTS.md",
+		Target:      "AGENTS.md",
+		Fingerprint: "sha256:codex-agents",
+		Interface:   "codex_cli",
+		TemplateID:  "codex_cli:agents-md@1",
+	}
+	pl, err := Build(Input{
+		RepoRoot:    repo,
+		Contract:    c,
+		Detect:      model.DetectResult{TargetSet: []string{"codex_cli"}, PruneAllowed: false, Reason: model.ReasonExplicit},
+		State:       state.Empty(""),
+		FeatureID:   "feat-codex",
+		Projections: []projection.Desired{d},
+	})
+	if err != nil {
+		t.Fatalf("build failed: %v", err)
+	}
+	if len(pl.Ops) != 1 {
+		t.Fatalf("expected 1 op, got %d", len(pl.Ops))
+	}
+	if pl.Ops[0].Op != "adopt" {
+		t.Fatalf("expected adopt op for self-source projection, got %s", pl.Ops[0].Op)
+	}
+}
