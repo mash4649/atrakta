@@ -13,6 +13,7 @@ import (
 	"atrakta/internal/contract"
 	"atrakta/internal/manifest"
 	"atrakta/internal/model"
+	"atrakta/internal/projection"
 	"atrakta/internal/proof"
 	"atrakta/internal/state"
 	"atrakta/internal/util"
@@ -301,7 +302,7 @@ func validateManagedParity(repoRoot string, st state.State, sourceAGENTS string,
 			Fingerprint: rec.Fingerprint,
 			Target:      rec.Target,
 			TemplateID:  rec.TemplateID,
-			SourceText:  sourceAGENTS,
+			SourceText:  managedSourceForParity(repoRoot, rec, sourceAGENTS),
 		}
 		if exp.Target == "" {
 			exp.Target = "AGENTS.md"
@@ -318,6 +319,19 @@ func validateManagedParity(repoRoot string, st state.State, sourceAGENTS string,
 			})
 		}
 	}
+}
+
+func managedSourceForParity(repoRoot string, rec state.ManagedRecord, sourceAGENTS string) string {
+	if synthetic, ok := projection.SyntheticTemplateContent(strings.TrimSpace(rec.TemplateID)); ok {
+		return synthetic
+	}
+	target := util.NormalizeRelPath(rec.Target)
+	if target != "" {
+		if b, err := os.ReadFile(filepath.Join(repoRoot, filepath.FromSlash(target))); err == nil {
+			return string(b)
+		}
+	}
+	return sourceAGENTS
 }
 
 func validateApprovalSurface(c contract.Contract, report *ParityReport) {

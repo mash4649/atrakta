@@ -8,6 +8,7 @@ import (
 
 	"atrakta/internal/contract"
 	"atrakta/internal/model"
+	"atrakta/internal/projection"
 	"atrakta/internal/state"
 )
 
@@ -183,6 +184,63 @@ func TestRunParityWarnsOutputSurfaceMismatch(t *testing.T) {
 	}
 	if !hasFinding(rep.Warnings, "output_surface_mismatch") {
 		t.Fatalf("expected output_surface_mismatch warning")
+	}
+}
+
+func TestRunParityAcceptsSyntheticJSONManagedCopy(t *testing.T) {
+	repo := t.TempDir()
+	must, ok := projection.SyntheticTemplateContent("claude_code:settings-json@1")
+	if !ok {
+		t.Fatalf("missing synthetic template content")
+	}
+	if err := os.MkdirAll(filepath.Join(repo, ".claude"), 0o755); err != nil {
+		t.Fatalf("mkdir .claude failed: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(repo, ".claude", "settings.json"), []byte(must), 0o644); err != nil {
+		t.Fatalf("write managed file failed: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(repo, "AGENTS.md"), []byte("constitution\n"), 0o644); err != nil {
+		t.Fatalf("write AGENTS failed: %v", err)
+	}
+	if err := os.MkdirAll(filepath.Join(repo, ".atrakta", "projections"), 0o755); err != nil {
+		t.Fatalf("mkdir projections failed: %v", err)
+	}
+	if err := os.MkdirAll(filepath.Join(repo, ".atrakta", "extensions"), 0o755); err != nil {
+		t.Fatalf("mkdir extensions failed: %v", err)
+	}
+	pb, _ := json.MarshalIndent(model.ProjectionManifest{V: 1, Entries: []model.ProjectionManifestEntry{}}, "", "  ")
+	pb = append(pb, '\n')
+	if err := os.WriteFile(filepath.Join(repo, ".atrakta", "projections", "manifest.json"), pb, 0o644); err != nil {
+		t.Fatalf("write projection manifest failed: %v", err)
+	}
+	eb, _ := json.MarshalIndent(model.ExtensionManifest{V: 1, Entries: []model.ExtensionManifestEntry{}}, "", "  ")
+	eb = append(eb, '\n')
+	if err := os.WriteFile(filepath.Join(repo, ".atrakta", "extensions", "manifest.json"), eb, 0o644); err != nil {
+		t.Fatalf("write extension manifest failed: %v", err)
+	}
+	if _, _, err := contract.LoadOrInit(repo); err != nil {
+		t.Fatalf("load/init contract failed: %v", err)
+	}
+	if err := state.Save(repo, state.State{
+		V: 1,
+		ManagedPaths: map[string]state.ManagedRecord{
+			".claude/settings.json": {
+				Interface:   "claude_code",
+				Kind:        "copy",
+				Fingerprint: "sha256:fp",
+				TemplateID:  "claude_code:settings-json@1",
+			},
+		},
+	}); err != nil {
+		t.Fatalf("save state failed: %v", err)
+	}
+
+	rep, err := RunParity(repo)
+	if err != nil {
+		t.Fatalf("run parity failed: %v", err)
+	}
+	if hasFinding(rep.BlockingIssues, "managed_block_corruption") {
+		t.Fatalf("unexpected managed_block_corruption finding: %#v", rep.BlockingIssues)
 	}
 }
 
