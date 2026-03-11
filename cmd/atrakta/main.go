@@ -69,7 +69,7 @@ func main() {
 	case "wrap":
 		handleWrap()
 	case "hook":
-		handleHook()
+		handleHook(cwd)
 	case "ide-autostart":
 		handleIDEAutoStart(cwd)
 	case "init":
@@ -408,7 +408,7 @@ func handleInit(cwd string, ad adapter.CLIAdapter) {
 			os.Exit(1)
 		}
 		if !*noHook {
-			if err := hooks.Install(self); err != nil {
+			if err := hooks.InstallForRepo(cwd, self, nil); err != nil {
 				fmt.Fprintln(os.Stderr, "init failed at hook install:", err)
 				os.Exit(1)
 			}
@@ -537,25 +537,80 @@ func handleWrap() {
 	}
 }
 
-func handleHook() {
+func handleHook(cwd string) {
 	if len(os.Args) < 3 {
-		fmt.Fprintln(os.Stderr, "usage: atrakta hook [install|uninstall]")
+		fmt.Fprintln(os.Stderr, "usage: atrakta hook [install|uninstall|status|repair]")
 		os.Exit(2)
 	}
 	self, _ := os.Executable()
 	switch os.Args[2] {
 	case "install":
-		if err := hooks.Install(self); err != nil {
+		fs := flag.NewFlagSet("hook install", flag.ExitOnError)
+		surface := fs.String("surface", "", "comma-separated surface ids")
+		_ = fs.Parse(os.Args[3:])
+		var surfaces []string
+		if strings.TrimSpace(*surface) != "" {
+			surfaces = []string{*surface}
+		}
+		if err := hooks.InstallForRepo(cwd, self, surfaces); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 	case "uninstall":
-		if err := hooks.Uninstall(); err != nil {
+		fs := flag.NewFlagSet("hook uninstall", flag.ExitOnError)
+		surface := fs.String("surface", "", "comma-separated surface ids")
+		_ = fs.Parse(os.Args[3:])
+		var surfaces []string
+		if strings.TrimSpace(*surface) != "" {
+			surfaces = []string{*surface}
+		}
+		if err := hooks.UninstallForRepo(cwd, surfaces); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+	case "status":
+		fs := flag.NewFlagSet("hook status", flag.ExitOnError)
+		surface := fs.String("surface", "", "comma-separated surface ids")
+		asJSON := fs.Bool("json", false, "print machine-readable output")
+		_ = fs.Parse(os.Args[3:])
+		var surfaces []string
+		if strings.TrimSpace(*surface) != "" {
+			surfaces = []string{*surface}
+		}
+		report, err := hooks.Status(cwd, surfaces)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		if *asJSON {
+			out, _ := json.MarshalIndent(report, "", "  ")
+			fmt.Println(string(out))
+			return
+		}
+		for _, row := range report.Surfaces {
+			state := "missing"
+			if row.Installed {
+				state = "installed"
+			}
+			fmt.Printf("%s: %s\n", row.Surface, state)
+			for _, p := range row.Paths {
+				fmt.Printf("  - %s\n", p)
+			}
+		}
+	case "repair":
+		fs := flag.NewFlagSet("hook repair", flag.ExitOnError)
+		surface := fs.String("surface", "", "comma-separated surface ids")
+		_ = fs.Parse(os.Args[3:])
+		var surfaces []string
+		if strings.TrimSpace(*surface) != "" {
+			surfaces = []string{*surface}
+		}
+		if err := hooks.RepairForRepo(cwd, self, surfaces); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 	default:
-		fmt.Fprintln(os.Stderr, "usage: atrakta hook [install|uninstall]")
+		fmt.Fprintln(os.Stderr, "usage: atrakta hook [install|uninstall|status|repair]")
 		os.Exit(2)
 	}
 }
@@ -735,8 +790,10 @@ func usage() {
 	fmt.Printf("  %s wrap install\n", cmd)
 	fmt.Printf("  %s wrap uninstall\n", cmd)
 	fmt.Printf("  %s wrap run --interface <id> --real <path> -- [args...]\n", cmd)
-	fmt.Printf("  %s hook install\n", cmd)
-	fmt.Printf("  %s hook uninstall\n", cmd)
+	fmt.Printf("  %s hook install [--surface <surface_id,...>]\n", cmd)
+	fmt.Printf("  %s hook uninstall [--surface <surface_id,...>]\n", cmd)
+	fmt.Printf("  %s hook status [--surface <surface_id,...>] [--json]\n", cmd)
+	fmt.Printf("  %s hook repair [--surface <surface_id,...>]\n", cmd)
 	fmt.Printf("  %s ide-autostart [install|uninstall|status]\n", cmd)
 	fmt.Printf("  %s migrate check\n", cmd)
 	fmt.Printf("  %s resume [--interfaces <id,id,...>] [--feature-id <id>] [--sync-level <0|1|2>] [--map-tokens <n>] [--map-refresh <sec>]\n", cmd)
