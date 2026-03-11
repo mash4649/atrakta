@@ -59,6 +59,20 @@ func TestA1StartCreatesOnlyRequiredProjection(t *testing.T) {
 	mustNotExist(t, filepath.Join(repo, ".vscode", "AGENTS.md"))
 }
 
+func TestClaudeStartCreatesNativeProjectionFiles(t *testing.T) {
+	repo := t.TempDir()
+	mustWrite(t, filepath.Join(repo, "AGENTS.md"), "human constitution\n")
+
+	_, err := core.Start(repo, testAdapter{}, core.StartFlags{Interfaces: "claude_code"})
+	if err != nil {
+		t.Fatalf("start failed: %v", err)
+	}
+	mustExist(t, filepath.Join(repo, "CLAUDE.md"))
+	mustExist(t, filepath.Join(repo, ".claude", "settings.json"))
+	mustExist(t, filepath.Join(repo, ".claude", "mcp.json"))
+	mustExist(t, filepath.Join(repo, ".claude", "agents", "atrakta.md"))
+}
+
 func TestAutoCreatesRootAGENTSWhenMissing(t *testing.T) {
 	repo := t.TempDir()
 	if _, err := core.Start(repo, testAdapter{}, core.StartFlags{Interfaces: "cursor"}); err != nil {

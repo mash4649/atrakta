@@ -100,3 +100,30 @@ func TestStableRenderHashIgnoresInputOrder(t *testing.T) {
 		t.Fatalf("expected order-independent hash: %s != %s", ha, hb)
 	}
 }
+
+func TestClaudeRendererProducesNativeTargets(t *testing.T) {
+	repo := t.TempDir()
+	c := contract.Default(repo)
+	model := BuildCanonicalModel(c, "sha256:contract", "# root\n")
+	reg := registry.Default()
+	rows, err := DefaultEngine().RenderTargets(repo, model, reg, []string{"claude_code"})
+	if err != nil {
+		t.Fatalf("render claude targets failed: %v", err)
+	}
+	want := map[string]bool{
+		"CLAUDE.md":                 false,
+		".claude/settings.json":     false,
+		".claude/mcp.json":          false,
+		".claude/agents/atrakta.md": false,
+	}
+	for _, r := range rows {
+		if _, ok := want[r.Path]; ok {
+			want[r.Path] = true
+		}
+	}
+	for p, ok := range want {
+		if !ok {
+			t.Fatalf("missing claude projection path: %s (rows=%#v)", p, rows)
+		}
+	}
+}

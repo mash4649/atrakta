@@ -23,11 +23,17 @@ type Renderer interface {
 }
 
 type Engine struct {
-	defaultRenderer Renderer
+	defaultRenderer    Renderer
+	interfaceRenderers map[string]Renderer
 }
 
 func DefaultEngine() Engine {
-	return Engine{defaultRenderer: agentsRenderer{}}
+	return Engine{
+		defaultRenderer: agentsRenderer{},
+		interfaceRenderers: map[string]Renderer{
+			"claude_code": claudeRenderer{},
+		},
+	}
 }
 
 func BuildCanonicalModel(c contract.Contract, contractHash, sourceAGENTS string) CanonicalModel {
@@ -61,10 +67,17 @@ func (e Engine) RenderTargets(repoRoot string, model CanonicalModel, reg registr
 	out := make([]Desired, 0, len(ids))
 	for _, id := range ids {
 		entry, ok := reg.Entries[id]
-		if !ok || entry.ProjectionDir == "" {
+		if !ok {
 			continue
 		}
-		rows, err := e.defaultRenderer.Render(repoRoot, model, id, entry.ProjectionDir)
+		r, hasCustom := e.interfaceRenderers[id]
+		if !hasCustom {
+			if entry.ProjectionDir == "" {
+				continue
+			}
+			r = e.defaultRenderer
+		}
+		rows, err := r.Render(repoRoot, model, id, entry.ProjectionDir)
 		if err != nil {
 			return nil, err
 		}
@@ -126,6 +139,46 @@ func (agentsRenderer) Render(repoRoot string, model CanonicalModel, interfaceID,
 		return nil, err
 	}
 	out = append(out, opt...)
+	sortDesired(out)
+	return out, nil
+}
+
+type claudeRenderer struct{}
+
+func (claudeRenderer) Render(repoRoot string, model CanonicalModel, interfaceID, projectionDir string) ([]Desired, error) {
+	agentsHash := model.SourceHash["AGENTS.md"]
+	if agentsHash == "" {
+		agentsHash = util.SHA256Tagged([]byte(util.NormalizeContentLF(model.SourceText["AGENTS.md"])))
+	}
+	out := []Desired{
+		{
+			Interface:   interfaceID,
+			TemplateID:  interfaceID + ":claude-md@1",
+			Path:        "CLAUDE.md",
+			Source:      "AGENTS.md",
+			Target:      "AGENTS.md",
+			Fingerprint: Fingerprint(model.ContractHash, interfaceID+":claude-md@1", agentsHash),
+		},
+	}
+	for _, item := range []struct {
+		templateID string
+		path       string
+	}{
+		{templateID: interfaceID + ":settings-json@1", path: ".claude/settings.json"},
+		{templateID: interfaceID + ":mcp-json@1", path: ".claude/mcp.json"},
+		{templateID: interfaceID + ":agents-md@1", path: ".claude/agents/atrakta.md"},
+	} {
+		content, _ := SyntheticTemplateContent(item.templateID)
+		contentHash := util.SHA256Tagged([]byte(content))
+		out = append(out, Desired{
+			Interface:   interfaceID,
+			TemplateID:  item.templateID,
+			Path:        item.path,
+			Source:      "AGENTS.md",
+			Target:      "",
+			Fingerprint: Fingerprint(model.ContractHash, item.templateID, contentHash),
+		})
+	}
 	sortDesired(out)
 	return out, nil
 }

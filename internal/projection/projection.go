@@ -105,6 +105,27 @@ alwaysApply: true
 
 Follow [AGENTS.md](mdc:../../AGENTS.md) and keep parity with Atrakta projections.
 `) + "\n", true
+	case strings.HasSuffix(templateID, ":settings-json@1"):
+		return strings.TrimSpace(`
+{
+  "atrakta_managed": true,
+  "instruction_source": "AGENTS.md",
+  "output_mode": "structured"
+}
+`) + "\n", true
+	case strings.HasSuffix(templateID, ":mcp-json@1"):
+		return strings.TrimSpace(`
+{
+  "atrakta_managed": true,
+  "servers": []
+}
+`) + "\n", true
+	case strings.HasSuffix(templateID, ":agents-md@1") && strings.HasPrefix(templateID, "claude_code:"):
+		return strings.TrimSpace(`
+# Atrakta Claude Agent
+
+This file is managed by Atrakta projection and follows the root AGENTS contract.
+`) + "\n", true
 	default:
 		return "", false
 	}
