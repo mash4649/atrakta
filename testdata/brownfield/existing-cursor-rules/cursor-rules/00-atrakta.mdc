@@ -1,0 +1,7 @@
+---
+description: user owned cursor rule
+globs:
+alwaysApply: true
+---
+
+User-managed cursor rule content.
