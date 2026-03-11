@@ -944,7 +944,6 @@ func managedArtifactsIntact(repoRoot string) bool {
 }
 
 var strictParityWarningBlockCodes = map[string]struct{}{
-	"extension_manifest_missing": {},
 	"extension_projection_drift": {},
 }
 

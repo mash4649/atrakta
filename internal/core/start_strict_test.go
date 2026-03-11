@@ -61,3 +61,15 @@ func TestStrictRuntimeBlockingReasonsDeduplicatesAndSorts(t *testing.T) {
 		t.Fatalf("unexpected dedup result: got=%v want=%v", got, want)
 	}
 }
+
+func TestStrictRuntimeBlockingReasonsDoesNotBlockOnExtensionManifestMissing(t *testing.T) {
+	parity := doctor.ParityReport{
+		Warnings: []doctor.ParityFinding{
+			{Code: "extension_manifest_missing", Message: "extension manifest is missing"},
+		},
+	}
+	got := strictRuntimeBlockingReasons(parity, nil, doctor.IntegrationReport{}, nil)
+	if len(got) != 0 {
+		t.Fatalf("extension_manifest_missing should not block strict runtime, got=%v", got)
+	}
+}
