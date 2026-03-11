@@ -15,6 +15,9 @@ func TestWindowsNativeParity(t *testing.T) {
 	}
 
 	repo := t.TempDir()
+	// Strict gate runs go_test_compile, so provide a minimal Go module fixture.
+	mustWrite(t, filepath.Join(repo, "go.mod"), "module example.com/windowsnativeparity\n\ngo 1.22\n")
+	mustWrite(t, filepath.Join(repo, "internal", "dummy", "dummy.go"), "package dummy\n\nfunc Nop() {}\n")
 	mustWrite(t, filepath.Join(repo, "AGENTS.md"), "constitution\n")
 
 	res, err := core.Start(repo, testAdapter{}, core.StartFlags{
