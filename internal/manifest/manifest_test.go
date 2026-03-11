@@ -69,3 +69,42 @@ func TestUpdateFromApplyCreatesAndUpdatesManifests(t *testing.T) {
 		t.Fatalf("expected empty entries after unlink, got %d", len(pm.Entries))
 	}
 }
+
+func TestReadStatusHandlesMissingAndExistingManifests(t *testing.T) {
+	repo := t.TempDir()
+
+	st0, err := ReadStatus(repo)
+	if err != nil {
+		t.Fatalf("read status (missing): %v", err)
+	}
+	if st0.ProjectionExists || st0.ExtensionExists {
+		t.Fatalf("expected manifests to be missing initially")
+	}
+	if st0.Projection.V != 1 || st0.Extension.V != 1 {
+		t.Fatalf("expected default manifest versions")
+	}
+
+	ap := model.ApplyResult{Ops: []model.OpResult{{
+		Path:        ".cursor/AGENTS.md",
+		Op:          "link",
+		Status:      "ok",
+		Interface:   "cursor",
+		TemplateID:  "cursor:agents-md@1",
+		Kind:        "link",
+		Fingerprint: "sha256:fp1",
+	}}}
+	if _, err := UpdateFromApply(repo, ap, "sha256:source1"); err != nil {
+		t.Fatalf("update manifest: %v", err)
+	}
+
+	st1, err := ReadStatus(repo)
+	if err != nil {
+		t.Fatalf("read status (existing): %v", err)
+	}
+	if !st1.ProjectionExists || !st1.ExtensionExists {
+		t.Fatalf("expected manifests to exist after update")
+	}
+	if len(st1.Projection.Entries) != 1 {
+		t.Fatalf("expected 1 projection entry, got %d", len(st1.Projection.Entries))
+	}
+}

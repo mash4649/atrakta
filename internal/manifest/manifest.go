@@ -24,6 +24,15 @@ type UpdateResult struct {
 	RenderHash        string
 }
 
+type Status struct {
+	ProjectionPath   string                   `json:"projection_manifest_path"`
+	ExtensionPath    string                   `json:"extension_manifest_path"`
+	ProjectionExists bool                     `json:"projection_manifest_exists"`
+	ExtensionExists  bool                     `json:"extension_manifest_exists"`
+	Projection       model.ProjectionManifest `json:"projection"`
+	Extension        model.ExtensionManifest  `json:"extension"`
+}
+
 func UpdateFromApply(repoRoot string, ap model.ApplyResult, sourceHash string) (UpdateResult, error) {
 	now := util.NowUTC()
 
@@ -113,6 +122,37 @@ func UpdateFromApply(repoRoot string, ap model.ApplyResult, sourceHash string) (
 		ExtensionEntries:  len(em.Entries),
 		SourceHash:        sourceHash,
 		RenderHash:        renderHash,
+	}, nil
+}
+
+func ReadStatus(repoRoot string) (Status, error) {
+	projectionPath := filepath.Join(repoRoot, filepath.FromSlash(projectionManifestPath))
+	extensionPath := filepath.Join(repoRoot, filepath.FromSlash(extensionManifestPath))
+
+	projectionExists, err := fileExists(projectionPath)
+	if err != nil {
+		return Status{}, fmt.Errorf("stat projection manifest: %w", err)
+	}
+	extensionExists, err := fileExists(extensionPath)
+	if err != nil {
+		return Status{}, fmt.Errorf("stat extension manifest: %w", err)
+	}
+
+	pm, err := loadProjectionManifest(repoRoot)
+	if err != nil {
+		return Status{}, err
+	}
+	em, err := loadExtensionManifest(repoRoot)
+	if err != nil {
+		return Status{}, err
+	}
+	return Status{
+		ProjectionPath:   projectionManifestPath,
+		ExtensionPath:    extensionManifestPath,
+		ProjectionExists: projectionExists,
+		ExtensionExists:  extensionExists,
+		Projection:       pm,
+		Extension:        em,
 	}, nil
 }
 
@@ -215,4 +255,15 @@ func manifestHash(pm model.ProjectionManifest) (string, error) {
 		return "", fmt.Errorf("canonical manifest hash: %w", err)
 	}
 	return util.SHA256Tagged(b), nil
+}
+
+func fileExists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
 }

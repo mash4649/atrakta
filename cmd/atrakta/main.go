@@ -19,8 +19,10 @@ import (
 	gcengine "atrakta/internal/gc"
 	"atrakta/internal/hooks"
 	"atrakta/internal/ide"
+	"atrakta/internal/manifest"
 	"atrakta/internal/migrate"
 	"atrakta/internal/model"
+	"atrakta/internal/registry"
 	"atrakta/internal/runtimeobs"
 	"atrakta/internal/syncpolicy"
 	"atrakta/internal/wrapper"
@@ -73,6 +75,8 @@ func main() {
 		handleMigrate(cwd)
 	case "resume":
 		handleResume(cwd, ad)
+	case "projection":
+		handleProjection(cwd, ad)
 	default:
 		usage()
 		os.Exit(2)
@@ -381,6 +385,96 @@ func handleResume(cwd string, ad adapter.CLIAdapter) {
 	maybeScheduleAutoGC(cwd, res.Step)
 }
 
+func handleProjection(cwd string, ad adapter.CLIAdapter) {
+	if len(os.Args) < 3 {
+		fmt.Fprintln(os.Stderr, "usage: atrakta projection [render|status|repair]")
+		os.Exit(2)
+	}
+	switch os.Args[2] {
+	case "render":
+		fs := flag.NewFlagSet("projection render", flag.ExitOnError)
+		iface := fs.String("interface", "", "interface id")
+		all := fs.Bool("all", false, "render all projection-capable interfaces")
+		_ = fs.Parse(os.Args[3:])
+		interfaces, err := resolveProjectionInterfaces(cwd, *iface, *all)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(2)
+		}
+		res, err := core.Start(cwd, ad, core.StartFlags{Interfaces: interfaces, FeatureID: "projection-render"})
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			if strings.HasPrefix(strings.ToLower(strings.TrimSpace(err.Error())), "blocked:") {
+				os.Exit(6)
+			}
+			os.Exit(1)
+		}
+		fmt.Printf("projection render: result=%s ops=%d\n", res.Apply.Result, len(res.Apply.Ops))
+	case "status":
+		fs := flag.NewFlagSet("projection status", flag.ExitOnError)
+		asJSON := fs.Bool("json", false, "print machine-readable status")
+		_ = fs.Parse(os.Args[3:])
+		st, err := manifest.ReadStatus(cwd)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		if *asJSON {
+			b, _ := json.MarshalIndent(st, "", "  ")
+			fmt.Println(string(b))
+			return
+		}
+		fmt.Printf("projection manifest: %s (exists=%v entries=%d)\n", st.ProjectionPath, st.ProjectionExists, len(st.Projection.Entries))
+		fmt.Printf("extension manifest: %s (exists=%v entries=%d)\n", st.ExtensionPath, st.ExtensionExists, len(st.Extension.Entries))
+	case "repair":
+		fs := flag.NewFlagSet("projection repair", flag.ExitOnError)
+		iface := fs.String("interface", "", "interface id")
+		all := fs.Bool("all", false, "repair all projection-capable interfaces")
+		_ = fs.Parse(os.Args[3:])
+		interfaces, err := resolveProjectionInterfaces(cwd, *iface, *all)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(2)
+		}
+		res, err := core.Start(cwd, ad, core.StartFlags{Interfaces: interfaces, FeatureID: "projection-repair"})
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			if strings.HasPrefix(strings.ToLower(strings.TrimSpace(err.Error())), "blocked:") {
+				os.Exit(6)
+			}
+			os.Exit(1)
+		}
+		fmt.Printf("projection repair: result=%s ops=%d\n", res.Apply.Result, len(res.Apply.Ops))
+	default:
+		fmt.Fprintln(os.Stderr, "usage: atrakta projection [render|status|repair]")
+		os.Exit(2)
+	}
+}
+
+func resolveProjectionInterfaces(cwd, iface string, all bool) (string, error) {
+	iface = strings.TrimSpace(iface)
+	if iface != "" && all {
+		return "", fmt.Errorf("--interface and --all are mutually exclusive")
+	}
+	if !all {
+		return iface, nil
+	}
+	c, _, err := contract.LoadOrInit(cwd)
+	if err != nil {
+		return "", fmt.Errorf("load contract: %w", err)
+	}
+	reg := registry.ApplyOverrides(registry.Default(), c)
+	ids := make([]string, 0, len(reg.Entries))
+	for _, id := range reg.InterfaceIDs() {
+		entry := reg.Entries[id]
+		if strings.TrimSpace(entry.ProjectionDir) == "" {
+			continue
+		}
+		ids = append(ids, id)
+	}
+	return strings.Join(ids, ","), nil
+}
+
 // cmdName returns the invoked command name (supports "atr" alias via symlink).
 func cmdName() string {
 	name := filepath.Base(os.Args[0])
@@ -407,6 +501,9 @@ func usage() {
 	fmt.Printf("  %s ide-autostart [install|uninstall|status]\n", cmd)
 	fmt.Printf("  %s migrate check\n", cmd)
 	fmt.Printf("  %s resume [--interfaces <id,id,...>] [--feature-id <id>] [--sync-level <0|1|2>] [--map-tokens <n>] [--map-refresh <sec>]\n", cmd)
+	fmt.Printf("  %s projection render [--interface <id>] [--all]\n", cmd)
+	fmt.Printf("  %s projection status [--json]\n", cmd)
+	fmt.Printf("  %s projection repair [--interface <id>] [--all]\n", cmd)
 	if cmd == "atrakta" {
 		fmt.Println("\n  tip: 'atr' is a short alias for 'atrakta'")
 	}
