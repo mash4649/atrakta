@@ -25,10 +25,9 @@ atrakta init \
 
 ## Post-check
 
-Run standard verification after integration:
-
 ```bash
 atrakta doctor
+atrakta doctor --parity
+atrakta doctor --integration
+atrakta projection status --json
 ```
-
-Additional parity/integration doctor commands are tracked in the parity backlog and are not part of the current stable CLI yet.

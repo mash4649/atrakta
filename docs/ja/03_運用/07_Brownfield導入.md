@@ -27,6 +27,7 @@ atrakta init \
 
 ```bash
 atrakta doctor
+atrakta doctor --parity
+atrakta doctor --integration
+atrakta projection status --json
 ```
-
-`doctor --parity` / `doctor --integration` は parity バックログ上の追加項目です（現行安定CLIには未導入）。

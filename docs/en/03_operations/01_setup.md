@@ -60,12 +60,11 @@ ls -l ~/.local/bin/atrakta
 
 Go is not required when using prebuilt binaries.
 
-## 2. First-time Setup
+## 2. Greenfield Setup
 
 Run at project root:
 
 ```bash
-# uniform command for both interactive and non-interactive usage
 atrakta init --interfaces cursor
 ```
 
@@ -79,10 +78,39 @@ Generated/updated on first run as needed:
 - `.atrakta/task-graph.json` (when plan runs)
 - `.atrakta/policies/prompt-min.json` (when default policy is referenced)
 
-## 3. Recommended Optional Setup
+## 3. Brownfield Setup
 
-- After the single command above, `start` is usually auto-resolved via wrapper/hook/IDE autostart tasks.
-- If `--interfaces` is omitted, resolution falls back to prompt or `needs_input` (no implicit default).
+For non-overwrite integration into an existing repository:
+
+```bash
+atrakta init \
+  --mode brownfield \
+  --interfaces cursor \
+  --merge-strategy append \
+  --agents-mode append \
+  --no-overwrite
+```
+
+- With `--no-overwrite`, merge conflicts are emitted as `.atrakta/proposals/*.patch`
+- Only mergeable managed scope is applied
+
+## 4. Post-setup Verification (Greenfield/Brownfield)
+
+```bash
+atrakta doctor
+atrakta doctor --parity
+atrakta doctor --integration
+atrakta projection status --json
+```
+
+Completion criteria:
+
+- `doctor` is not BLOCKED
+- `doctor --parity` is not BLOCKED
+- `doctor --integration` is not BLOCKED
+- `projection status --json` shows required projection status
+
+## 5. Optional Staged Setup
 
 For staged manual setup:
 
