@@ -5,7 +5,7 @@
 This directory contains the canonical documentation for Atrakta.
 
 - Version: `v0.14.1` ([VERSION](../VERSION))
-- Last updated: `2026-03-11`
+- Last updated: `2026-03-12`
 
 ## Structure
 

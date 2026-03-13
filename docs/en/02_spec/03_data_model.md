@@ -27,10 +27,11 @@
 
 - `v`, `project_id`
 - `interfaces.supported/core_set/fallback`
+- `interfaces.prune_unused_default` (optional; pruning policy for unused projections)
 - `boundary.include/exclude/managed_root`
 - `tools.approval_required_for`
 - `token_budget.soft/hard`
-- `hints` (prefer/disable/anchors)
+- `hints` (optional; prefer/disable/anchors)
 - `quality` (quick/heavy checks)
 - `projections.optional_templates/max_per_interface`
 - `routing` (worker/quality per task category)

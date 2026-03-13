@@ -1,6 +1,6 @@
 # CLI仕様
 
-[English](../../en/02_仕様/01_CLI仕様.md) | [日本語](./01_CLI仕様.md)
+[English](../../en/02_spec/01_cli_spec.md) | [日本語](./01_CLI仕様.md)
 
 
 ## 仕様バージョン
@@ -12,18 +12,23 @@
 ## コマンド
 
 ```bash
-atrakta init [--interfaces <id,id,...>] [--feature-id <id>] [--sync-level <0|1|2>] [--map-tokens <n>] [--map-refresh <sec>] [--no-hook]
+atrakta init [--mode <greenfield|brownfield>] [--interfaces <id,id,...>] [--feature-id <id>] [--sync-level <0|1|2>] [--map-tokens <n>] [--map-refresh <sec>] [--merge-strategy <append|include|replace>] [--agents-mode <append|include|generate>] [--no-overwrite] [--no-hook]
 atrakta start [--interfaces <id,id,...>] [--feature-id <id>] [--sync-level <0|1|2>] [--map-tokens <n>] [--map-refresh <sec>]
-atrakta doctor [--sync-proposal] [--apply-sync] [--sync-level <0|1|2>]
+atrakta doctor [--sync-proposal] [--apply-sync] [--sync-level <0|1|2>] [--parity|--integration] [--json]
 atrakta gc [--scope <tmp,events>] [--apply] [--auto]
 atrakta wrap install
 atrakta wrap uninstall
 atrakta wrap run --interface <id> --real <path> -- [args...]
-atrakta hook install
-atrakta hook uninstall
+atrakta hook install [--surface <surface_id,...>]
+atrakta hook uninstall [--surface <surface_id,...>]
+atrakta hook status [--surface <surface_id,...>] [--json]
+atrakta hook repair [--surface <surface_id,...>]
 atrakta ide-autostart [install|uninstall|status]
 atrakta migrate check
 atrakta resume [--interfaces <id,id,...>] [--feature-id <id>] [--sync-level <0|1|2>] [--map-tokens <n>] [--map-refresh <sec>]
+atrakta projection render [--interface <id>] [--all]
+atrakta projection status [--json]
+atrakta projection repair [--interface <id>] [--all]
 atrakta import repo <path> [--auto-analyze]
 atrakta import report <batch_id>
 atrakta import pulse
@@ -42,6 +47,11 @@ atrakta exploration catalog [--reviewed-only] [--limit <n>]
 ## `init`
 
 - 初回導入用の統合コマンド
+- 主要フラグ:
+  - `--mode`: `greenfield`（新規）または `brownfield`（既存プロジェクトへの導入）
+  - `--merge-strategy`: AGENTS 等のマージ方針（`append` / `include` / `replace`）
+  - `--agents-mode`: AGENTS 生成方針（`append` / `include` / `generate`）
+  - `--no-overwrite`: 既存ファイルを上書きしない
 - 実行順:
   1. `wrap install`
   2. `hook install`（`--no-hook` 指定時はスキップ）
@@ -97,6 +107,10 @@ atrakta exploration catalog [--reviewed-only] [--limit <n>]
 - 整合性診断と復旧アクション提示
 - `--sync-proposal`: AGENTS由来の提案表示
 - `--apply-sync`: 提案の承認適用
+- `--parity`: Parity Contract の drift を診断（AGENTS.md 推奨確認コマンド）
+- `--integration`: integration の整合性を診断
+- `--json`: 機械可読な JSON 出力（`ATRAKTA_STATUS_JSON=1` でも同様）
+- `--parity` と `--integration` は同時指定不可
 - 追加の自己修復提案:
   - `ide-autostart` 未導入 -> `atrakta ide-autostart install`
   - wrapper/PATH 不整合 -> `atrakta wrap install`
@@ -123,6 +137,9 @@ atrakta exploration catalog [--reviewed-only] [--limit <n>]
 ## `hook`
 
 - シェルのディレクトリ移動時に `start` を起動するフックを導入/削除
+- `install` / `uninstall`: フックの導入・削除（`--surface` で対象 surface を限定可能）
+- `status`: 導入状態を表示（`--json` で機械可読）
+- `repair`: フックの不整合を修復
 - Hook 実行時 `start` は非対話モード（`ATRAKTA_NONINTERACTIVE=1`）
 
 ## `ide-autostart`
@@ -136,6 +153,13 @@ atrakta exploration catalog [--reviewed-only] [--limit <n>]
 
 - `events.jsonl` の `schema_version` 整合を検証
 - 現行要件: `schema_version = 2`
+
+## `projection`
+
+- ツール固有設定の projection（正本からの生成）を管理
+- `render`: 指定 interface または `--all` で projection を生成
+- `status`: projection manifest と extension manifest の状態を表示（`--json` で機械可読。AGENTS.md 推奨確認コマンド）
+- `repair`: projection の欠損・ドリフトを修復
 
 ## `resume`
 

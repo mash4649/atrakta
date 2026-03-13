@@ -20,12 +20,16 @@ Atrakta is a deterministic harness for keeping AI development workflows consiste
 
 ## Current Subcommands
 
-- `init`
-- `start`
-- `doctor`
-- `gc`
+- `init`, `start`, `resume`
+- `doctor`, `gc`
 - `wrap install|uninstall|run`
 - `hook install|uninstall`
 - `ide-autostart install|uninstall|status`
 - `migrate check`
-- `resume`
+- `import repo|report|pulse`
+- `capability analyze`
+- `recipe convert`, `memory review`
+- `exploration catalog`
+- `projection status` (projection state check)
+
+See `02_spec/01_cli_spec.md` for details.

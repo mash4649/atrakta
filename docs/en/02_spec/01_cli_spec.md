@@ -11,18 +11,23 @@
 ## Commands
 
 ```bash
-atrakta init [--interfaces <id,id,...>] [--feature-id <id>] [--sync-level <0|1|2>] [--map-tokens <n>] [--map-refresh <sec>] [--no-hook]
+atrakta init [--mode <greenfield|brownfield>] [--interfaces <id,id,...>] [--feature-id <id>] [--sync-level <0|1|2>] [--map-tokens <n>] [--map-refresh <sec>] [--merge-strategy <append|include|replace>] [--agents-mode <append|include|generate>] [--no-overwrite] [--no-hook]
 atrakta start [--interfaces <id,id,...>] [--feature-id <id>] [--sync-level <0|1|2>] [--map-tokens <n>] [--map-refresh <sec>]
-atrakta doctor [--sync-proposal] [--apply-sync] [--sync-level <0|1|2>]
+atrakta doctor [--sync-proposal] [--apply-sync] [--sync-level <0|1|2>] [--parity|--integration] [--json]
 atrakta gc [--scope <tmp,events>] [--apply] [--auto]
 atrakta wrap install
 atrakta wrap uninstall
 atrakta wrap run --interface <id> --real <path> -- [args...]
-atrakta hook install
-atrakta hook uninstall
+atrakta hook install [--surface <surface_id,...>]
+atrakta hook uninstall [--surface <surface_id,...>]
+atrakta hook status [--surface <surface_id,...>] [--json]
+atrakta hook repair [--surface <surface_id,...>]
 atrakta ide-autostart [install|uninstall|status]
 atrakta migrate check
 atrakta resume [--interfaces <id,id,...>] [--feature-id <id>] [--sync-level <0|1|2>] [--map-tokens <n>] [--map-refresh <sec>]
+atrakta projection render [--interface <id>] [--all]
+atrakta projection status [--json]
+atrakta projection repair [--interface <id>] [--all]
 atrakta import repo <path> [--auto-analyze]
 atrakta import report <batch_id>
 atrakta import pulse
@@ -41,6 +46,11 @@ atrakta exploration catalog [--reviewed-only] [--limit <n>]
 ## `init`
 
 - Integrated first-time setup command
+- Key flags:
+  - `--mode`: `greenfield` (new project) or `brownfield` (existing project integration)
+  - `--merge-strategy`: merge policy for AGENTS etc. (`append` / `include` / `replace`)
+  - `--agents-mode`: AGENTS generation policy (`append` / `include` / `generate`)
+  - `--no-overwrite`: do not overwrite existing files
 - Execution order:
   1. `wrap install`
   2. `hook install` (skipped with `--no-hook`)
@@ -98,6 +108,10 @@ atrakta exploration catalog [--reviewed-only] [--limit <n>]
 - Integrity diagnostics and recovery suggestions
 - `--sync-proposal`: show AGENTS-derived proposal
 - `--apply-sync`: apply proposal with explicit approval
+- `--parity`: diagnose Parity Contract drift (AGENTS.md recommended check)
+- `--integration`: diagnose integration consistency
+- `--json`: machine-readable JSON output (same as `ATRAKTA_STATUS_JSON=1`)
+- `--parity` and `--integration` are mutually exclusive
 - Additional remediation suggestions:
   - missing `ide-autostart` -> `atrakta ide-autostart install`
   - wrapper/PATH mismatch -> `atrakta wrap install`
@@ -124,6 +138,9 @@ atrakta exploration catalog [--reviewed-only] [--limit <n>]
 ## `hook`
 
 - Install/uninstall shell hook for directory-change-triggered `start`
+- `install` / `uninstall`: add/remove hook (`--surface` to scope by surface)
+- `status`: show installation state (`--json` for machine-readable)
+- `repair`: fix hook inconsistencies
 - Hook-triggered `start` is non-interactive (`ATRAKTA_NONINTERACTIVE=1`)
 
 ## `ide-autostart`
@@ -137,6 +154,13 @@ atrakta exploration catalog [--reviewed-only] [--limit <n>]
 
 - Validate `events.jsonl` schema version
 - Current requirement: `schema_version = 2`
+
+## `projection`
+
+- Manage tool-specific projection (generation from canonical sources)
+- `render`: generate projection for specified interface or `--all`
+- `status`: show projection manifest and extension manifest state (`--json` for machine-readable; AGENTS.md recommended check)
+- `repair`: fix missing or drifted projections
 
 ## `resume`
 
