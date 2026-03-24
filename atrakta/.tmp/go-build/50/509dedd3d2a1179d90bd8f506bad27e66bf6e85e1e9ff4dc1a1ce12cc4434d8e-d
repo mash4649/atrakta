@@ -1,7 +1,0 @@
-# test log
-getenv PWD
-stat /Users/mbp/Public/dev/mash4649/atrakta_dev/atrakta/tests/contracts/go.mod
-stat /Users/mbp/Public/dev/mash4649/atrakta_dev/atrakta/tests/go.mod
-stat /Users/mbp/Public/dev/mash4649/atrakta_dev/atrakta/go.mod
-open /Users/mbp/Public/dev/mash4649/atrakta_dev/atrakta/fixtures/core/run-concept-coverage.fixture.json
-open /Users/mbp/Public/dev/mash4649/atrakta_dev/atrakta/docs/plan/concept-coverage-matrix.md
