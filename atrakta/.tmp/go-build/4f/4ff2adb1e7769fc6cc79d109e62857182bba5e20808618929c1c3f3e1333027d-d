@@ -1,0 +1,10 @@
+# test log
+getenv GOTMPDIR
+getenv TMPDIR
+stat /var/folders/x7/tq0swxf56wd1n9jbtnm25cc80000gn/T/TestResolve669750220/001/extensions/manifests
+stat /var/folders/x7/tq0swxf56wd1n9jbtnm25cc80000gn/T/TestResolve669750220/001/extensions
+stat /var/folders/x7/tq0swxf56wd1n9jbtnm25cc80000gn/T/TestResolve669750220/001
+open /var/folders/x7/tq0swxf56wd1n9jbtnm25cc80000gn/T/TestResolve669750220/001/extensions/manifests/default.json
+open /var/folders/x7/tq0swxf56wd1n9jbtnm25cc80000gn/T/TestResolve669750220/001/extensions/manifests
+open /var/folders/x7/tq0swxf56wd1n9jbtnm25cc80000gn/T/TestResolve669750220/001/extensions/manifests/default.json
+open /var/folders/x7/tq0swxf56wd1n9jbtnm25cc80000gn/T

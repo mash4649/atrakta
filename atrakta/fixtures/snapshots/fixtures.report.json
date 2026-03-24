@@ -1,0 +1,151 @@
+{
+  "passed": 29,
+  "failed": 0,
+  "results": [
+    {
+      "fixture": "fixtures/canonical/guidance-precedence.fixture.json",
+      "case": 1,
+      "passed": true
+    },
+    {
+      "fixture": "fixtures/canonical/projection-eligibility.fixture.json",
+      "case": 1,
+      "passed": true
+    },
+    {
+      "fixture": "fixtures/canonical/projection-eligibility.fixture.json",
+      "case": 2,
+      "passed": true
+    },
+    {
+      "fixture": "fixtures/canonical/projection-eligibility.fixture.json",
+      "case": 3,
+      "passed": true
+    },
+    {
+      "fixture": "fixtures/core/audit-requirements.fixture.json",
+      "case": 1,
+      "passed": true
+    },
+    {
+      "fixture": "fixtures/core/audit-requirements.fixture.json",
+      "case": 2,
+      "passed": true
+    },
+    {
+      "fixture": "fixtures/core/audit-requirements.fixture.json",
+      "case": 3,
+      "passed": true
+    },
+    {
+      "fixture": "fixtures/core/classify-layer.fixture.json",
+      "case": 1,
+      "passed": true
+    },
+    {
+      "fixture": "fixtures/core/classify-layer.fixture.json",
+      "case": 2,
+      "passed": true
+    },
+    {
+      "fixture": "fixtures/core/classify-layer.fixture.json",
+      "case": 3,
+      "passed": true
+    },
+    {
+      "fixture": "fixtures/core/failure-routing.fixture.json",
+      "case": 1,
+      "passed": true
+    },
+    {
+      "fixture": "fixtures/core/mutation-scope.fixture.json",
+      "case": 1,
+      "passed": true
+    },
+    {
+      "fixture": "fixtures/core/mutation-scope.fixture.json",
+      "case": 2,
+      "passed": true
+    },
+    {
+      "fixture": "fixtures/core/operation-capability.fixture.json",
+      "case": 1,
+      "passed": true
+    },
+    {
+      "fixture": "fixtures/core/operation-capability.fixture.json",
+      "case": 2,
+      "passed": true
+    },
+    {
+      "fixture": "fixtures/core/strict-state-machine.fixture.json",
+      "case": 1,
+      "passed": true
+    },
+    {
+      "fixture": "fixtures/core/strict-state-machine.fixture.json",
+      "case": 2,
+      "passed": true
+    },
+    {
+      "fixture": "fixtures/core/strict-state-machine.fixture.json",
+      "case": 3,
+      "passed": true
+    },
+    {
+      "fixture": "fixtures/extension/extension-order.fixture.json",
+      "case": 1,
+      "passed": true
+    },
+    {
+      "fixture": "fixtures/extension/surface-portability.fixture.json",
+      "case": 1,
+      "passed": true
+    },
+    {
+      "fixture": "fixtures/extension/surface-portability.fixture.json",
+      "case": 2,
+      "passed": true
+    },
+    {
+      "fixture": "fixtures/extension/surface-portability.fixture.json",
+      "case": 3,
+      "passed": true
+    },
+    {
+      "fixture": "fixtures/legacy/legacy-drift.fixture.json",
+      "case": 1,
+      "passed": true
+    },
+    {
+      "fixture": "fixtures/legacy/legacy-drift.fixture.json",
+      "case": 2,
+      "passed": true
+    },
+    {
+      "fixture": "fixtures/legacy/legacy-drift.fixture.json",
+      "case": 3,
+      "passed": true
+    },
+    {
+      "fixture": "fixtures/legacy/legacy-status.fixture.json",
+      "case": 1,
+      "passed": true
+    },
+    {
+      "fixture": "fixtures/legacy/legacy-status.fixture.json",
+      "case": 2,
+      "passed": true
+    },
+    {
+      "fixture": "fixtures/onboarding/onboarding-proposal.fixture.json",
+      "case": 1,
+      "passed": true
+    },
+    {
+      "fixture": "fixtures/onboarding/onboarding-proposal.fixture.json",
+      "case": 2,
+      "passed": true
+    }
+  ]
+}

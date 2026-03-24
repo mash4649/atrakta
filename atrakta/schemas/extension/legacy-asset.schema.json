@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "atrakta/schemas/extension/legacy-asset.schema.json",
+  "title": "LegacyAsset",
+  "type": "object",
+  "required": ["asset_id", "status"],
+  "properties": {
+    "asset_id": { "type": "string" },
+    "status": { "type": "string", "enum": ["reference_only", "partially_mapped", "canonicalized"] },
+    "ownership": { "type": "string", "enum": ["known", "unknown"] },
+    "freshness": { "type": "string", "enum": ["acceptable", "stale", "unknown"] },
+    "mapping": { "type": "string", "enum": ["exists", "missing"] }
+  },
+  "additionalProperties": false
+}

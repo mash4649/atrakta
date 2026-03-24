@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "atrakta/schemas/extension/provenance.schema.json",
+  "title": "ProvenanceAsset",
+  "type": "object",
+  "required": ["asset_id", "source", "recorded_at"],
+  "properties": {
+    "asset_id": { "type": "string" },
+    "source": { "type": "string" },
+    "recorded_at": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": false
+}

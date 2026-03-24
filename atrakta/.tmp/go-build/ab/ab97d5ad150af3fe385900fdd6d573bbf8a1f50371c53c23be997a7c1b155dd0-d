@@ -1,0 +1,4 @@
+./interface.go
+./state.go
+./interface_test.go
+./state_test.go

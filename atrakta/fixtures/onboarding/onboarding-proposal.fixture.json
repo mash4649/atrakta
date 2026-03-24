@@ -1,0 +1,85 @@
+{
+  "cases": [
+    {
+      "assets": [
+        "AGENTS.md",
+        ".cursor/rules",
+        ".github/workflows",
+        "docs",
+        "tests",
+        "package.json"
+      ],
+      "expected_mode": "brownfield_project",
+      "expected_detected_risks": [],
+      "expected_conflicts": [
+        "possible duplicate guidance: agents_md (e.g., AGENTS.md) and ide_rules (e.g., .cursor/rules)"
+      ],
+      "expected_failure_routing": {
+        "failure_class": "legacy_conflict_failure",
+        "resolved_tier": "DEGRADE_TO_STRICT",
+        "strict_transition": "strict",
+        "next_allowed_action": "inspect"
+      },
+      "expected_next_actions": [
+        "review conflicts",
+        "inspect details",
+        "accept defaults",
+        "export proposal only"
+      ],
+      "expected_managed_scope": {
+        ".atrakta/canonical/**": "managed_block",
+        ".atrakta/generated/**": "managed_block",
+        ".atrakta/state/**": "managed_block",
+        ".atrakta/audit/**": "managed_block",
+        "docs/generated/**": "managed_include",
+        "AGENTS.md": "proposal_patch_only",
+        ".cursor/**": "proposal_patch_only"
+      },
+      "expected_guidance_strength": {
+        "canonical_policy": "authoritative_constraint",
+        "workflow_binding": "orchestration_constraint",
+        "agents_md": "advisory_map",
+        "repo_docs": "advisory_map",
+        "ide_rules": "tool_hint"
+      },
+      "expected_capabilities_contains": [
+        "inspect_repo",
+        "inspect_integration",
+        "run_tests",
+        "search_docs"
+      ]
+    },
+    {
+      "assets": [],
+      "expected_mode": "new_project",
+      "expected_detected_risks": [],
+      "expected_conflicts": [],
+      "expected_failure_routing": {
+        "failure_class": "projection_failure",
+        "resolved_tier": "WARN_ONLY",
+        "strict_transition": "none",
+        "next_allowed_action": "inspect"
+      },
+      "expected_next_actions": [
+        "accept defaults",
+        "initialize canonical store",
+        "run inspect baseline"
+      ],
+      "expected_managed_scope": {
+        ".atrakta/canonical/**": "managed_block",
+        ".atrakta/generated/**": "managed_block",
+        ".atrakta/state/**": "managed_block",
+        ".atrakta/audit/**": "managed_block",
+        "docs/generated/**": "managed_include"
+      },
+      "expected_guidance_strength": {
+        "canonical_policy": "authoritative_constraint"
+      },
+      "expected_capabilities_contains": [
+        "inspect_repo",
+        "inspect_drift",
+        "propose_repair"
+      ]
+    }
+  ]
+}

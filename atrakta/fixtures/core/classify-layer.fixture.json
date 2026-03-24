@@ -1,0 +1,16 @@
+{
+  "cases": [
+    {
+      "input": { "kind": "request" },
+      "expected_layer": "core"
+    },
+    {
+      "input": { "kind": "policy" },
+      "expected_layer": "canonical"
+    },
+    {
+      "input": { "kind": "workflow" },
+      "expected_layer": "extension"
+    }
+  ]
+}

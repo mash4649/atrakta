@@ -1,0 +1,13 @@
+{
+  "input": {
+    "failure_class": "approval_failure",
+    "context": {
+      "scope": "task",
+      "triggers": ["missing_approval"]
+    }
+  },
+  "expected": {
+    "resolved_tier": "DEGRADE_TO_STRICT",
+    "strict_transition": "strict"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "cases": [
+    {
+      "input": { "command_or_alias": "doctor" },
+      "expected_capability": "inspect_health"
+    },
+    {
+      "input": { "command_or_alias": "apply_repair", "failure_tier": "BLOCK" },
+      "expected_effective_action_class": "inspect_only"
+    }
+  ]
+}

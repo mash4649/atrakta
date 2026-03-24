@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "atrakta/schemas/canonical/audit-event.schema.json",
+  "title": "CanonicalAuditEvent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["event_id", "event_type", "timestamp", "integrity_level", "payload"],
+  "properties": {
+    "event_id": { "type": "string", "minLength": 1 },
+    "event_type": { "type": "string", "minLength": 1 },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "integrity_level": { "type": "string", "enum": ["A0", "A1", "A2", "A3"] },
+    "payload": { "type": "object", "additionalProperties": true },
+    "hash": { "type": "string" },
+    "prev_hash": { "type": "string" }
+  }
+}

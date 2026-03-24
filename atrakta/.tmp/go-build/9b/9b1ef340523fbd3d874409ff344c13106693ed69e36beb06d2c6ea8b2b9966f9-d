@@ -1,0 +1,5 @@
+./coverage.go
+./schema.go
+./validation.go
+./coverage_test.go
+./validation_test.go

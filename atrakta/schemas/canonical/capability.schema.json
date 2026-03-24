@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "atrakta/schemas/canonical/capability.schema.json",
+  "title": "CanonicalCapability",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["capability_id", "name", "action_class", "enabled"],
+  "properties": {
+    "capability_id": { "type": "string", "minLength": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "action_class": {
+      "type": "string",
+      "enum": ["inspect_only", "propose_only", "apply_mutation"]
+    },
+    "enabled": { "type": "boolean" },
+    "source": { "type": "string" }
+  }
+}

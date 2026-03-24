@@ -1,0 +1,54 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+
+      - name: Run tests
+        run: mkdir -p .tmp/go-build && GOCACHE=$(pwd)/.tmp/go-build go test ./...
+
+      - name: Verify schema and resolver fixture coverage
+        run: mkdir -p .tmp/go-build && GOCACHE=$(pwd)/.tmp/go-build go run ./cmd/atrakta verify-coverage
+
+      - name: Export all snapshots
+        run: mkdir -p .tmp/atrakta-artifacts && GOCACHE=$(pwd)/.tmp/go-build go run ./cmd/atrakta export-snapshots --dir .tmp/atrakta-artifacts
+
+      - name: Verify artifact files
+        run: |
+          test -f .tmp/atrakta-artifacts/onboarding.proposal.json
+          test -f .tmp/atrakta-artifacts/inspect.onboard.bundle.json
+          test -f .tmp/atrakta-artifacts/preview.onboard.bundle.json
+          test -f .tmp/atrakta-artifacts/simulate.onboard.bundle.json
+          test -f .tmp/atrakta-artifacts/inspect.bundle.json
+          test -f .tmp/atrakta-artifacts/preview.bundle.json
+          test -f .tmp/atrakta-artifacts/simulate.bundle.json
+          test -f .tmp/atrakta-artifacts/fixtures.report.json
+
+      - name: Verify committed snapshots are up to date
+        run: |
+          cmp -s .tmp/atrakta-artifacts/onboarding.proposal.json fixtures/snapshots/onboarding.proposal.json
+          cmp -s .tmp/atrakta-artifacts/inspect.onboard.bundle.json fixtures/snapshots/inspect.onboard.bundle.json
+          cmp -s .tmp/atrakta-artifacts/preview.onboard.bundle.json fixtures/snapshots/preview.onboard.bundle.json
+          cmp -s .tmp/atrakta-artifacts/simulate.onboard.bundle.json fixtures/snapshots/simulate.onboard.bundle.json
+          cmp -s .tmp/atrakta-artifacts/inspect.bundle.json fixtures/snapshots/inspect.bundle.json
+          cmp -s .tmp/atrakta-artifacts/preview.bundle.json fixtures/snapshots/preview.bundle.json
+          cmp -s .tmp/atrakta-artifacts/simulate.bundle.json fixtures/snapshots/simulate.bundle.json
+          cmp -s .tmp/atrakta-artifacts/fixtures.report.json fixtures/snapshots/fixtures.report.json
+
+      - name: Upload JSON artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: atrakta-json-artifacts
+          path: .tmp/atrakta-artifacts/*.json

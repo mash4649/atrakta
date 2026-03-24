@@ -1,0 +1,32 @@
+{
+  "cases": [
+    {
+      "input": {
+        "current_state": "normal",
+        "event": "trigger_guarded",
+        "scope": "task"
+      },
+      "expected_next_state": "guarded",
+      "expected_next_allowed_action": "propose"
+    },
+    {
+      "input": {
+        "current_state": "strict",
+        "event": "release_approved",
+        "scope": "task",
+        "release_approved": true
+      },
+      "expected_next_state": "released",
+      "expected_next_allowed_action": "inspect"
+    },
+    {
+      "input": {
+        "current_state": "released",
+        "event": "reset",
+        "scope": "task"
+      },
+      "expected_next_state": "normal",
+      "expected_next_allowed_action": "apply"
+    }
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "atrakta/schemas/operations/run-output.schema.json",
+  "title": "RunOutput",
+  "type": "object",
+  "required": [
+    "status",
+    "path",
+    "project_root",
+    "canonical_state",
+    "interface",
+    "apply_requested",
+    "approved",
+    "message",
+    "portability",
+    "resolved_projection_targets",
+    "degraded_surfaces",
+    "missing_projection_targets",
+    "portability_status",
+    "portability_reason"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["ok", "needs_input", "needs_approval"]
+    },
+    "path": {
+      "type": "string",
+      "enum": ["onboarding", "normal"]
+    },
+    "project_root": { "type": "string", "minLength": 1 },
+    "canonical_state": {
+      "type": "string",
+      "enum": ["none", "canonical_present", "onboarding_complete", "partial_state", "corrupt_state"]
+    },
+    "canonical_summary": { "type": "object", "additionalProperties": true },
+    "interface": {
+      "type": "object",
+      "required": ["interface_id", "source"],
+      "properties": {
+        "interface_id": { "type": "string", "minLength": 1 },
+        "source": { "type": "string", "enum": ["flag", "env", "detect", "default"] }
+      },
+      "additionalProperties": false
+    },
+    "apply_requested": { "type": "boolean" },
+    "approved": { "type": "boolean" },
+    "message": { "type": "string", "minLength": 1 },
+    "portability": {
+      "type": "object",
+      "required": [
+        "supported_targets",
+        "degraded_targets",
+        "unsupported_targets",
+        "ingest_plan",
+        "projection_plan",
+        "portability_status",
+        "degrade_policy"
+      ],
+      "properties": {
+        "supported_targets": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "degraded_targets": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "unsupported_targets": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "ingest_plan": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "projection_plan": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["requested_target", "status", "reason"],
+            "properties": {
+              "requested_target": { "type": "string", "minLength": 1 },
+              "effective_target": { "type": "string", "minLength": 1 },
+              "status": { "type": "string", "enum": ["supported", "degraded", "unsupported"] },
+              "reason": { "type": "string", "minLength": 1 }
+            },
+            "additionalProperties": false
+          }
+        },
+        "portability_status": { "type": "string", "enum": ["supported", "degraded", "unsupported"] },
+        "degrade_policy": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "resolved_projection_targets": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "degraded_surfaces": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "missing_projection_targets": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "portability_status": {
+      "type": "string",
+      "enum": ["supported", "degraded", "unsupported"]
+    },
+    "portability_reason": { "type": "string", "minLength": 1 },
+    "next_allowed_action": { "type": "string", "minLength": 1 },
+    "required_inputs": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "approval_scope": { "type": "string", "minLength": 1 },
+    "onboarding_proposal": { "type": "object", "additionalProperties": true },
+    "accept_result": { "type": "object", "additionalProperties": true },
+    "inspect_bundle": { "type": "object", "additionalProperties": true },
+    "planned_mutations": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+    "applied_mutations": { "type": "array", "items": { "type": "object", "additionalProperties": true } }
+  },
+  "additionalProperties": false
+}

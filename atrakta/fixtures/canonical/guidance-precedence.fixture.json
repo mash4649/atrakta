@@ -1,0 +1,10 @@
+{
+  "input": [
+    { "id": "policy-1", "type": "policy" },
+    { "id": "workflow-1", "type": "workflow" },
+    { "id": "skill-1", "type": "skill" },
+    { "id": "repo-1", "type": "repo_map" },
+    { "id": "hint-1", "type": "tool_hint" }
+  ],
+  "expected_order": ["policy-1", "workflow-1", "skill-1", "repo-1", "hint-1"]
+}

@@ -1,0 +1,52 @@
+{
+  "entries": [
+    {
+      "resolver": "audit/resolve-audit-requirements",
+      "fixtures": ["fixtures/core/audit-requirements.fixture.json"]
+    },
+    {
+      "resolver": "extension/resolve-extension-order",
+      "fixtures": ["fixtures/extension/extension-order.fixture.json"]
+    },
+    {
+      "resolver": "failure/resolve-failure-tier",
+      "fixtures": ["fixtures/core/failure-routing.fixture.json"]
+    },
+    {
+      "resolver": "failure/strict-state-machine",
+      "fixtures": ["fixtures/core/strict-state-machine.fixture.json"]
+    },
+    {
+      "resolver": "guidance/resolve-guidance-precedence",
+      "fixtures": ["fixtures/canonical/guidance-precedence.fixture.json"]
+    },
+    {
+      "resolver": "layer/classify-layer",
+      "fixtures": ["fixtures/core/classify-layer.fixture.json"]
+    },
+    {
+      "resolver": "legacy/detect-legacy-drift",
+      "fixtures": ["fixtures/legacy/legacy-drift.fixture.json"]
+    },
+    {
+      "resolver": "legacy/resolve-legacy-status",
+      "fixtures": ["fixtures/legacy/legacy-status.fixture.json"]
+    },
+    {
+      "resolver": "mutation/check-mutation-scope",
+      "fixtures": ["fixtures/core/mutation-scope.fixture.json"]
+    },
+    {
+      "resolver": "operations/resolve-operation-capability",
+      "fixtures": ["fixtures/core/operation-capability.fixture.json"]
+    },
+    {
+      "resolver": "portability/resolve-surface-portability",
+      "fixtures": ["fixtures/extension/surface-portability.fixture.json"]
+    },
+    {
+      "resolver": "projection/check-projection-eligibility",
+      "fixtures": ["fixtures/canonical/projection-eligibility.fixture.json"]
+    }
+  ]
+}
