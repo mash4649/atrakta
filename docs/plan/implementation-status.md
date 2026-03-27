@@ -2,6 +2,10 @@
 
 ## Completed
 
+- Phase 1 hardening
+  - `P1-H-001` `start` lifecycle hardening completed
+  - edge-case diagnostics now produce deterministic output envelopes
+  - `start --json` validates against the run-output schema on the task's covered paths
 - Issue 1 baseline
   - layer ownership contract documented
   - `classify_layer` resolver implemented with tests
@@ -40,27 +44,54 @@
 - Integration baseline complete (snapshot gate enabled)
 - `atrakta run` contract and adapter invocation docs added
 - semantic portability v1 added for `agents_md`, `ide_rules`, `repo_docs`, and `skill_bundle`
+- `atrakta resume` remains on the shared `start` runtime path
 
 ## Next
 
 No blocking baseline tasks remain for the current v0 contract scope.
+
+Post-baseline harness roadmap feed:
+- Structured handoff bundle for `resume` and clean restarts (`feature-spec`, acceptance criteria, checkpoint, next action)
+- Browser-backed evaluator loop for app-quality verification
+- Harness profile / ablation benchmarks to confirm which planner/evaluator/reset steps remain load-bearing on current models
 
 ## Integration Progress
 
 - Added `atrakta run` as the primary execution primitive:
   - onboarding path for initial accept
   - canonical-present path for detect/plan/apply
+- Added `atrakta start` and `atrakta resume` session entrypoints:
+  - `start` persists fast-path / auto-state / handoff runtime artifacts
+  - `resume` reuses persisted handoff or auto-state hints to re-enter the `start` path
+  - `resume` now interprets handoff `next_action`: auto-inherits `--apply` from `apply`, and blocks restart on `deny`
+- Enriched `handoff.v1.json` with restart-oriented summary fields:
+  - `feature_spec` summary from current run response
+  - `acceptance` hints derived from portability / planned targets / next action
+  - normalized `next_action` object and `updated_at`
+- Added session runtime state persistence for `start`/`resume` (non-fast-path):
+  - `.atrakta/state.json`
+  - `.atrakta/progress.json`
+  - `.atrakta/task-graph.json`
+- Added Phase 1 runtime event stream (`run-events`) under audit store:
+  - `.atrakta/audit/events/run-events.jsonl`
+  - `schemas/canonical/run-event.v1.schema.json`
+  - `start`/`resume` (and apply-related run paths) now append v0 run lifecycle events
+  - preflight audit verification now validates both install stream and run stream integrity
 - Added machine contract documentation for `.atrakta/contract.json`
 - Added semantic portability resolver and run gating:
   - capability declarations loaded from `adapters/bindings/*/binding.json`
   - `resolve_surface_portability`
   - proposal-only fallback for degraded or unsupported surfaces
 - Added CLI entrypoints under `cmd/atrakta`:
+  - `init` (bootstrap entrypoint; delegates to `start` with integration-step placeholders)
   - `inspect`
   - `preview`
   - `simulate`
   - `onboard`
   - `run-fixtures`
+  - `projection` (`render` / `status` / `repair`)
+  - `gc`
+  - `migrate check`
 - Added CLI schema validation hooks for input and output bundles.
 - Added zero-config onboarding proposal builder under `internal/onboarding`:
   - `detect_project_root`

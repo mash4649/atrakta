@@ -2,6 +2,10 @@
 
 ## 完了
 
+- Phase 1 hardening
+  - `P1-H-001` `start` ライフサイクル hardening 完了
+  - 例外系診断で決定的な出力エンベロープを返すようになった
+  - `start --json` はタスクで扱う経路で run-output スキーマに通る
 - イシュー 1 ベースライン
   - レイヤ所有権の契約を文書化
   - `classify_layer` リゾルバをテスト付きで実装
@@ -40,27 +44,54 @@
 - インテグレーションベースライン完了（スナップショットゲート有効）
 - `atrakta run` の契約とアダプタ呼び出しドキュメントを追加
 - `agents_md`、`ide_rules`、`repo_docs`、`skill_bundle` 向けの意味論移植性 v1 を追加
+- `atrakta resume` は共有 `start` ランタイム経路上にある
 
 ## 次
 
 現在の v0 契約スコープについて、ブロックとなるベースライン作業は残っていない。
+
+ベースライン後のハーネス拡張候補:
+- `resume` とクリーン再起動向けの handoff bundle（`feature-spec`、受け入れ条件、checkpoint、next action）
+- アプリ品質を検証するブラウザベース evaluator ループ
+- planner / evaluator / reset が現行モデルでも本当に効くかを確認するハーネスプロファイル / アブレーション評価
 
 ## インテグレーションの進捗
 
 - 主要な実行プリミティブとして `atrakta run` を追加:
   - 初回受諾向けのオンボーディング経路
   - 正規あり向けの detect／plan／apply 経路
+- セッション入口として `atrakta start` と `atrakta resume` を追加:
+  - `start` は fast-path / auto-state / handoff の runtime artifact を永続化
+  - `resume` は handoff または auto-state をヒントに `start` 経路へ再投入
+  - `resume` は handoff の `next_action` を解釈し、`apply` は `--apply` を継承、`deny` は再開をブロック
+- `handoff.v1.json` を再開向けに拡張:
+  - 現在の run response から導く `feature_spec` 要約
+  - portability / planned targets / next action から導く `acceptance` ヒント
+  - 正規化した `next_action` オブジェクトと `updated_at`
+- `start`／`resume`（fast-path 以外）のセッション runtime state 永続化を追加:
+  - `.atrakta/state.json`
+  - `.atrakta/progress.json`
+  - `.atrakta/task-graph.json`
+- 監査ストア配下の Phase 1 ランタイムイベントストリーム（`run-events`）を追加:
+  - `.atrakta/audit/events/run-events.jsonl`
+  - `schemas/canonical/run-event.v1.schema.json`
+  - `start`／`resume`（および apply 関連 run 経路）で v0 ライフサイクルイベントを追記
+  - preflight 監査検証で install ストリームと run ストリームの両方を整合性検証
 - `.atrakta/contract.json` の機械契約ドキュメントを追加
 - 意味論移植性リゾルバと run ゲートを追加:
   - `adapters/bindings/*/binding.json` から能力宣言を読み込む
   - `resolve_surface_portability`
   - 劣化または非対応サーフェスでは提案のみにフォールバック
 - `cmd/atrakta` 配下に CLI 入口を追加:
+  - `init`（bootstrap 入口。統合ステップはプレースホルダで `start` へ委譲）
   - `inspect`
   - `preview`
   - `simulate`
   - `onboard`
   - `run-fixtures`
+  - `projection`（`render` / `status` / `repair`）
+  - `gc`
+  - `migrate check`
 - 入力・出力バンドル向けの CLI スキーマ検証フックを追加
 - `internal/onboarding` 配下にゼロ設定オンボーディング提案ビルダーを追加:
   - `detect_project_root`
