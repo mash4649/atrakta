@@ -1,0 +1,435 @@
+{
+  "mode": "simulate",
+  "steps": [
+    {
+      "name": "classify_layer",
+      "output": {
+        "input": {
+          "kind": "request",
+          "schema_id": "atrakta/schemas/core/request.schema.json"
+        },
+        "decision": "core",
+        "reason": "layer classified",
+        "evidence": [
+          "kind=request",
+          "schema_id=atrakta/schemas/core/request.schema.json"
+        ],
+        "next_allowed_action": "inspect"
+      }
+    },
+    {
+      "name": "resolve_guidance_precedence",
+      "output": {
+        "input": [
+          {
+            "id": "policy-1",
+            "type": "policy"
+          },
+          {
+            "id": "workflow-1",
+            "type": "workflow"
+          },
+          {
+            "id": "skill-1",
+            "type": "skill"
+          },
+          {
+            "id": "repo-1",
+            "type": "repo_map"
+          }
+        ],
+        "decision": {
+          "ordered_ids": [
+            "policy-1",
+            "workflow-1",
+            "skill-1",
+            "repo-1"
+          ],
+          "classifications": [
+            {
+              "id": "policy-1",
+              "type": "policy",
+              "strength": "authoritative_constraint",
+              "surfaces": [
+                "decision",
+                "mutation"
+              ],
+              "precedence": 1
+            },
+            {
+              "id": "workflow-1",
+              "type": "workflow",
+              "strength": "orchestration_constraint",
+              "surfaces": [
+                "orchestration",
+                "mutation"
+              ],
+              "precedence": 2
+            },
+            {
+              "id": "skill-1",
+              "type": "skill",
+              "strength": "executable_guidance",
+              "surfaces": [
+                "orchestration",
+                "mutation"
+              ],
+              "precedence": 3
+            },
+            {
+              "id": "repo-1",
+              "type": "repo_map",
+              "strength": "advisory_map",
+              "surfaces": [
+                "projection",
+                "diagnostics"
+              ],
+              "precedence": 4
+            }
+          ],
+          "violations": []
+        },
+        "reason": "guidance precedence resolved",
+        "evidence": [
+          "canonical_policy_always_wins"
+        ],
+        "next_allowed_action": "propose"
+      }
+    },
+    {
+      "name": "check_projection_eligibility",
+      "output": {
+        "input": {
+          "type": "policy"
+        },
+        "decision": {
+          "eligibility": "allowed",
+          "can_be_decision_root": true,
+          "projection_types": [
+            "durable",
+            "ephemeral",
+            "diagnostics"
+          ]
+        },
+        "reason": "projection source allowed",
+        "evidence": [
+          "has_canonical_anchor=false",
+          "type=policy"
+        ],
+        "next_allowed_action": "propose"
+      }
+    },
+    {
+      "name": "resolve_failure_tier",
+      "output": {
+        "input": {
+          "context": {
+            "scope": "workspace",
+            "is_diagnostics_only": true
+          },
+          "failure_class": "projection_failure"
+        },
+        "decision": {
+          "failure_class": "projection_failure",
+          "default_tier": "WARN_ONLY",
+          "resolved_tier": "WARN_ONLY",
+          "can_override": true,
+          "requires_human_review": false,
+          "scope": "workspace",
+          "strict_transition": "none",
+          "execution_allowed": true,
+          "projection_allowed": true
+        },
+        "reason": "warn-only fallback",
+        "evidence": [
+          "default_tier=WARN_ONLY",
+          "diagnostics_only=true"
+        ],
+        "next_allowed_action": "inspect"
+      }
+    },
+    {
+      "name": "strict_state_machine",
+      "output": {
+        "input": {
+          "current_state": "normal",
+          "event": "reset",
+          "scope": "task"
+        },
+        "decision": {
+          "current_state": "normal",
+          "next_state": "normal",
+          "scope": "task",
+          "allowed_actions": [
+            "inspect",
+            "preview",
+            "simulate",
+            "propose",
+            "apply"
+          ],
+          "release_required": false
+        },
+        "reason": "state unchanged",
+        "evidence": [
+          "scope=task",
+          "event=reset"
+        ],
+        "next_allowed_action": "inspect"
+      }
+    },
+    {
+      "name": "check_mutation_scope",
+      "output": {
+        "input": {
+          "path": "AGENTS.md",
+          "asset_type": "existing_user_rules",
+          "has_ambiguity": true
+        },
+        "decision": {
+          "scope": "proposal_patch_only",
+          "implicit_mutation_allowed": false,
+          "allowed_modes": [
+            "inspect",
+            "preview",
+            "simulate",
+            "propose"
+          ],
+          "reverse_sync_mode": "proposal_only",
+          "policy": "ambiguity fallback to proposal-only"
+        },
+        "reason": "mutation scope resolved",
+        "evidence": [
+          "scope=proposal_patch_only",
+          "asset_type=existing_user_rules",
+          "operation=",
+          "dual_read_single_write=true",
+          "reverse_sync=proposal_only"
+        ],
+        "next_allowed_action": "propose"
+      }
+    },
+    {
+      "name": "resolve_legacy_status",
+      "output": {
+        "input": {
+          "asset_id": "legacy-1",
+          "ownership": "known",
+          "freshness": "acceptable",
+          "canonical_mapping": "exists",
+          "integrity": "known"
+        },
+        "decision": {
+          "status": "canonicalized",
+          "can_auto_promote": true,
+          "drift_conditions": [],
+          "routing": "warn",
+          "ownership_known": true,
+          "freshness_acceptable": true,
+          "mapping_exists": true
+        },
+        "reason": "canonicalized status ready",
+        "evidence": [
+          "freshness=acceptable",
+          "mapping=exists",
+          "ownership=known"
+        ],
+        "next_allowed_action": "propose"
+      }
+    },
+    {
+      "name": "resolve_operation_capability",
+      "output": {
+        "input": {
+          "command_or_alias": "repair",
+          "failure_tier": "WARN_ONLY"
+        },
+        "decision": {
+          "canonical_capability": "propose_repair",
+          "action_class": "propose_only",
+          "ceiling_action_class": "apply_mutation",
+          "effective_action_class": "propose_only",
+          "alias_resolved_from": "repair"
+        },
+        "reason": "operation capability resolved",
+        "evidence": [
+          "canonical_capability=propose_repair",
+          "ceiling=apply_mutation"
+        ],
+        "next_allowed_action": "propose"
+      }
+    },
+    {
+      "name": "resolve_extension_order",
+      "output": {
+        "input": [
+          {
+            "id": "policy-1",
+            "kind": "policy"
+          },
+          {
+            "id": "workflow-1",
+            "kind": "workflow"
+          },
+          {
+            "id": "skill-1",
+            "kind": "skill"
+          },
+          {
+            "id": "hint-1",
+            "kind": "tool_hint"
+          },
+          {
+            "id": "hook-1",
+            "kind": "hook"
+          },
+          {
+            "id": "plugin-1",
+            "kind": "projection_plugin"
+          }
+        ],
+        "decision": {
+          "ordered": [
+            {
+              "id": "policy-1",
+              "kind": "policy",
+              "first_pass_group": "orchestration_assets",
+              "order": 1
+            },
+            {
+              "id": "workflow-1",
+              "kind": "workflow",
+              "first_pass_group": "orchestration_assets",
+              "order": 2
+            },
+            {
+              "id": "skill-1",
+              "kind": "skill",
+              "first_pass_group": "orchestration_assets",
+              "order": 3
+            },
+            {
+              "id": "hint-1",
+              "kind": "tool_hint",
+              "first_pass_group": "orchestration_assets",
+              "order": 4
+            },
+            {
+              "id": "hook-1",
+              "kind": "hook",
+              "first_pass_group": "runtime_hooks",
+              "order": 5
+            },
+            {
+              "id": "plugin-1",
+              "kind": "projection_plugin",
+              "first_pass_group": "capability_adapters",
+              "order": 6
+            }
+          ],
+          "violations": []
+        },
+        "reason": "extension order resolved",
+        "evidence": [
+          "evaluation_order=canonical_policy\u003eworkflow\u003eskill\u003etool_hint\u003eruntime_hook\u003eprojection_plugin"
+        ],
+        "next_allowed_action": "propose"
+      }
+    },
+    {
+      "name": "resolve_surface_portability",
+      "output": {
+        "input": {
+          "interface_id": "generic-cli",
+          "requested_targets": [
+            "agents_md",
+            "repo_docs"
+          ],
+          "available_sources": [
+            "canonical_policy",
+            "repo_docs",
+            "agents_md"
+          ],
+          "binding_capabilities": {
+            "id": "generic-cli",
+            "projection_targets": [
+              "agents_md",
+              "repo_docs"
+            ],
+            "ingest_sources": [
+              "canonical_policy",
+              "repo_docs",
+              "agents_md"
+            ],
+            "approval_channel": "cli_flag",
+            "portability_mode": "semantic_required"
+          },
+          "degrade_policy": "proposal_only"
+        },
+        "decision": {
+          "supported_targets": [
+            "agents_md",
+            "repo_docs"
+          ],
+          "degraded_targets": [],
+          "unsupported_targets": [],
+          "ingest_plan": [
+            "canonical_policy",
+            "repo_docs",
+            "agents_md"
+          ],
+          "projection_plan": [
+            {
+              "requested_target": "agents_md",
+              "effective_target": "agents_md",
+              "status": "supported",
+              "reason": "binding supports requested target"
+            },
+            {
+              "requested_target": "repo_docs",
+              "effective_target": "repo_docs",
+              "status": "supported",
+              "reason": "binding supports requested target"
+            }
+          ],
+          "portability_status": "supported",
+          "degrade_policy": "proposal_only"
+        },
+        "reason": "requested targets supported without degradation",
+        "evidence": [
+          "degrade_policy=proposal_only",
+          "interface_id=generic-cli",
+          "portability_mode=semantic_required"
+        ],
+        "next_allowed_action": "propose"
+      }
+    },
+    {
+      "name": "resolve_audit_requirements",
+      "output": {
+        "input": {
+          "action": "propose"
+        },
+        "decision": {
+          "required_integrity_level": "A2",
+          "append_only": true,
+          "per_event_hash_required": true,
+          "prev_hash_chain_required": true,
+          "chain_verification_required": false,
+          "checkpoint_required": false,
+          "dry_run_required": false,
+          "destructive_cleanup_mode": "proposal_only",
+          "protect_core_audit_head": true,
+          "protect_manifest_projection_linkage": true,
+          "strict_trigger_on_shortfall": true
+        },
+        "reason": "audit requirements resolved",
+        "evidence": [
+          "append_only=true",
+          "integrity_level=A2"
+        ],
+        "next_allowed_action": "inspect"
+      }
+    }
+  ],
+  "final_allowed_action": "inspect"
+}

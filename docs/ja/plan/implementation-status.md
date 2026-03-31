@@ -6,6 +6,8 @@
   - `P1-H-001` `start` ライフサイクル hardening 完了
   - 例外系診断で決定的な出力エンベロープを返すようになった
   - `start --json` はタスクで扱う経路で run-output スキーマに通る
+  - `P1-H-008` `cmd_run.go` のライフサイクルを小さな単位へ分割 完了
+  - `P1-H-009` task-graph の意味論 hardening（`resume` 再解釈とノード寿命）完了
 - イシュー 1 ベースライン
   - レイヤ所有権の契約を文書化
   - `classify_layer` リゾルバをテスト付きで実装
@@ -72,6 +74,10 @@
   - `.atrakta/state.json`
   - `.atrakta/progress.json`
   - `.atrakta/task-graph.json`
+- セッション task-graph の replay 意味論を hardening:
+  - replay 保存時に既存ノードのライフサイクル状態を上書きせず保持
+  - 空の replay 保存でも既存の task-graph を空にせず保持
+- `cmd/atrakta/cmd_run.go` のライフサイクル処理を `cmd_run_lifecycle.go` に分離し、main 側は 1k 行未満に縮小
 - 監査ストア配下の Phase 1 ランタイムイベントストリーム（`run-events`）を追加:
   - `.atrakta/audit/events/run-events.jsonl`
   - `schemas/canonical/run-event.v1.schema.json`

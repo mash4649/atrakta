@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "atrakta/schemas/canonical/run-event.v1.schema.json",
+  "title": "RunEventV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "seq",
+    "timestamp",
+    "event_type",
+    "integrity_level",
+    "payload"
+  ],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "seq": { "type": "integer", "minimum": 1 },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "event_type": { "type": "string", "minLength": 1 },
+    "integrity_level": { "type": "string", "enum": ["A0", "A1", "A2", "A3"] },
+    "payload": { "type": "object", "additionalProperties": true },
+    "payload_hash": { "type": "string", "minLength": 1 },
+    "prev_hash": { "type": "string" },
+    "hash": { "type": "string", "minLength": 1 },
+    "event_id": { "type": "string", "minLength": 1 },
+    "actor": { "type": "string", "minLength": 1 },
+    "run_id": { "type": "string", "minLength": 1 },
+    "interface": { "type": "string", "minLength": 1 },
+    "feature_id": { "type": "string", "minLength": 1 }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "integrity_level": { "enum": ["A1", "A2", "A3"] } }
+      },
+      "then": { "required": ["payload_hash"] }
+    },
+    {
+      "if": {
+        "properties": { "integrity_level": { "enum": ["A2", "A3"] } }
+      },
+      "then": { "required": ["prev_hash", "hash"] }
+    }
+  ]
+}

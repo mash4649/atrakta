@@ -1,0 +1,38 @@
+package main
+
+import "fmt"
+
+func usage() {
+	fmt.Println("usage:")
+	fmt.Println("  primary:")
+	fmt.Println("  atrakta run [--project-root dir] [--interface id] [--artifact-dir dir] [--non-interactive] [--json] [--apply] [--approve]")
+	fmt.Println("  atrakta start [--project-root dir] [--interface id] [--artifact-dir dir] [--non-interactive] [--json] [--apply] [--approve]")
+	fmt.Println("  atrakta init [--project-root dir] [--interface id] [--artifact-dir dir] [--mode greenfield|brownfield] [--non-interactive] [--json] [--apply] [--approve] [--no-wrap] [--no-hook] [--no-ide-autostart] [--no-overwrite]")
+	fmt.Println("  atrakta wrap install|uninstall [<tool-id>] [--tool id] [--project-root dir] [--dry-run] [--json] [--approve] [--non-interactive]")
+	fmt.Println("  atrakta wrap run <tool-id> [args...]")
+	fmt.Println("  atrakta hook install|uninstall [<hook-type>] [--hook-type type] [--project-root dir] [--dry-run] [--json] [--approve]")
+	fmt.Println("  atrakta hook status [--project-root dir] [--json]")
+	fmt.Println("  atrakta hook repair [--project-root dir] [--json] [--approve]")
+	fmt.Println("  atrakta ide-autostart [--project-root dir] [--dry-run] [--json] [--approve]")
+	fmt.Println("  atrakta resume [--project-root dir] [--interface id] [--artifact-dir dir] [--non-interactive] [--json] [--apply] [--approve]")
+	fmt.Println("  debug/auxiliary:")
+	fmt.Println("  atrakta inspect [--input bundle.json] [--onboard-root dir] [--artifact-dir dir]")
+	fmt.Println("  atrakta preview [--input bundle.json] [--onboard-root dir] [--artifact-dir dir]")
+	fmt.Println("  atrakta simulate [--input bundle.json] [--onboard-root dir] [--artifact-dir dir]")
+	fmt.Println("  atrakta projection <render|status|repair> [--project-root dir] [--target target|path] [--interface id] [--json] [--artifact-dir dir] [--dry-run] [--approve]")
+	fmt.Println("  atrakta gc [--project-root dir] [--scope tmp|events] [--apply] [--json] [--artifact-dir dir] [--retention-days n]")
+	fmt.Println("  atrakta migrate check [--project-root dir] [--json] [--artifact-dir dir]")
+	fmt.Println("  atrakta run-fixtures [--artifact-dir dir]")
+	fmt.Println("  atrakta onboard [--project-root dir] [--artifact-dir dir]")
+	fmt.Println("  atrakta accept [--project-root dir] [--proposal proposal.json] [--artifact-dir dir]")
+	fmt.Println("  atrakta harness-profile [--project-root dir] [--model-generation name] [--artifact-dir dir]")
+	fmt.Println("  atrakta benchmark start-latency [--iterations n] [--interface id] [--workspace small|monorepo] [--artifact-dir dir]")
+	fmt.Println("  atrakta mutate <inspect|propose|apply> --target path [--content text|--content-file file] [--allow]")
+	fmt.Println("  atrakta audit <append|verify> [flags]")
+	fmt.Println("  atrakta doctor [--project-root dir] [--json] [--execute]")
+	fmt.Println("  atrakta parity [--execute]")
+	fmt.Println("  atrakta integration [--execute]")
+	fmt.Println("  atrakta extensions [--project-root dir]")
+	fmt.Println("  atrakta export-snapshots [--dir fixtures/snapshots]")
+	fmt.Println("  atrakta verify-coverage")
+}

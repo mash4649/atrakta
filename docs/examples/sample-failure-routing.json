@@ -1,0 +1,7 @@
+{
+  "failure_class": "approval_failure",
+  "default_tier": "DEGRADE_TO_STRICT",
+  "resolved_tier": "DEGRADE_TO_STRICT",
+  "requires_human_review": true,
+  "scope": "task"
+}

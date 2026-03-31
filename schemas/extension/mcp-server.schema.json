@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "atrakta/schemas/extension/mcp-server.schema.json",
+  "title": "MCPServerDefinition",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "id",
+    "name",
+    "kind",
+    "transport",
+    "capabilities",
+    "permissions"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "mcp-server.v1"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "type": "string",
+      "const": "mcp"
+    },
+    "transport": {
+      "type": "object",
+      "required": [
+        "type",
+        "command"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "stdio",
+            "http"
+          ]
+        },
+        "command": {
+          "type": "string",
+          "minLength": 1
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "env": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "adapter",
+          "diagnostics",
+          "projection",
+          "inspection"
+        ]
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "required": [
+        "can_mutate_core_contract",
+        "can_write_canonical",
+        "can_block_execution"
+      ],
+      "properties": {
+        "can_mutate_core_contract": {
+          "type": "boolean",
+          "const": false
+        },
+        "can_write_canonical": {
+          "type": "boolean",
+          "const": false
+        },
+        "can_block_execution": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "description": { "type": "string" },
+        "homepage": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

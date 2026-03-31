@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "atrakta/schemas/operations/machine-contract.schema.json",
+  "title": "MachineContract",
+  "type": "object",
+  "required": ["v", "interfaces", "boundary", "tools", "routing"],
+  "properties": {
+    "v": { "type": "integer", "minimum": 1 },
+    "project_id": { "type": "string", "minLength": 1 },
+    "interfaces": {
+      "type": "object",
+      "required": ["supported", "fallback"],
+      "properties": {
+        "supported": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "fallback": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": true
+    },
+    "boundary": {
+      "type": "object",
+      "required": ["managed_root"],
+      "properties": {
+        "managed_root": { "type": "string", "minLength": 1 },
+        "include": { "type": "array", "items": { "type": "string" } },
+        "exclude": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": true
+    },
+    "tools": {
+      "type": "object",
+      "required": ["allow"],
+      "properties": {
+        "allow": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "deny": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      },
+      "additionalProperties": true
+    },
+    "routing": {
+      "type": "object",
+      "required": ["default"],
+      "properties": {
+        "default": { "type": "object", "additionalProperties": true }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "atrakta/schemas/canonical/task-state.schema.json",
+  "title": "CanonicalTaskState",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["task_id", "scope", "state"],
+  "properties": {
+    "task_id": { "type": "string", "minLength": 1 },
+    "scope": { "type": "string", "enum": ["request", "task", "workspace"] },
+    "state": { "type": "string", "enum": ["normal", "guarded", "strict", "released"] },
+    "strict_cause": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "release_conditions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    }
+  }
+}

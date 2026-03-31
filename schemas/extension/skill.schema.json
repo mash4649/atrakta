@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "atrakta/schemas/extension/skill.schema.json",
+  "title": "SkillAsset",
+  "type": "object",
+  "required": ["skill_id", "name", "entry"],
+  "properties": {
+    "skill_id": { "type": "string" },
+    "name": { "type": "string" },
+    "entry": { "type": "string" }
+  },
+  "additionalProperties": false
+}

@@ -40,10 +40,10 @@
 |----------|--------|------|
 | init 連携の統合 | **部分完了** | 最小版の `init` はあるが、wrap/hook/ide-autostart の統合がまだ足りない |
 | wrap / hook / ide-autostart | **必須** | ツール結合層が無い |
-| projection render / status / repair | **完了** | 初期のディスク書き出し render/status/repair はある。対象拡張が残る |
-| state / progress / task-graph hardening | **部分完了** | 永続化の基盤はあるが、版管理と再実行意味論の整理が必要 |
+| projection render / status / repair | **完了** | 初期のディスク書き出し render/status/repair はある。target 拡張は `agents_md` / `ide_rules` / `repo_docs` / `skill_bundle` まで反映済み |
+| state / progress / task-graph hardening | **完了** | 永続化の基盤に加え、replay 意味論とノード寿命を hardening 済み |
 | 旧 events.jsonl | **低** | `run-events` が v0 の正規ストリームで、旧 `/.atrakta/events.jsonl` は読み取り専用の履歴データ |
-| Fast Path hardening | **重要** | Fast Path は `start` / `resume` にあるが、キー方針と可観測性の整理が必要 |
+| Fast Path hardening | **完了** | Fast Path は `start` / `resume` にある。キー方針・可観測性・互換性を整理済み |
 | インターフェース解決の拡張性 | **重要** | 基本解決はあるが、wrapper／hook 連携と binding 駆動の拡張が残る |
 | gc / migrate | **部分完了** | 初期コマンドはあるが、保持ポリシーと移行ガイダンスの強化が必要 |
 | バイナリ配布 / インストーラ | **重要** | `go run` 前提で配布形態が無い |
@@ -141,9 +141,9 @@
 | run-events の taxonomy 拡張と発行範囲の整備 | start | M | P0 |
 | handoff bundle（`feature-spec`、受け入れ条件、checkpoint、next action）の深化 | start, state | M | P0 |
 | `resume` の handoff／auto-state 由来再開の忠実性向上 | start, state | M | P0 |
-| Fast Path の拡張（キー方針・可観測性・互換性） | start, state | M | P1 |
+| Fast Path の拡張（キー方針・可観測性・互換性） — 実装済み | start, state | M | P1 |
 | `init` コマンド（wrap + hook + ide-autostart + start の統合） | wrap, hook, start | L | P1 |
-| task-graph の意味論 hardening（resume 再解釈とノード寿命） | start | S | P1 |
+| task-graph の意味論 hardening（resume 再解釈とノード寿命） — 実装済み | start | S | P1 |
 
 ### Phase 2: ツール結合・プロジェクション（beta 初期）
 
@@ -154,7 +154,7 @@
 | `wrap install / uninstall / run` 実装 | start | L | P0 |
 | `hook install / uninstall / status / repair` 実装 | start | L | P0 |
 | `ide-autostart` 実装（.vscode/tasks.json 等） | hook | M | P1 |
-| `projection render`（canonical + contract → agents_md 等のファイル生成） | start, surface-portability | L | P0 |
+| `projection render`（canonical + contract → target ファイル生成） | start, surface-portability | L | P0 |
 | `projection status`（投影と canonical の drift 検出） | projection render | M | P1 |
 | `projection repair`（drift の自動修復） | projection status | M | P1 |
 | Cursor アダプタバインディングの実装 | wrap, hook | M | P0 |
@@ -169,7 +169,7 @@
 |--------|------|----------|--------|
 | `gc` コマンド（tmp / events スコープ） | events.jsonl | M | P1 |
 | `migrate check`（スキーマ版の検証と移行ガイダンス） | state, events | M | P1 |
-| doctor 拡張（state 整合性、projection パリティ、events チェーン） | start, projection | M | P1 |
+| doctor 拡張（state 整合性、projection パリティ、events チェーン）— 実装済み | start, projection | M | P1 |
 | 構造化エラーメッセージとリカバリガイダンス | 全体 | L | P1 |
 | 受け入れ成果物の生成（prompt から実行可能な spec と scoring rubric を得る） | start, state | M | P1 |
 | モデル世代ごとのハーネスプロファイル / アブレーション評価 | start, パフォーマンスベンチマーク | M | P1 |
@@ -239,7 +239,7 @@
 
 | 対象 | 課題 | 対応案 |
 |------|------|--------|
-| `cmd/atrakta/cmd_run.go`（約 1200 行） | セッションライフサイクルと apply オーケストレーションが集中 | start / run / resume の共通ライフサイクルを小さな単位へ分割 |
+| `cmd/atrakta/cmd_run.go`（約 955 行） | セッションライフサイクルと apply オーケストレーションが集中 | 共通ライフサイクルを `cmd_run_lifecycle.go` に分離。helper 群は今後も整理余地あり |
 | リゾルバの共通出力構造 | `resolvers/common/output.go` に集約途中 | 全リゾルバで統一的な出力インターフェースを徹底 |
 | フィクスチャ管理 | `fixtures/` 配下の手動管理 | テーブル駆動テスト + フィクスチャ自動生成の検討 |
 | 用語の揺れ | `follow-up-vocabulary-alignment.md` で認識済み | Phase 5 の用語集整備で解消 |

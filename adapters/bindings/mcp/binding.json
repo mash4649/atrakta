@@ -1,0 +1,16 @@
+{
+  "id": "mcp",
+  "kind": "capability_adapter",
+  "surfaces": [
+    "capability_source",
+    "operations"
+  ],
+  "notes": "MCP is adapter/capability source only",
+  "projection_targets": [],
+  "ingest_sources": [
+    "canonical_policy"
+  ],
+  "approval_channel": "unsupported",
+  "portability_mode": "unsupported",
+  "can_mutate_core_contract": false
+}

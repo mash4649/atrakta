@@ -1,0 +1,70 @@
+{
+  "cases": [
+    {
+      "input": {
+        "interface_id": "generic-cli",
+        "requested_targets": ["agents_md", "repo_docs"],
+        "available_sources": ["canonical_policy", "agents_md", "repo_docs"],
+        "binding_capabilities": {
+          "id": "generic-cli",
+          "projection_targets": ["agents_md", "repo_docs"],
+          "ingest_sources": ["canonical_policy", "agents_md", "repo_docs"],
+          "approval_channel": "cli_flag",
+          "portability_mode": "semantic_required"
+        },
+        "degrade_policy": "proposal_only"
+      },
+      "expected": {
+        "status": "supported",
+        "supported": ["agents_md", "repo_docs"],
+        "degraded": [],
+        "unsupported": [],
+        "next_allowed_action": "propose"
+      }
+    },
+    {
+      "input": {
+        "interface_id": "cursor",
+        "requested_targets": ["agents_md", "repo_docs"],
+        "available_sources": ["canonical_policy", "agents_md", "repo_docs", "ide_rules"],
+        "binding_capabilities": {
+          "id": "cursor",
+          "projection_targets": ["ide_rules", "repo_docs"],
+          "ingest_sources": ["canonical_policy", "agents_md", "repo_docs", "ide_rules"],
+          "approval_channel": "prompt",
+          "portability_mode": "semantic_best_effort"
+        },
+        "degrade_policy": "proposal_only"
+      },
+      "expected": {
+        "status": "degraded",
+        "supported": ["repo_docs"],
+        "degraded": ["agents_md"],
+        "unsupported": [],
+        "next_allowed_action": "propose"
+      }
+    },
+    {
+      "input": {
+        "interface_id": "mcp",
+        "requested_targets": ["repo_docs"],
+        "available_sources": ["canonical_policy", "repo_docs"],
+        "binding_capabilities": {
+          "id": "mcp",
+          "projection_targets": [],
+          "ingest_sources": ["canonical_policy"],
+          "approval_channel": "unsupported",
+          "portability_mode": "unsupported"
+        },
+        "degrade_policy": "proposal_only"
+      },
+      "expected": {
+        "status": "unsupported",
+        "supported": [],
+        "degraded": [],
+        "unsupported": ["repo_docs"],
+        "next_allowed_action": "inspect"
+      }
+    }
+  ]
+}

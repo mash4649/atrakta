@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "atrakta/schemas/operations/binding.schema.json",
+  "title": "BindingDefinition",
+  "type": "object",
+  "required": ["id", "install_path", "script_template", "capabilities"],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "kind": { "type": "string" },
+    "surfaces": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "projection_targets": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "ingest_sources": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "approval_channel": { "type": "string" },
+    "portability_mode": { "type": "string" },
+    "can_mutate_core_contract": { "type": "boolean" },
+    "install_path": { "type": "string", "minLength": 1 },
+    "script_template": { "type": "string", "minLength": 1 },
+    "capabilities": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    }
+  },
+  "additionalProperties": true
+}

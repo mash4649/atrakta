@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "atrakta/schemas/operations/session-state.schema.json",
+  "title": "SessionState",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "command",
+    "canonical_state",
+    "status",
+    "interface_id",
+    "interface_source",
+    "apply_requested",
+    "approved",
+    "planned_count",
+    "applied_count"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": ["session-state.v0", "session-state.v1"]
+    },
+    "command": {
+      "type": "string",
+      "enum": ["start", "resume"]
+    },
+    "canonical_state": {
+      "type": "string",
+      "enum": ["none", "canonical_present", "onboarding_complete", "partial_state", "corrupt_state"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ok", "needs_input", "needs_approval", "applied", "error"]
+    },
+    "interface_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "interface_source": {
+      "type": "string",
+      "enum": ["flag", "env", "detect", "default", "auto", "projection-default"]
+    },
+    "portability_status": {
+      "type": "string",
+      "enum": ["supported", "degraded", "unsupported"]
+    },
+    "portability_reason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "apply_requested": {
+      "type": "boolean"
+    },
+    "approved": {
+      "type": "boolean"
+    },
+    "planned_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "applied_count": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false
+}

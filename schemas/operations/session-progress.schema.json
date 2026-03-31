@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "atrakta/schemas/operations/session-progress.schema.json",
+  "title": "SessionProgress",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "command",
+    "status",
+    "planned_count",
+    "applied_count"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": ["session-progress.v0", "session-progress.v1"]
+    },
+    "command": {
+      "type": "string",
+      "enum": ["start", "resume"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ok", "needs_input", "needs_approval", "planned", "applied", "error"]
+    },
+    "next_allowed_action": {
+      "type": "string",
+      "minLength": 1
+    },
+    "planned_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "applied_count": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false
+}

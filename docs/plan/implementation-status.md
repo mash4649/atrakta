@@ -6,6 +6,8 @@
   - `P1-H-001` `start` lifecycle hardening completed
   - edge-case diagnostics now produce deterministic output envelopes
   - `start --json` validates against the run-output schema on the task's covered paths
+  - `P1-H-008` `cmd_run.go` lifecycle split into smaller units completed
+  - `P1-H-009` task-graph semantics hardening (`resume` replay + node lifecycle) completed
 - Issue 1 baseline
   - layer ownership contract documented
   - `classify_layer` resolver implemented with tests
@@ -72,6 +74,10 @@ Post-baseline harness roadmap feed:
   - `.atrakta/state.json`
   - `.atrakta/progress.json`
   - `.atrakta/task-graph.json`
+- Hardened session task-graph replay semantics:
+  - replay saves now preserve existing node lifecycle status instead of overwriting it
+  - empty replay saves now preserve the previous task graph instead of blanking it
+- Split the `cmd/atrakta/cmd_run.go` lifecycle handlers into `cmd_run_lifecycle.go`; the main command file now stays under 1k lines.
 - Added Phase 1 runtime event stream (`run-events`) under audit store:
   - `.atrakta/audit/events/run-events.jsonl`
   - `schemas/canonical/run-event.v1.schema.json`

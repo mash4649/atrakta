@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "atrakta/schemas/operations/fixtures-report.schema.json",
+  "title": "FixturesReport",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["passed", "failed", "results"],
+  "properties": {
+    "passed": { "type": "integer", "minimum": 0 },
+    "failed": { "type": "integer", "minimum": 0 },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["fixture", "case", "passed"],
+        "properties": {
+          "fixture": { "type": "string", "minLength": 1 },
+          "case": { "type": "integer", "minimum": 0 },
+          "passed": { "type": "boolean" },
+          "message": { "type": "string" }
+        }
+      }
+    }
+  }
+}

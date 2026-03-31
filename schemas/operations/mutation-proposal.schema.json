@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "atrakta/schemas/operations/mutation-proposal.schema.json",
+  "title": "MutationProposal",
+  "type": "object",
+  "required": ["envelope", "proposed_patch"],
+  "properties": {
+    "envelope": { "type": "object", "additionalProperties": true },
+    "proposed_patch": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": false
+}

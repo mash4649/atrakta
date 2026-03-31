@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "atrakta/schemas/extension/workflow.schema.json",
+  "title": "WorkflowAsset",
+  "type": "object",
+  "required": ["workflow_id", "name", "steps"],
+  "properties": {
+    "workflow_id": { "type": "string" },
+    "name": { "type": "string" },
+    "steps": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": false
+}

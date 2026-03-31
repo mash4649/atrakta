@@ -40,10 +40,10 @@ Japanese / 日本語: [../ja/plan/maturity-roadmap.md](../ja/plan/maturity-roadm
 |-----|----------|---------|
 | init lifecycle unification | **Partial** | Minimal `init` exists; wrap/hook/ide-autostart integration still missing |
 | wrap / hook / ide-autostart | **Required** | No tool binding layer |
-| projection render / status / repair | **Done** | Initial disk-write render/status/repair exist; target expansion remains |
-| state / progress / task-graph hardening | **Partial** | Base persistence exists; schema/versioning and replay semantics still need hardening |
+| projection render / status / repair | **Done** | Initial disk-write render/status/repair exist; target expansion now covers `agents_md`, `ide_rules`, `repo_docs`, and `skill_bundle` |
+| state / progress / task-graph hardening | **Done** | Base persistence exists; replay semantics and node lifecycle are now hardened |
 | legacy events.jsonl | **Low** | `run-events` is the v0 canonical stream; legacy `/.atrakta/events.jsonl` is read-only historical data |
-| Fast Path hardening | **Important** | Fast path exists for `start`/`resume`; key policy and observability need refinement |
+| Fast Path hardening | **Done** | Fast path exists for `start`/`resume`; key policy, observability, and compatibility are now refined |
 | Interface resolution extensibility | **Important** | Core resolution exists; wrapper/hook-trigger integration and binding-driven extension remain |
 | gc / migrate | **Partial** | Initial commands exist; policy and migration guidance still need hardening |
 | Binary distribution / installer | **Important** | Requires `go run`; no distribution form |
@@ -125,9 +125,9 @@ Japanese / 日本語: [../ja/plan/maturity-roadmap.md](../ja/plan/maturity-roadm
 | run-events taxonomy expansion and emission coverage | start | M | P0 |
 | Structured handoff bundle deepening (`feature-spec`, acceptance, checkpoint, next action) | start, state | M | P0 |
 | `resume` fidelity hardening from handoff/auto-state artifacts | start, state | M | P0 |
-| Fast Path expansion (key policy + observability + compatibility) | start, state | M | P1 |
+| Fast Path expansion (key policy + observability + compatibility) — implemented | start, state | M | P1 |
 | `init` command (wrap + hook + ide-autostart + start) | wrap, hook, start | L | P1 |
-| task-graph semantics hardening (resume replay and node lifecycle) | start | S | P1 |
+| task-graph semantics hardening (resume replay and node lifecycle) — implemented | start | S | P1 |
 
 ### Phase 2: Tool Binding and Projection (early beta)
 
@@ -138,7 +138,7 @@ Japanese / 日本語: [../ja/plan/maturity-roadmap.md](../ja/plan/maturity-roadm
 | `wrap install / uninstall / run` | start | L | P0 |
 | `hook install / uninstall / status / repair` | start | L | P0 |
 | `ide-autostart` (.vscode/tasks.json etc.) | hook | M | P1 |
-| `projection render` (canonical + contract → agents_md file generation) | start, surface-portability | L | P0 |
+| `projection render` (canonical + contract → target file generation) | start, surface-portability | L | P0 |
 | `projection status` (drift detection between projection and canonical) | projection render | M | P1 |
 | `projection repair` (auto-fix for drift) | projection status | M | P1 |
 | Cursor adapter binding | wrap, hook | M | P0 |
@@ -153,7 +153,7 @@ Japanese / 日本語: [../ja/plan/maturity-roadmap.md](../ja/plan/maturity-roadm
 |------|------------|------|----------|
 | `gc` command (tmp / events scopes) | events.jsonl | M | P1 |
 | `migrate check` (schema version verification and migration guidance) | state, events | M | P1 |
-| doctor expansion (state integrity, projection parity, event chain) | start, projection | M | P1 |
+| doctor expansion (state integrity, projection parity, event chain) — implemented | start, projection | M | P1 |
 | Structured error messages with recovery guidance | all | L | P1 |
 | Acceptance artifact generation (prompt → executable spec + scoring rubric) | start, state | M | P1 |
 | Harness profile / ablation benchmarks by model generation | start, performance benchmarks | M | P1 |
@@ -223,7 +223,7 @@ Reference: [Anthropic, "Harness design for long-running application development"
 
 | Target | Issue | Proposed fix |
 |--------|-------|--------------|
-| `cmd/atrakta/cmd_run.go` (~1200 lines) | Session lifecycle and apply orchestration logic is concentrated | Split shared start/run/resume lifecycle into smaller command-local files/packages |
+| `cmd/atrakta/cmd_run.go` (~955 lines) | Session lifecycle and apply orchestration logic is concentrated | Shared start/run/resume lifecycle split into `cmd_run_lifecycle.go`; helper grouping can still be refined |
 | Resolver common output structure | Consolidation in progress at `resolvers/common/output.go` | Enforce unified output interface across all resolvers |
 | Fixture management | Manual management under `fixtures/` | Consider table-driven tests + fixture auto-generation |
 | Terminology drift | Acknowledged in `follow-up-vocabulary-alignment.md` | Resolve in Phase 5 glossary work |

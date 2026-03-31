@@ -1,0 +1,22 @@
+{
+  "required_targets": {
+    "bundle_input": "schemas/operations/bundle-input.schema.json",
+    "bundle_output": "schemas/operations/bundle-output.schema.json",
+    "fixtures_report": "schemas/operations/fixtures-report.schema.json",
+    "onboarding_proposal_bundle": "schemas/operations/onboarding-proposal-bundle.schema.json",
+    "session_state": "schemas/operations/session-state.schema.json",
+    "session_progress": "schemas/operations/session-progress.schema.json",
+    "mutation_decision_envelope": "schemas/operations/mutation-decision-envelope.schema.json",
+    "mutation_proposal": "schemas/operations/mutation-proposal.schema.json",
+    "run_output": "schemas/operations/run-output.schema.json",
+    "machine_contract": "schemas/operations/machine-contract.schema.json",
+    "harness_profile": "schemas/operations/harness-profile.schema.json",
+    "start_latency_benchmark": "schemas/operations/start-latency-benchmark.schema.json",
+    "binding_definition": "schemas/operations/binding.schema.json"
+  },
+  "allowed_unbound": [
+    "schemas/operations/inspect-output.schema.json",
+    "schemas/operations/preview-output.schema.json",
+    "schemas/operations/simulate-output.schema.json"
+  ]
+}

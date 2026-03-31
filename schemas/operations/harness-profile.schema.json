@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "atrakta/schemas/operations/harness-profile.schema.json",
+  "title": "HarnessProfileReport",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "project_root",
+    "model_generation",
+    "profile_name",
+    "threshold",
+    "baseline_score",
+    "steps",
+    "ablations",
+    "load_bearing_components",
+    "retirable_components"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "minLength": 1 },
+    "project_root": { "type": "string" },
+    "model_generation": { "type": "string", "minLength": 1 },
+    "profile_name": { "type": "string", "minLength": 1 },
+    "threshold": { "type": "integer", "minimum": 0 },
+    "baseline_score": { "type": "integer", "minimum": 0 },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "description", "weight"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "description": { "type": "string", "minLength": 1 },
+          "weight": { "type": "integer", "minimum": 0 },
+          "evidence": { "type": "array", "items": { "type": "string" } }
+        },
+        "additionalProperties": false
+      }
+    },
+    "ablations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "component",
+          "baseline_score",
+          "ablated_score",
+          "delta",
+          "load_bearing",
+          "impact"
+        ],
+        "properties": {
+          "component": { "type": "string", "minLength": 1 },
+          "baseline_score": { "type": "integer", "minimum": 0 },
+          "ablated_score": { "type": "integer", "minimum": 0 },
+          "delta": { "type": "integer", "minimum": 0 },
+          "load_bearing": { "type": "boolean" },
+          "impact": { "type": "string", "minLength": 1 },
+          "evidence": { "type": "array", "items": { "type": "string" } }
+        },
+        "additionalProperties": false
+      }
+    },
+    "load_bearing_components": { "type": "array", "items": { "type": "string" } },
+    "retirable_components": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,11 @@
+{
+  "v": 1,
+  "intents": [
+    "first_time_safe_onboarding",
+    "deterministic_day_to_day_execution",
+    "explicit_write_control",
+    "audit_traceability",
+    "failure_recovery_posture"
+  ],
+  "operational_entrypoint": "run"
+}

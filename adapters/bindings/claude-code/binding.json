@@ -1,0 +1,22 @@
+{
+  "id": "claude-code",
+  "kind": "cli_binding",
+  "surfaces": [
+    "inspect",
+    "propose"
+  ],
+  "projection_targets": [
+    "agents_md",
+    "repo_docs",
+    "skill_bundle"
+  ],
+  "ingest_sources": [
+    "canonical_policy",
+    "repo_docs",
+    "agents_md",
+    "skill_asset"
+  ],
+  "approval_channel": "cli_flag",
+  "portability_mode": "semantic_best_effort",
+  "can_mutate_core_contract": false
+}

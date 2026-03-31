@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "atrakta/schemas/core/error.schema.json",
+  "title": "CoreError",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["error_id", "request_id", "code", "severity", "message"],
+  "properties": {
+    "error_id": { "type": "string", "minLength": 1 },
+    "request_id": { "type": "string", "minLength": 1 },
+    "code": { "type": "string", "minLength": 1 },
+    "severity": { "type": "string", "enum": ["warn", "error", "fatal"] },
+    "message": { "type": "string", "minLength": 1 },
+    "recoverable": { "type": "boolean", "default": false }
+  }
+}

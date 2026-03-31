@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "atrakta/schemas/operations/inspect-output.schema.json",
+  "title": "InspectOutput",
+  "type": "object",
+  "required": ["input", "decision", "reason", "evidence", "next_allowed_action"],
+  "properties": {
+    "input": { "type": "object", "additionalProperties": true },
+    "decision": { "type": ["string", "object", "array"] },
+    "reason": { "type": "string" },
+    "evidence": { "type": "array", "items": { "type": "string" } },
+    "next_allowed_action": {
+      "type": "string",
+      "enum": ["inspect", "preview", "simulate", "propose", "apply", "deny"]
+    }
+  },
+  "additionalProperties": false
+}
