@@ -71,6 +71,15 @@ Atrakta は、AI 支援開発を実リポジトリで使えるものにしつつ
 - `go run ./cmd/atrakta run --project-root . --non-interactive --json`
 - `go run ./cmd/atrakta run --project-root . --apply --approve --json`
 
+## インストール
+
+- curl インストーラ（Linux / macOS）:
+  - `curl -fsSL https://raw.githubusercontent.com/mash4649/atrakta/main/scripts/install.sh | bash`
+- 直接ダウンロード:
+  - `https://github.com/mash4649/atrakta/releases/latest`
+- Docker（公開後）:
+  - `docker run --rm ghcr.io/mash4649/atrakta:latest --help`
+
 ## リフレッシュの位置づけ
 
 - 運用インターフェースはまず `run` を優先する。

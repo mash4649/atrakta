@@ -68,6 +68,15 @@ Start from `docs/architecture/run-contract.md`, then execute
 - `go run ./cmd/atrakta run --project-root . --non-interactive --json`
 - `go run ./cmd/atrakta run --project-root . --apply --approve --json`
 
+## Install
+
+- Curl installer (Linux/macOS):
+  - `curl -fsSL https://raw.githubusercontent.com/mash4649/atrakta/main/scripts/install.sh | bash`
+- Direct download:
+  - `https://github.com/mash4649/atrakta/releases/latest`
+- Docker (once published):
+  - `docker run --rm ghcr.io/mash4649/atrakta:latest --help`
+
 ## Refresh Positioning
 
 - Operational interface is `run` first.
