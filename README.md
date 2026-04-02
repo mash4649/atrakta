@@ -64,9 +64,14 @@ Start from `docs/architecture/run-contract.md`, then execute
 
 ## Quick Start
 
-- `go run ./cmd/atrakta run --project-root . --json`
-- `go run ./cmd/atrakta run --project-root . --non-interactive --json`
-- `go run ./cmd/atrakta run --project-root . --apply --approve --json`
+- Curl (Linux/macOS): `curl -fsSL https://raw.githubusercontent.com/mash4649/atrakta/main/scripts/install.sh | bash`
+- Brew wrapper (uses the same installer): `curl -fsSL https://raw.githubusercontent.com/mash4649/atrakta/main/scripts/install-brew.sh | bash`
+- Scoop wrapper (Windows): `iwr https://raw.githubusercontent.com/mash4649/atrakta/main/scripts/install-scoop.ps1 -useb | iex`
+- Docker: `docker run --rm ghcr.io/mash4649/atrakta:latest --help`
+- From source:
+  - `go run ./cmd/atrakta run --project-root . --json`
+  - `go run ./cmd/atrakta run --project-root . --non-interactive --json`
+  - `go run ./cmd/atrakta run --project-root . --apply --approve --json`
 
 ## Install
 
@@ -76,6 +81,15 @@ Start from `docs/architecture/run-contract.md`, then execute
   - `https://github.com/mash4649/atrakta/releases/latest`
 - Docker (once published):
   - `docker run --rm ghcr.io/mash4649/atrakta:latest --help`
+
+## Verify Download
+
+- Checksums: `curl -fsSL https://github.com/mash4649/atrakta/releases/latest/download/checksums.txt | shasum -a 256 -c -`
+
+## Version Policy and Platforms
+
+- Semantic Versioning: MAJOR.MINOR.PATCH (pre-release tags for alphas)
+- Supported targets (binaries): `linux/amd64`, `linux/arm64`, `darwin/amd64`, `darwin/arm64`, `windows/amd64`, `windows/arm64`
 
 ## Refresh Positioning
 

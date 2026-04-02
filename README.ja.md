@@ -67,9 +67,14 @@ Atrakta は、AI 支援開発を実リポジトリで使えるものにしつつ
 
 ## クイックスタート
 
-- `go run ./cmd/atrakta run --project-root . --json`
-- `go run ./cmd/atrakta run --project-root . --non-interactive --json`
-- `go run ./cmd/atrakta run --project-root . --apply --approve --json`
+- curl（Linux/macOS）: `curl -fsSL https://raw.githubusercontent.com/mash4649/atrakta/main/scripts/install.sh | bash`
+- Brew ラッパー: `curl -fsSL https://raw.githubusercontent.com/mash4649/atrakta/main/scripts/install-brew.sh | bash`
+- Scoop ラッパー（Windows）: `iwr https://raw.githubusercontent.com/mash4649/atrakta/main/scripts/install-scoop.ps1 -useb | iex`
+- Docker: `docker run --rm ghcr.io/mash4649/atrakta:latest --help`
+- ソースから:
+  - `go run ./cmd/atrakta run --project-root . --json`
+  - `go run ./cmd/atrakta run --project-root . --non-interactive --json`
+  - `go run ./cmd/atrakta run --project-root . --apply --approve --json`
 
 ## インストール
 
@@ -79,6 +84,15 @@ Atrakta は、AI 支援開発を実リポジトリで使えるものにしつつ
   - `https://github.com/mash4649/atrakta/releases/latest`
 - Docker（公開後）:
   - `docker run --rm ghcr.io/mash4649/atrakta:latest --help`
+
+## ダウンロード検証
+
+- チェックサム: `curl -fsSL https://github.com/mash4649/atrakta/releases/latest/download/checksums.txt | shasum -a 256 -c -`
+
+## バージョン方針と対応プラットフォーム
+
+- セマンティックバージョニング（MAJOR.MINOR.PATCH、プレリリースは alpha 等）
+- バイナリ対応: `linux/amd64`, `linux/arm64`, `darwin/amd64`, `darwin/arm64`, `windows/amd64`, `windows/arm64`
 
 ## リフレッシュの位置づけ
 
